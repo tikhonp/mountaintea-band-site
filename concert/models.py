@@ -28,7 +28,7 @@ def save_user_profile(sender, instance, **kwargs):
 
 class Concert(models.Model):
     title = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+    description = models.TextField(('Описание концерта'))
     place = models.CharField(max_length=255)
     place_url = models.URLField()
     date = models.DateField()

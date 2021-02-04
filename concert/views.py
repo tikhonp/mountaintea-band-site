@@ -10,6 +10,10 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 @require_http_methods(["GET"])
+def main(request):
+    return HttpResponse("HI")
+
+@require_http_methods(["GET"])
 def main_page(request):
     return render(request, 'main.html', {
         'concert_id': Concert.objects.all().first()

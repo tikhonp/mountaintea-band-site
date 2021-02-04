@@ -29,6 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     '10.0.1.106',
+    '45.128.204.12',
+    'mountainteaband.ru',
 ]
 
 
