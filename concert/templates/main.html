@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block style %}
+<style>
+   body{
+    background-color: #000000;   
+   }   
+   .dialogue {
+    line-height: 1.25;
+    overflow: hidden;
+    margin-bottom: -2.5em;
+}
+p,h3{
+  color: #ffffff;
+}
+img{width:100%;}
+
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="">
+  <img src="{% static 'background.jpg' %}"  class="img-responsive" alt="Background">
+  <div class="container">  
+    <h3>PUNK FICTION SHOW</h3>
+
+    <p>3 марта в баре «PUNK FICTION» пройдёт совместный концерт Миши Мещерина и группы «Горный Чай». Помимо уже известных песен Миши вы услышите композиции с дебютного EP «Горного Чая»</p>
+
+    <p>Вход строго 16+ (на входе оригинал паспорта или водительского удостоверения)</p>
+
+    <p>Москва, Ольховская улица, 14с1, арт-пространство «Авиатор» (5 минут м. Бауманская и м. Красносельская)</p>
+
+    <div class="d-grid gap-2">
+      <a href="tickets/{{ concert_id.id }}/" role="button" class="btn btn-outline-light">Купить билет</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

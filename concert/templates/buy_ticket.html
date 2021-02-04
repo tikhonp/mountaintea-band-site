@@ -1,0 +1,105 @@
+{% extends "base.html" %} {% block body %}
+<div class="container">
+  <div class="shadow-lg p-3 mb-5 bg-white rounded">
+    <h2>Билет на концерт - {{ concert.title }}</h2>
+    <p>{{ concert.date }} Стоимость - {{ price.price }} рублей.</p>
+  </div>
+
+  <div
+    class="shadow{% if paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded"
+  >
+    <form role="form" method="post">
+      {% csrf_token %} {% include "form.html" %}
+      <br />
+      <div class="d-grid">
+        <button type="submit" class="btn btn-outline-secondary">
+          Продолжить
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div
+    class="shadow{% if not paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded"
+  >
+    <form
+      method="POST"
+      action="https://yoomoney.ru/quickpay/confirm.xml"
+      class="row row-cols-lg-auto g-3 align-items-center"
+    >
+      <legend>К оплате {{ price.price }}₽</legend>
+
+      <input type="hidden" name="receiver" value="410017742960837" />
+      <input
+        type="hidden"
+        name="formcomment"
+        value="Горный Чай: {{ concert.title }}"
+      />
+      <input
+        type="hidden"
+        name="short-dest"
+        value="Горный Чай: {{ concert.title }}"
+      />
+      <input type="hidden" name="label" value="{{ transaction.id }}" />
+      <input type="hidden" name="quickpay-form" value="shop" />
+      <input
+        type="hidden"
+        name="targets"
+        value="Горный Чай: {{ concert.title }}"
+      />
+      <input
+        type="hidden"
+        name="sum"
+        value="{{ price.price }}"
+        data-type="number"
+      />
+
+      <div class="form-check form-check-inline">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="paymentType"
+          value="PC"
+          {%
+          if
+          not
+          paying
+          %}disabled{%
+          endif
+          %}
+        />
+        <label class="form-check-label" for="inlineRadio1"
+          >ЮMoney (Яндекс.Деньги)</label
+        >
+      </div>
+      <div class="form-check form-check-inline">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="paymentType"
+          value="AC"
+          {%
+          if
+          not
+          paying
+          %}disabled{%
+          endif
+          %}
+        />
+        <label class="form-check-label" for="inlineRadio2"
+          >Банковской картой</label
+        >
+      </div>
+
+      <div class="col-auto">
+        <button
+          type="submit"
+          class="btn btn-outline-secondary {% if not paying %}disabled{% endif %}"
+        >
+          Перевести
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
