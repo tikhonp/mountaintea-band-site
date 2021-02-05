@@ -6,7 +6,7 @@ from concert import forms
 from django.contrib.auth.models import User
 from django.core import exceptions
 from django.views.decorators.csrf import csrf_exempt
-# from django.core.mail import send_mail
+from django.core.mail import send_mail
 
 
 @require_http_methods(["GET"])
@@ -105,14 +105,14 @@ def incoming_payment(request):
     transaction.is_done = True
     transaction.save()
 
-    # u = transaction.user
-    # print(u.email)
-    # send_mail(
-        # 'Ваш билет!',
-        # 'Поздравляю',
-        # None,
-        # [u.email],
-        # fail_silently=False
-    # )
+    u = transaction.user
+    print(u.email)
+    send_mail(
+        'Ваш билет!',
+        'Поздравляю',
+        'noreply@mountainteaband.ru',
+        [u.email],
+        fail_silently=False
+    )
     print(request.POST)
     return HttpResponse("ok")

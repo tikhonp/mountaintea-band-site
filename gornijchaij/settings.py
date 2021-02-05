@@ -134,10 +134,14 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 # STATICFILES_DIRS = (os.path.join('static'), )
 
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'tikhonpetrischev@yandex.ru'
-EMAIL_HOST_PASSWORD = 'skxdeoyfjcaivivs'
-DEFAULT_FROM_EMAIL = 'tikhon'
-DEFAULT_TO_EMAIL = 'ticha56@mail.ru'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = 'Gornij Chaij Ltd. <noreply@mountainteaband.ru>'
+# DEFAULT_TO_EMAIL = 'ticha56@mail.ru'
+
+
+SERVER_EMAIL = 'errors@mountaintea.ru'
