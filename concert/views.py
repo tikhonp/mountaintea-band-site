@@ -9,6 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 import hashlib
 import datetime
+from concert.sendmail import send_mail
+from django.template.loader import render_to_string
 # from django.conf import settings
 
 notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd' # settings.YANDEX_notification_secret
@@ -144,3 +146,9 @@ def incoming_payment(request):
         fail_silently=False
     )
     return HttpResponse("ok")
+
+
+def test():
+    msg = render_to_string("buy_ticket.html")
+    send_mail('vdfmefgme', 'sdfgdrtgt', 'tikhon <tikhon@mountainteaband.ru>', ['ticha56@mail.ru'], message_html=msg)
+
