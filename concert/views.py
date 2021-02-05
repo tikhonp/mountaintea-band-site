@@ -7,14 +7,15 @@ from django.contrib.auth.models import User
 from django.core import exceptions
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
+import hashlib
+import datetime
+# from django.conf import settings
 
-with open("debug", "r") as f:
-    debug = f.read()
-
+notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd' # settings.YANDEX_notification_secret
 
 @require_http_methods(["GET"])
 def main(request):
-    return HttpResponse(str(debug))
+    return HttpResponse("hi")
 
 @require_http_methods(["GET"])
 def main_page(request):
@@ -95,17 +96,37 @@ def buy_ticket(request, concert_id):
 @csrf_exempt
 @require_http_methods(["POST"])
 def incoming_payment(request):
-    global  debug
+    hash_str = "{}&{}&{}&{}&{}&{}&{}&{}&{}".format(
+        request.POST.get('notification_type', ''),
+        request.POST.get('operation_id', ''),
+        request.POST.get('amount', ''),
+        request.POST.get('currency', ''),
+        request.POST.get('datetime', ''),
+        request.POST.get('sender', ''),
+        request.POST.get('codepro', ''),
+        notification_secret,
+        request.POST.get('label', ''),
+    )
+    hash_object = hashlib.sha1(hash_str.encode())
+    if str(hash_object.hexdigest()) != request.POST.get('sha1_hash', ''):
+        response = HttpResponse("Failed to check SHA1 hash")
+        response.status_code = 400
+        return response
+
     label = request.POST.get('label', '')
+
     try:
         transaction = Transaction.objects.get(id=int(label))
-    except exceptions.ObjectDoesNotExist:
+    except:
         return HttpResponse("Aborted object doesnt exist")
 
     p = transaction.price
     if p.price != float(request.POST['withdraw_amount']):
         return HttpResponse("Aborted price didnt match")
 
+    transaction.date_closed = datetime.datetime.strptime(
+        request.POST.get('datetime', ''), '%Y-%m-%dT%H:%M:%SZ')
+    transaction.amount_sum = float(request.POST['amount'])
     transaction.is_done = True
     transaction.save()
 
@@ -117,6 +138,4 @@ def incoming_payment(request):
         [u.email],
         fail_silently=False
     )
-    with open("debug", "w") as f:
-        debug = f.write(str(request.POST))
     return HttpResponse("ok")

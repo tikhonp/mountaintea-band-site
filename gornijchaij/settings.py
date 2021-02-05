@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '10.0.1.106',
     '45.128.204.12',
+    'tikhonsystems.ddns.net',
     'mountainteaband.ru',
 ]
 
@@ -145,3 +146,8 @@ DEFAULT_FROM_EMAIL = 'Gornij Chaij Ltd. <noreply@mountainteaband.ru>'
 
 
 SERVER_EMAIL = 'errors@mountaintea.ru'
+
+YANDEX_notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd'
+
+
+
