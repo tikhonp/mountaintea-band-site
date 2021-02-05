@@ -1,6 +1,5 @@
 import smtplib
 from email.message import EmailMessage
-from email.headerregistry import Address
 
 
 def send_mail(
@@ -26,4 +25,4 @@ def send_mail(
         msg.add_alternative(message_html, subtype='html')
 
     with smtplib.SMTP('localhost', port=25) as s:
-        s.send_message(msg)
+        print("Sending message!", s.send_message(msg))
