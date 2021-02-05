@@ -146,12 +146,14 @@ def incoming_payment(request):
 
     u = transaction.user
 
+    print("Transaction got!!!", transaction, u, tickets)
     try:
         msg = render_to_string("tickets_email.html", {
             'concert': transaction.concert,
             'tickets': tickets,
             'u': u,
         })
+        print("generaterd html email")
         send_mail(
             'Билет на концерт {}'.format(transaction.concert.title),
             '''
