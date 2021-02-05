@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from concert.models import Concert, Price, Transaction
+from concert.models import Concert, Price, Transaction, Ticket
 from django.http import Http404, HttpResponse
 from django.views.decorators.http import require_http_methods
 from concert import forms
@@ -79,10 +79,14 @@ def buy_ticket(request, concert_id):
 
             transaction = Transaction.objects.create(
                 user=user,
-                price=prices.first(),
                 concert=concert
             )
             transaction.save()
+            ticket = Ticket.objects.create(
+                transaction = transaction,
+                price = prices.first()
+            )
+            ticket.save()
             paying = True
 
     params = {
@@ -111,6 +115,7 @@ def incoming_payment(request):
         request.POST.get('label', ''),
     )
     hash_object = hashlib.sha1(hash_str.encode())
+    print(str(hash_object.hexdigest()))
     if str(hash_object.hexdigest()) != request.POST.get('sha1_hash', ''):
         print("failed to validate hash")
         response = HttpResponse("Failed to check SHA1 hash")
@@ -123,13 +128,13 @@ def incoming_payment(request):
     try:
         transaction = Transaction.objects.get(id=int(label))
     except:
-        print("transaction does mot exist")
+        print("transaction does not exist")
         return HttpResponse("Aborted object doesnt exist")
 
-    p = transaction.price
-    if p.price != float(request.POST['withdraw_amount']):
-        print("prices did not match")
-        return HttpResponse("Aborted price didnt match")
+
+    # if p.price != float(request.POST['withdraw_amount']):
+        # print("prices did not match")
+        # return HttpResponse("Aborted price didnt match")
 
     transaction.date_closed = datetime.datetime.strptime(
         request.POST.get('datetime', ''), '%Y-%m-%dT%H:%M:%SZ')
@@ -137,18 +142,36 @@ def incoming_payment(request):
     transaction.is_done = True
     transaction.save()
 
+    tickets = Ticket.objects.filter(transaction=transaction)
+
     u = transaction.user
+
+    msg = render_to_string("tickets_email.html", {
+        'concert': transaction.concert,
+        'tickets': tickets,
+        'u': u,
+    })
     send_mail(
-        'Ваш билет!',
-        'Поздравляю',
-        'noreply@mountainteaband.ru',
+        'Билет на концерт {}'.format(transaction.concert.title),
+        '''
+            {},
+            Поздравляем, {}! Вы теперь сможете попасть на этот концерт
+            ---
+            {}
+            Обратите внимание, что на мероприятие допускаются старше 16 лет. Необходимо наличие документа удостоверяющего личность.
+        '''.format(
+            transaction.concert.title,
+            u.first_name,
+            "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
+                i.price.description,
+                i.price.price,
+                i.number
+            ) for i in tickets])
+        ),
+        'Gornij Chaij Ltd. <noreply@mountainteaband.ru>',
         [u.email],
-        fail_silently=False
+        message_html=msg
     )
+
     return HttpResponse("ok")
-
-
-def test():
-    msg = render_to_string("buy_ticket.html")
-    send_mail('vdfmefgme', 'sdfgdrtgt', 'tikhon <tikhon@mountainteaband.ru>', ['ticha56@mail.ru'], message_html=msg)
 
