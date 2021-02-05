@@ -96,6 +96,7 @@ def buy_ticket(request, concert_id):
 @csrf_exempt
 @require_http_methods(["POST"])
 def incoming_payment(request):
+    print(request.POST)
     hash_str = "{}&{}&{}&{}&{}&{}&{}&{}&{}".format(
         request.POST.get('notification_type', ''),
         request.POST.get('operation_id', ''),
@@ -109,19 +110,23 @@ def incoming_payment(request):
     )
     hash_object = hashlib.sha1(hash_str.encode())
     if str(hash_object.hexdigest()) != request.POST.get('sha1_hash', ''):
+        print("failed to validate hash")
         response = HttpResponse("Failed to check SHA1 hash")
         response.status_code = 400
         return response
+    print("Valid sha")
 
     label = request.POST.get('label', '')
 
     try:
         transaction = Transaction.objects.get(id=int(label))
     except:
+        print("transaction does mot exist")
         return HttpResponse("Aborted object doesnt exist")
 
     p = transaction.price
     if p.price != float(request.POST['withdraw_amount']):
+        print("prices did not match")
         return HttpResponse("Aborted price didnt match")
 
     transaction.date_closed = datetime.datetime.strptime(
