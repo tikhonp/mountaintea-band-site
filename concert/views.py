@@ -9,9 +9,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 
 
+debug = {}
+
+
 @require_http_methods(["GET"])
 def main(request):
-    return HttpResponse("HI")
+    return HttpResponse(str(debug))
 
 @require_http_methods(["GET"])
 def main_page(request):
@@ -92,6 +95,7 @@ def buy_ticket(request, concert_id):
 @csrf_exempt
 @require_http_methods(["POST"])
 def incoming_payment(request):
+    global  debug
     label = request.POST.get('label', '')
     try:
         transaction = Transaction.objects.get(id=int(label))
@@ -106,7 +110,6 @@ def incoming_payment(request):
     transaction.save()
 
     u = transaction.user
-    print(u.email)
     send_mail(
         'Ваш билет!',
         'Поздравляю',
@@ -114,5 +117,5 @@ def incoming_payment(request):
         [u.email],
         fail_silently=False
     )
-    print(request.POST)
+    debug = request.POST
     return HttpResponse("ok")

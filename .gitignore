@@ -133,3 +133,4 @@ dmypy.json
 *.swp
 
 static/
+env/
