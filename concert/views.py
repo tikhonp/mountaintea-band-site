@@ -8,8 +8,8 @@ from django.core import exceptions
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 
-
-debug = {}
+with open("debug", "r") as f:
+    debug = f.read()
 
 
 @require_http_methods(["GET"])
@@ -117,5 +117,6 @@ def incoming_payment(request):
         [u.email],
         fail_silently=False
     )
-    debug = request.POST
+    with open("debug", "w") as f:
+        debug = f.write(str(request.POST))
     return HttpResponse("ok")
