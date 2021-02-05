@@ -146,32 +146,38 @@ def incoming_payment(request):
 
     u = transaction.user
 
-    msg = render_to_string("tickets_email.html", {
-        'concert': transaction.concert,
-        'tickets': tickets,
-        'u': u,
-    })
-    send_mail(
-        'Билет на концерт {}'.format(transaction.concert.title),
-        '''
-            {},
-            Поздравляем, {}! Вы теперь сможете попасть на этот концерт
-            ---
-            {}
-            Обратите внимание, что на мероприятие допускаются старше 16 лет. Необходимо наличие документа удостоверяющего личность.
-        '''.format(
-            transaction.concert.title,
-            u.first_name,
-            "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
-                i.price.description,
-                i.price.price,
-                i.number
-            ) for i in tickets])
-        ),
-        'Gornij Chaij Ltd. <noreply@mountainteaband.ru>',
-        [u.email],
-        message_html=msg
-    )
+    try:
+        msg = render_to_string("tickets_email.html", {
+            'concert': transaction.concert,
+            'tickets': tickets,
+            'u': u,
+        })
+        send_mail(
+            'Билет на концерт {}'.format(transaction.concert.title),
+            '''
+                {},
+                Поздравляем, {}! Вы теперь сможете попасть на этот концерт
+                ---
+                {}
+                Обратите внимание, что на мероприятие допускаются старше 16 лет. Необходимо наличие документа удостоверяющего личность.
+            '''.format(
+                transaction.concert.title,
+                u.first_name,
+                "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
+                    i.price.description,
+                    i.price.price,
+                    i.number
+                ) for i in tickets])
+            ),
+            'Gornij Chaij Ltd. <noreply@mountainteaband.ru>',
+            [u.email],
+            message_html=msg
+        )
+    except Exception as e:
+        print(e)
 
     return HttpResponse("ok")
 
+
+def done_payment(request):
+    pass

@@ -7,4 +7,5 @@ urlpatterns = [
     path(
         'tickets/<int:concert_id>/', views.buy_ticket, name='Покупка билета'),
     path('incomingpayment/', views.incoming_payment, name='Входящий платеж'),
+    path('tickets/donepayment/', views.done_payment, name='Платеж совершен'),
 ]
