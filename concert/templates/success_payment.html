@@ -1,4 +1,8 @@
-{% extends "base.html" %} {% block body %}
+{% extends "base.html" %}
+
+{% block title %}Успешный платеж{% endblock %}
+
+{% block body %}
 <div class="container">
   <h1 class="title">Спасибо за вашу покупку, {{ user.first_name }}</h1>
   <p>Ожидайте электронного письма на вашу почту. Пожалуйста проверьте спам!</p>

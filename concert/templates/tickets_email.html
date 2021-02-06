@@ -1,44 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+  <meta charset="utf-8" />
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
-      crossorigin="anonymous"
-    />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  </head>
-  <body>
-    <div class="container bg-light">
-      <figure>
-        <blockquote class="blockquote">
-          <p>{{ concert.title }}</p>
-        </blockquote>
-        <br>
-        <figcaption class="blockquote-footer">
-          Поздравляем, {{ u.first_name}}! Вы теперь сможете попасть на этот концерт 
-        </figcaption>
-      </figure>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous" />
 
-      {% for ticket in tickets %}
-      <div class="card shadow p-3 mb-5 bg-white rounded">
-        <div class="card-body">
-          <h5 class="card-title">{{ ticket.price.description }}</h5>
-          <h6 class="card-subtitle mb-2 text-muted">{{ ticket.price.price }} р. (оплачено)</h6>
-          <h2>Номер: <kbd class="">{{ ticket.number }}</kbd></h2>
-        </div>
-      </div>
-      {% endfor %}
+</head>
 
-      <div class="container">
-        <p class="text-muted"><small>Обратите внимание, что на мероприятие допускаются старше 16 лет. Необходимо наличие документа удостоверяющего личность.</small></p>
+<body>
+  <div class="container bg-light">
+    <figure>
+      <blockquote class="blockquote">
+        <p>{{ concert.title }}</p>
+      </blockquote>
+      <br>
+      <figcaption class="blockquote-footer">
+        Поздравляем, {{ u.first_name}}! Вы теперь сможете попасть на этот концерт
+      </figcaption>
+    </figure>
+
+    {% for ticket in tickets %}
+    <div class="card shadow p-3 mb-5 bg-white rounded">
+      <div class="card-body">
+        <h5 class="card-title">{{ ticket.price.description }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ ticket.price.price }} р. (оплачено)</h6>
+        <h2>Номер: <kbd class="">{{ ticket.number }}</kbd></h2>
       </div>
     </div>
-  </body>
+    {% endfor %}
+
+    <div class="container">
+      <p class="text-muted"><small>Обратите внимание, что на мероприятие не допускаются посетители младше 16 лет. Необходимо наличие документа удостоверяющего личность.</small></p>
+    </div>
+  </div>
+</body>
+
 </html>
+
 </html>

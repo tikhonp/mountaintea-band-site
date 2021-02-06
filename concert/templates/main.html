@@ -2,6 +2,8 @@
 
 {% load static %}
 
+{% block title %}Горный Чай - Офицальный сайт{% endblock %}
+
 {% block style %}
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@900&display=swap" rel="stylesheet">
@@ -49,11 +51,13 @@
 </div>
 
 <div class="container">
-  <center>
+  <div class="text-center">
   <h3>Кто мы?</h3>
-  <div class="col-md-2 px-0">
-    <img src="{% static 'avatar_band.jpeg' %}" class="img-thumbnail rounded-circle img-fluid" alt="Мы на фото">
-  </div>
+  <center>
+    <div class="col-md-2 px-0">
+      <img src="{% static 'avatar_band.jpeg' %}" class="img-thumbnail rounded-circle img-fluid" alt="Мы на фото">
+    </div>
+  </center>
   <br>
   <p>Горный Чай - молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка. 11 февраля выходит дебютный EP "Сборник прошлогодних песен".</p>
   <br>
@@ -90,8 +94,8 @@
         <h5>Контакты</h5>
         <ul class="list-unstyled text-small">
           <li><a class="link-secondary" href="https://www.instagram.com/mountainteaaa/">Instagram</a></li>
-          <li><a class="link-secondary" href="#">ВКонтакте (я забыл че ща ссылка)</a></li>
-          <li><a class="link-secondary" href="#">Еще чето</a></li>
+          <li><a class="link-secondary" href="https://vk.com/mountainteaaa">ВКонтакте</a></li>
+          <li><a class="link-secondary" href="https://www.youtube.com/channel/UCaY2lcv8Lhri_Zg4s8pFUfA">Youtube</a></li>
         </ul>
       </div>
       <div class="col-6 col-md">
@@ -104,6 +108,6 @@
       </div>
     </div>
   </footer>
-  </center>
+  </div>
 </div>
 {% endblock %}
