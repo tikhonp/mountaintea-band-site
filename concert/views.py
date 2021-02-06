@@ -20,7 +20,7 @@ notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd'
 @require_http_methods(["GET"])
 def main(request):
     return render(request, 'main.html', {
-        'concerts': Concert.objects.filter(is_active=True)
+        'concerts': Concert.objects.filter(is_active=True)[:3]
     })
 
 

@@ -1,29 +1,109 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block style %}
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@900&display=swap" rel="stylesheet">
+<style>
+  body {
+    background-color: #000000;
+  }
+
+  .dialogue {
+    line-height: 1.25;
+    overflow: hidden;
+    margin-bottom: -2.5em;
+  }
+
+  p,
+  h3,h1,h5 {
+    color: #ffffff;
+  }
+
+  .container2 {
+    position: relative;
+    text-align: center;
+    color: white;
+  }
+
+  .fonttitle {
+    font-family: 'Playfair Display SC', serif;
+    font-size: 60px;
+  }
+  h3,h5{
+    font-family: 'Playfair Display SC', serif;
+  }
+</style>
+{% endblock %}
 
 {% block body %}
+<div class="container-fluid p-0">
+  <section class="row no-gutters align-items-center">
+    <div class="col-12 text-center d-flex">
+      <img class="img-fluid of" src="{% static 'background2.jpeg' %}" style="width:100%;">
+      <h1 class="position-absolute top-0 start-50 translate-middle text-light fonttitle"><br><br><br>
+        Горный Чай</h1>
+    </div>
+  </section>
+</div>
+
 <div class="container">
-  <h1>Офицальный сайт группы Горный Чай.</h1>
-
-  <p>Короче тут типа всякие картиночки ссылки на альбомы описания группы </p>
-
+  <center>
+  <h3>Кто мы?</h3>
+  <div class="col-md-2 px-0">
+    <img src="{% static 'avatar_band.jpeg' %}" class="img-thumbnail rounded-circle img-fluid" alt="Мы на фото">
+  </div>
+  <br>
+  <p>Горный Чай - молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка. 11 февраля выходит дебютный EP "Сборник прошлогодних песен".</p>
+  <br>
   <h3>Концерты</h3>
-
   <p>И тут бабах раздел с концертами вот например один:</p>
-  <p>Нажмите на него и попадете на страницу этого концерта</p> 
+  <p>Нажмите на него и попадете на страницу этого концерта</p>
   {% for concet in concerts %}
-    <div class="card shadow p-3 mb-5 bg-white rounded">
-      <div class="card-body">
-        <h4 class="card-title">{{ concet.title }}</h4> 
-        <a href="{{ concet.place_url }}"></a><h6 class="card-subtitle mb-2 text-muted">{{ concet.place }}</h6></a>
-        <p class="card-text">{{ concet.description }}</p>
-        <h6 class="card-subtitle mb-2 text-muted">{{ concet.date }}</h6>
-        <a href="concerts/{{ concet.id }}/" class="stretched-link"></a>
-      </div>
-    </div> 
+  <div class="card bg-dark text-white rounded">
+    <div class="card-body">
+      <h4 class="card-title">{{ concet.title }}</h4>
+      <a href="{{ concet.place_url }}"></a>
+      <h6 class="card-subtitle mb-2 text-muted">{{ concet.place }}</h6></a>
+      <p class="card-text">{{ concet.description }}</p>
+      <h6 class="card-subtitle mb-2 text-muted">{{ concet.date }}</h6>
+      <a href="concerts/{{ concet.id }}/" class="stretched-link"></a>
+    </div>
+  </div>
   {% endfor %}
+  <br>
+  <div class="d-grid gap-2">
+    <a href="concerts/" class="btn btn-outline-light" role="button">Все концерты -></a>
+  </div>
+  <br>
+  <h3>Релизы</h3>
+  <p>Тут скоро что-то будет :)</p>
 
-  <a href="concerts/">Здесь список всех концертов на которые можно купить билеты</a>
 
-  <p>Тут будет футер со всякими красивостями типа тиам ссылочки на соцсети и все такое</p>
+  <footer class="pt-4 my-md-5 pt-md-5 border-top">
+    <div class="row">
+      <div class="col-12 col-md">
+        <small class="d-block mb-3 text-muted">Горный Чай © 2021</small>
+      </div>
+      <div class="col-6 col-md">
+        <h5>Контакты</h5>
+        <ul class="list-unstyled text-small">
+          <li><a class="link-secondary" href="https://www.instagram.com/mountainteaaa/">Instagram</a></li>
+          <li><a class="link-secondary" href="#">ВКонтакте (я забыл че ща ссылка)</a></li>
+          <li><a class="link-secondary" href="#">Еще чето</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-md">
+        <h5>Мы</h5>
+        <ul class="list-unstyled text-small">
+          <li><a class="link-secondary" href="https://www.instagram.com/leshich999/">Леша</a></li>
+          <li><a class="link-secondary" href="https://www.instagram.com/stepa.aa/">Степа</a></li>
+          <li><a class="link-secondary" href="https://www.instagram.com/tikhonnnnn/">Тихон</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  </center>
 </div>
 {% endblock %}
