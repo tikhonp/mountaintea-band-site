@@ -175,9 +175,8 @@ def incoming_payment(request):
         'Билет на концерт {}'.format(transaction.concert.title),
         msg_plain,
         # 'Gornij Chaij Ltd. <noreply@mountainteaband.ru>',
-        'tikhon <tikhon@mountainteaband.ru>',
-        # [u.email],
-        ['ticha56@mail.ru'],
+        'Gornij Chaij Ltd. <tikhon@mountainteaband.ru>',
+        [u.email],
         message_html=msg
     )
     # except Exception as e:
@@ -187,4 +186,4 @@ def incoming_payment(request):
 
 
 def done_payment(request):
-    pass
+    return HttpResponse("Тут вы молодец все заплатили типа но мне лень делать страницу, вам придет письмо проверьте спам")
