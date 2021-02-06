@@ -1,0 +1,29 @@
+{% extends "base.html" %} 
+
+{% block body %}
+<div class="container">
+  <h1>Офицальный сайт группы Горный Чай.</h1>
+
+  <p>Короче тут типа всякие картиночки ссылки на альбомы описания группы </p>
+
+  <h3>Концерты</h3>
+
+  <p>И тут бабах раздел с концертами вот например один:</p>
+  <p>Нажмите на него и попадете на страницу этого концерта</p> 
+  {% for concet in concerts %}
+    <div class="card shadow p-3 mb-5 bg-white rounded">
+      <div class="card-body">
+        <h4 class="card-title">{{ concet.title }}</h4> 
+        <a href="{{ concet.place_url }}"></a><h6 class="card-subtitle mb-2 text-muted">{{ concet.place }}</h6></a>
+        <p class="card-text">{{ concet.description }}</p>
+        <h6 class="card-subtitle mb-2 text-muted">{{ concet.date }}</h6>
+        <a href="concerts/{{ concet.id }}/" class="stretched-link"></a>
+      </div>
+    </div> 
+  {% endfor %}
+
+  <a href="concerts/">Здесь список всех концертов на которые можно купить билеты</a>
+
+  <p>Тут будет футер со всякими красивостями типа тиам ссылочки на соцсети и все такое</p>
+</div>
+{% endblock %}

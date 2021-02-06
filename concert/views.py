@@ -19,7 +19,9 @@ notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd'
 
 @require_http_methods(["GET"])
 def main(request):
-    return HttpResponse('hi <a href="concerts/">concerts</a>')
+    return render(request, 'main.html', {
+        'concerts': Concert.objects.filter(is_active=True)
+    })
 
 
 @require_http_methods(["GET"])
@@ -233,4 +235,9 @@ def incoming_payment(request):
 
 
 def done_payment(request):
-    return HttpResponse("Тут вы молодец все заплатили типа но мне лень делать страницу, вам придет письмо проверьте спам")
+    u = request.session.get('user', False)
+    user = User.objects.get(id=u)
+    return render(request, 'success_payment.html', {
+        'user': user,
+    })
+    # return HttpResponse("Тут вы молодец все заплатили типа но мне лень делать страницу, вам придет письмо проверьте спам")
