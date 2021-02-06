@@ -1,44 +1,51 @@
-{% extends "base.html" %} {% block body %}
-{% load my_filters %}
+{% extends "base.html" %} {% block body %} {% load my_filters %}
 
 <div class="container">
   <div class="shadow-lg p-3 mb-5 bg-white rounded">
     <h2>Билет на концерт - {{ concert.title }}</h2>
     <p>{{ concert.date }}</p>
   </div>
-  
-  
+
   <div
     class="shadow{% if paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded"
   >
     <form role="form" method="post">
       {% csrf_token %} {% include "form.html" %}
       <br />
-      {% if messages %}
-      {% for message in messages %}
+      {% if messages %} {% for message in messages %}
       <div class="alert alert-danger" role="alert">
         {{ message }}
       </div>
-      {% endfor %}
-      {% endif %}
+      {% endfor %} {% endif %}
 
       <div class="row">
         {% for price in prices %}
         <div class="col-sm">
           <div class="card">
             <div class="card-body">
-              <h6 class="card-subtitle mb-2 text-muted">{{ price.price }} р.</h6>
+              <h6 class="card-subtitle mb-2 text-muted">
+                {{ price.price }} р.
+              </h6>
               <p class="card-text">{{ price.description }}</p>
               <div class="row mb-3">
-                <label for="inputEmail3" class="col-sm-2 col-form-label">Количество: </label>
+                <label for="inputEmail3" class="col-sm-2 col-form-label"
+                  >Количество:
+                </label>
                 <div class="col-sm-10">
-                  <input class="form-control" name="pricecount{{ price.id }}" min="0" step="1" type="number" value="{% if price.id in f_tickets %}{{ f_tickets|get_item:price.id }}{% else %}0{% endif %}">
+                  <input
+                    class="form-control"
+                    name="pricecount{{ price.id }}"
+                    min="0"
+                    step="1"
+                    type="number"
+                    value="{% if price.id in f_tickets %}{{ f_tickets|get_item:price.id }}{% else %}0{% endif %}"
+                  />
                 </div>
               </div>
             </div>
-          </div> 
-        </div>  
-        {% endfor %}  
+          </div>
+        </div>
+        {% endfor %}
       </div>
       <br />
       <div class="d-grid">
@@ -58,9 +65,13 @@
       action="https://yoomoney.ru/quickpay/confirm.xml"
       class="row row-cols-lg-auto g-3 align-items-center"
     >
-    <legend>К оплате {{ amount_sum }} руб.</legend>
+      <legend>К оплате {{ amount_sum }} руб.</legend>
 
-      <input type="hidden" name="successURL" value="https://mountainteaband.ru/concerts/tickets/donepayment/"/>
+      <input
+        type="hidden"
+        name="successURL"
+        value="https://mountainteaband.ru/concerts/tickets/donepayment/"
+      />
       <input type="hidden" name="receiver" value="410017742960837" />
       <input
         type="hidden"
@@ -136,4 +147,6 @@
 
   {% endif %}
 </div>
-{% endblock %}
+{% endblock %} {% if paying %} {% block script %}
+<script type="text/javascript">window.scrollTo(0,document.body.scrollHeight);</script>
+{% endblock %} {% endif %}
