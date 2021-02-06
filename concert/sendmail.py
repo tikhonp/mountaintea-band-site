@@ -23,6 +23,8 @@ def send_mail(
     if message_html:
         # asparagus_cid = make_msgid()
         msg.add_alternative(message_html, subtype='html')
-
-    with smtplib.SMTP('localhost', port=25) as s:
-        print("Sending message!", s.send_message(msg))
+    try:
+        with smtplib.SMTP('localhost', port=1025) as s:
+            s.send_message(msg)
+    except Exception as e:
+        print("Error connecting smtp and send error: {}".format(e))
