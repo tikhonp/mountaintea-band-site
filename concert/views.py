@@ -6,28 +6,45 @@ from concert import forms
 from django.contrib.auth.models import User
 from django.core import exceptions
 from django.views.decorators.csrf import csrf_exempt
-from django.core.mail import send_mail
 import hashlib
 import datetime
 from concert.sendmail import send_mail
 from django.template.loader import render_to_string
+from django.contrib import messages
 # from django.conf import settings
 
-notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd' # settings.YANDEX_notification_secret
+notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd'
+# settings.YANDEX_notification_secret
+
 
 @require_http_methods(["GET"])
 def main(request):
-    return HttpResponse("hi")
+    return HttpResponse('hi <a href="concerts/">concerts</a>')
+
 
 @require_http_methods(["GET"])
-def main_page(request):
-    return render(request, 'main.html', {
-        'concert_id': Concert.objects.all().first()
+def concerts(request):
+    return render(request, 'concerts.html', {
+        'concerts': Concert.objects.filter(is_active=True)
+    })
+
+
+@require_http_methods(["GET"])
+def concert_page(request, concert_id):
+    try:
+        concert = Concert.objects.get(id=concert_id)
+    except exceptions.ObjectDoesNotExist:
+        response = HttpResponse("Invalid concert (does not exist)")
+        response.status_code = 400
+        return response
+
+    return render(request, 'concert.html', {
+        'concert': concert
     })
 
 
 @require_http_methods(["GET", "POST"])
-def buy_ticket(request, concert_id):
+def buy_ticket(request, concert_id=None):
     if concert_id is None:
         return Http404('Please provide concert id')
 
@@ -36,6 +53,9 @@ def buy_ticket(request, concert_id):
 
     paying = False
     transaction = None
+    amount_sum = 0
+
+    f_tickets = {}
 
     if request.method == 'GET':
         form = forms.BuyTicketForm()
@@ -54,9 +74,27 @@ def buy_ticket(request, concert_id):
             except exceptions.ObjectDoesNotExist:
                 request.session.pop('user', None)
 
+        ft = request.session.get('f_tickets', False)
+        print("FT:", ft)
+        if ft:
+            ft = dict((int(name), val) for name, val in ft.items())
+            f_tickets = ft
+
     else:
         form = forms.BuyTicketForm(request.POST)
-        if form.is_valid():
+
+        f_tickets = {}
+        for price in prices:
+            t = request.POST.get('pricecount{}'.format(price.id), '')
+            if t == '' or int(t) == 0:
+                continue
+            f_tickets[price.id] = int(t)
+
+        if f_tickets == {}:
+            messages.error(request,
+                "Вы должны добавить хотя бы один билет, чтобы совершить покупку")
+
+        if form.is_valid() and f_tickets != {}:
             cd = form.cleaned_data
             user = User.objects.filter(
                 email=cd['email'], first_name=cd['name'])
@@ -76,25 +114,34 @@ def buy_ticket(request, concert_id):
 
             request.session['user'] = user.id
             request.session['price'] = prices.first().id
+            request.session['f_tickets'] = f_tickets
 
             transaction = Transaction.objects.create(
                 user=user,
                 concert=concert
             )
             transaction.save()
-            ticket = Ticket.objects.create(
-                transaction = transaction,
-                price = prices.first()
-            )
-            ticket.save()
+            for tick in f_tickets:
+                for i in range(f_tickets[tick]):
+                    ticket = Ticket.objects.create(
+                        transaction = transaction,
+                        price = Price.objects.get(id=tick)
+                    )
+                    ticket.save()
+                    amount_sum += ticket.price.price
+
             paying = True
 
+    print(f_tickets, prices)
     params = {
         'concert': concert,
         'price': prices.first(),
         'form': form,
         'paying': paying,
         'transaction': transaction,
+        'prices': prices,
+        'amount_sum': amount_sum,
+        'f_tickets': f_tickets,
     }
     return render(request, 'buy_ticket.html', params)
 

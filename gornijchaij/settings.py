@@ -28,9 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
-    '10.0.1.106',
-    '45.128.204.12',
-    'tikhonsystems.ddns.net',
+    # '10.0.1.106',
+    # '45.128.204.12',
+    # 'tikhonsystems.ddns.net',
     'mountainteaband.ru',
 ]
 
@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'phonenumber_field',
-    # 'bootstrapform',
     'concert',
 ]
 
@@ -142,12 +141,7 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = 'Gornij Chaij Ltd. <noreply@mountainteaband.ru>'
-# DEFAULT_TO_EMAIL = 'ticha56@mail.ru'
 
-
-SERVER_EMAIL = 'errors@mountaintea.ru'
+# SERVER_EMAIL = 'errors@mountaintea.ru'
 
 YANDEX_notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd'
-
-
-

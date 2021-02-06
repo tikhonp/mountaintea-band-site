@@ -3,9 +3,10 @@ from concert import views
 
 
 urlpatterns = [
-    path('', views.main_page, name='Лендинг концерта'),
+    path('', views.concerts, name='Список концертов'),
+    path('<int:concert_id>/', views.concert_page, name='Лендинг концерта'),
     path(
-        'tickets/<int:concert_id>/', views.buy_ticket, name='Покупка билета'),
+        '<int:concert_id>/tickets/', views.buy_ticket, name='Покупка билета'),
     path('incomingpayment/', views.incoming_payment, name='Входящий платеж'),
     path('tickets/donepayment/', views.done_payment, name='Платеж совершен'),
 ]
