@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Горный Чай - 500{% endblock %}
+
+{% block style %}
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@900&display=swap" rel="stylesheet">
+<style>
+  body {
+    background-color: #000000;
+  }
+
+  p,
+  h3,
+  h1,
+  h5 {
+    color: #ffffff;
+  }
+
+  .fonttitle {
+    font-family: 'Playfair Display SC', serif;
+    font-size: 60px;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid p-0">
+  <section class="row no-gutters align-items-center">
+    <div class="col-12 text-center d-flex">
+      <img class="img-fluid of" src="{% static 'background2.jpeg' %}" style="width:100%;">
+      <h1 class="position-absolute top-0 start-50 translate-middle text-light fonttitle"><br><br><br>
+        500</h1>
+    </div>
+  </section>
+</div>
+
+<div class="container">
+  <div class="text-center">
+    <p>Ошибка серевера! Ой... Мы обязательно это исправим! Напиши о проблеме <a href="https://t.me/tikhonnnnn">сюда, завари чая и жди ремонта!</a></p>
+  </div>
+</div>
+{% endblock %}
