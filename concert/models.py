@@ -44,6 +44,8 @@ class Price(models.Model):
     price = models.FloatField()
     description = models.CharField(max_length=255)
     concert = models.ForeignKey(Concert, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
+    max_count = models.IntegerField(default=None, null=True)
 
     def __str__(self):
         return "{} цена - {}".format(self.concert.title, self.price)
@@ -80,6 +82,15 @@ class Ticket(models.Model):
                 t = Ticket.objects.filter(number=self.number)
                 if len(t) == 0:
                     break
+
+        if self.price.max_count:
+            t = Ticket.objects.filter(
+                price=self.price,
+                transaction__is_done=True
+            )
+            if len(t) >= self.price.max_count:
+                self.price.active = False
+                self.price.save()
 
         return super(Ticket, self).save(*args, **kwargs)
 

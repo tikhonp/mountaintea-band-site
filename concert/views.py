@@ -51,7 +51,10 @@ def buy_ticket(request, concert_id=None):
         return Http404('Please provide concert id')
 
     concert = Concert.objects.get(id=concert_id)
-    prices = Price.objects.filter(concert=concert)
+    prices = Price.objects.filter(
+        concert=concert,
+        active=True,
+    )
 
     paying = False
     transaction = None
