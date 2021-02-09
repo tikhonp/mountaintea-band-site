@@ -11,6 +11,7 @@ import datetime
 from concert.sendmail import send_mail
 from django.template.loader import render_to_string
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 # from django.conf import settings
 
 notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd'
@@ -244,3 +245,11 @@ def done_payment(request):
         'user': user,
     })
     # return HttpResponse("Тут вы молодец все заплатили типа но мне лень делать страницу, вам придет письмо проверьте спам")
+
+
+@staff_member_required
+@require_http_methods(["GET"])
+def stat(request):
+    t = Ticket.objects.filter(transaction__is_done=True).order_by('-transaction__date_created')
+
+    return render(request, "stat.html", {"t": t})

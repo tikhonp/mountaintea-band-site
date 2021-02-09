@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Продажи билетов{% endblock %}
+
+{% block body %}
+<div class="container">
+<h2>Билеты</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Номер билета</th>
+      <th scope="col">Дата создания</th>
+      <th scope="col">Имя и Фамилия</th>
+      <th scope="col">Цена билета</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in t %}
+    <tr>
+      <th scope="row">{{ i.number }}</th>
+      <td>{{ i.transaction.date_created }}</td>
+      <td>{{ i.transaction.user.first_name }}</td>
+      <td>{{ i.price.price }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}
