@@ -29,7 +29,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
     '127.0.0.1',
     # '10.0.1.106',
-    # '45.128.204.12',
+    '45.128.204.12',
     # 'tikhonsystems.ddns.net',
     'mountainteaband.ru',
 ]
@@ -136,7 +136,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 MANAGERS = [('Tikhon', 'ticha56@mail.ru'),
             ('Миша', 'mmescherin@1553.ru'),
-            ('Степан', 'Stepaqw@mail.ru')]
+            ('Степан', 'Stepaqw@mail.ru'),
+	    ('Леша', 'leshich99@yandex.ru'),
+]
+             
 ADMINS = [('Tikhon', 'ticha56@mail.ru')]
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
