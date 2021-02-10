@@ -134,14 +134,18 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 # STATICFILES_DIRS = (os.path.join('static'), )
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
-EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = 'Gornij Chaij Ltd. <noreply@mountainteaband.ru>'
+MANAGERS = [('Tikhon', 'ticha56@mail.ru'),
+            ('Миша', 'mmescherin@1553.ru'),
+            ('Степан', 'Stepaqw@mail.ru')]
+ADMINS = [('Tikhon', 'ticha56@mail.ru')]
 
-# SERVER_EMAIL = 'errors@mountaintea.ru'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.eu.mailgun.org'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'postmaster@mountainteaband.ru'
+EMAIL_HOST_PASSWORD = '15ca6ef6fca7b38674038383758e0b42-77751bfc-b5d61f92'
+DEFAULT_FROM_EMAIL = 'Gornij Chaij Ltd. <noreply@mountainteaband.ru>'
+EMAIL_USE_TLS = True
+SERVER_EMAIL = 'django@mountaintea.ru'
 
 YANDEX_notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd'

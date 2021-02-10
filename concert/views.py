@@ -8,10 +8,11 @@ from django.core import exceptions
 from django.views.decorators.csrf import csrf_exempt
 import hashlib
 import datetime
-from concert.sendmail import send_mail
+# from concert.sendmail import send_mail
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core.mail import send_mail, mail_managers
 # from django.conf import settings
 
 notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd'
@@ -228,9 +229,19 @@ def incoming_payment(request):
         'Билет на концерт {}'.format(transaction.concert.title),
         msg_plain,
         # 'Gornij Chaij Ltd. <noreply@mountainteaband.ru>',
-        'Gornij Chaij Ltd. <tikhon@mountainteaband.ru>',
+        'Gornij Chaij Ltd. <noreply@mountainteaband.ru>',
         [u.email],
-        message_html=msg
+        fail_silently=False,
+        html_message=msg
+    )
+    mail_managers(
+        'Куплен новый билет',
+        '{}\n{}\n{}'.format(u.first_name,  "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
+                i.price.description,
+                i.price.price,
+                i.number
+            ) for i in tickets]), transaction.date_created),
+            fail_silently=False
     )
     # except Exception as e:
         # print(e)
