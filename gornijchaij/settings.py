@@ -24,15 +24,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'qz2bqf9#$dl@8xe=^21%k#r92m15x!7ep=-j7j2-_n_jz6y2=s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
-    '127.0.0.1',
-    # '10.0.1.106',
     '45.128.204.12',
-    # 'tikhonsystems.ddns.net',
     'mountainteaband.ru',
+    'www.mountainteaband.ru',
 ]
+if DEBUG:
+    ALLOWED_HOSTS.append('127.0.0.1')
 
 
 # Application definition
@@ -132,17 +132,16 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-# STATICFILES_DIRS = (os.path.join('static'), )
 
-MANAGERS = [('Tikhon', 'ticha56@mail.ru'),
-            ('Миша', 'mmescherin@1553.ru'),
-            ('Степан', 'Stepaqw@mail.ru'),
-	    ('Леша', 'leshich99@yandex.ru'),
+MANAGERS = [
+    ('Tikhon', 'ticha56@mail.ru'),
+    ('Миша', 'mmescherin@1553.ru'),
+    ('Степан', 'Stepaqw@mail.ru'),
+    ('Леша', 'leshich99@yandex.ru'),
 ]
-             
-ADMINS = [('Tikhon', 'ticha56@mail.ru')]
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+ADMINS = [('Tikhon', 'ticha56@mail.ru')] if not DEBUG else []
+
 EMAIL_HOST = 'smtp.eu.mailgun.org'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'postmaster@mountainteaband.ru'

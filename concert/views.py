@@ -8,15 +8,15 @@ from django.core import exceptions
 from django.views.decorators.csrf import csrf_exempt
 import hashlib
 import datetime
-# from concert.sendmail import send_mail
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.mail import send_mail, mail_managers
-# from django.conf import settings
+from django.core import exceptions
+from django.db.models import Sum
+
 
 notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd'
-# settings.YANDEX_notification_secret
 
 
 @require_http_methods(["GET"])
@@ -72,7 +72,7 @@ def buy_ticket(request, concert_id=None):
             try:
                 u = User.objects.get(id=u)
                 p = u.profile
-                print(p, p.phone)
+
                 form = forms.BuyTicketForm({
                     'name': u.first_name,
                     'email': u.email,
@@ -82,7 +82,7 @@ def buy_ticket(request, concert_id=None):
                 request.session.pop('user', None)
 
         ft = request.session.get('f_tickets', False)
-        print("FT:", ft)
+
         if ft:
             ft = dict((int(name), val) for name, val in ft.items())
             f_tickets = ft
@@ -99,12 +99,12 @@ def buy_ticket(request, concert_id=None):
 
         if f_tickets == {}:
             messages.error(request,
-                "Вы должны добавить хотя бы один билет, чтобы совершить покупку")
+                           "Вы должны добавить хотя бы один билет, чтобы совершить покупку")
 
         if form.is_valid() and f_tickets != {}:
             cd = form.cleaned_data
             user = User.objects.filter(
-                email=cd['email'], first_name=cd['name'])
+                username=cd['name'].replace(" ", ""))
             if len(user) == 0:
                 user = User.objects.create(
                     username=cd['name'].replace(" ", ""),
@@ -118,6 +118,9 @@ def buy_ticket(request, concert_id=None):
                 p.save()
             else:
                 user = user.first()
+                user.email = cd['email']
+                user.profile.phone = cd['phone_number']
+                user.save()
 
             request.session['user'] = user.id
             request.session['price'] = prices.first().id
@@ -131,15 +134,14 @@ def buy_ticket(request, concert_id=None):
             for tick in f_tickets:
                 for i in range(f_tickets[tick]):
                     ticket = Ticket.objects.create(
-                        transaction = transaction,
-                        price = Price.objects.get(id=tick)
+                        transaction=transaction,
+                        price=Price.objects.get(id=tick)
                     )
                     ticket.save()
                     amount_sum += ticket.price.price
 
             paying = True
 
-    print(f_tickets, prices)
     params = {
         'concert': concert,
         'price': prices.first(),
@@ -156,7 +158,7 @@ def buy_ticket(request, concert_id=None):
 @csrf_exempt
 @require_http_methods(["POST"])
 def incoming_payment(request):
-    print(request.POST)
+
     hash_str = "{}&{}&{}&{}&{}&{}&{}&{}&{}".format(
         request.POST.get('notification_type', ''),
         request.POST.get('operation_id', ''),
@@ -171,24 +173,16 @@ def incoming_payment(request):
     hash_object = hashlib.sha1(hash_str.encode())
     print(str(hash_object.hexdigest()))
     if str(hash_object.hexdigest()) != request.POST.get('sha1_hash', ''):
-        print("failed to validate hash")
         response = HttpResponse("Failed to check SHA1 hash")
         response.status_code = 400
         return response
-    print("Valid sha")
 
     label = request.POST.get('label', '')
 
     try:
         transaction = Transaction.objects.get(id=int(label))
-    except:
-        print("transaction does not exist")
+    except exceptions.ObjectDoesNotExist:
         return HttpResponse("Aborted object doesnt exist")
-
-
-    # if p.price != float(request.POST['withdraw_amount']):
-        # print("prices did not match")
-        # return HttpResponse("Aborted price didnt match")
 
     transaction.date_closed = datetime.datetime.strptime(
         request.POST.get('datetime', ''), '%Y-%m-%dT%H:%M:%SZ')
@@ -200,14 +194,12 @@ def incoming_payment(request):
 
     u = transaction.user
 
-    print("Transaction got!!!", transaction, u, tickets)
-    # try:
     msg = render_to_string("tickets_email.html", {
         'concert': transaction.concert,
         'tickets': tickets,
         'u': u,
     })
-    print("generaterd html email")
+
     msg_plain = '''
             {},
             Поздравляем, {}! Вы теперь сможете попасть на этот концерт
@@ -215,16 +207,15 @@ def incoming_payment(request):
             {}
             Обратите внимание, что на мероприятие допускаются старше 16 лет. Необходимо наличие документа удостоверяющего личность.
         '''.format(
-            transaction.concert.title,
-            u.first_name,
-            "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
+        transaction.concert.title,
+        u.first_name,
+        "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
                 i.price.description,
                 i.price.price,
                 i.number
-            ) for i in tickets])
-        )
+        ) for i in tickets])
+    )
 
-    print("Generated plain text")
     send_mail(
         'Билет на концерт {}'.format(transaction.concert.title),
         msg_plain,
@@ -234,33 +225,51 @@ def incoming_payment(request):
         fail_silently=False,
         html_message=msg
     )
+
     mail_managers(
         'Куплен новый билет',
-        '{}\n{}\n{}'.format(u.first_name,  "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
+        '{}\n{}\n{}'.format(
+            u.first_name,
+            "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
                 i.price.description,
                 i.price.price,
                 i.number
-            ) for i in tickets]), transaction.date_created),
-            fail_silently=False
+            ) for i in tickets]),
+            transaction.date_created),
+        fail_silently=False
     )
-    # except Exception as e:
-        # print(e)
 
     return HttpResponse("ok")
 
 
 def done_payment(request):
-    u = request.session.get('user', False)
-    user = User.objects.get(id=u)
+    u = request.GET.get('t', False)
+
+    if u:
+        try:
+            user = Transaction.objects.get(pk=int(u))
+        except (exceptions.ObjectDoesNotExist, ValueError):
+            response = HttpResponse("Invalid query params")
+            response.status_code = 400
+            return response
+    else:
+        response = HttpResponse("Invalid query params")
+        response.status_code = 400
+        return response
+
     return render(request, 'success_payment.html', {
         'user': user,
     })
-    # return HttpResponse("Тут вы молодец все заплатили типа но мне лень делать страницу, вам придет письмо проверьте спам")
 
 
 @staff_member_required
 @require_http_methods(["GET"])
 def stat(request):
-    t = Ticket.objects.filter(transaction__is_done=True).order_by('-transaction__date_created')
+    t = Ticket.objects.filter(
+        transaction__is_done=True).order_by('-transaction__date_created')
 
-    return render(request, "stat.html", {"t": t})
+    amount_sum = Transaction.objects.filter(
+        is_done=True).aggregate(Sum('amount_sum'))['amount_sum__sum']
+
+    return render(request, "stat.html", {
+        "t": t, "amount_sum": amount_sum})

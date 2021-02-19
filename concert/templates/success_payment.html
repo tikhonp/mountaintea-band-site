@@ -1,18 +1,46 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block title %}Успешный платеж{% endblock %}
 
-{% block body %}
-<div class="container">
-  <h1 class="title">Спасибо за вашу покупку, {{ user.first_name }}</h1>
-  <p>Ожидайте электронного письма на вашу почту. Пожалуйста проверьте спам!</p>
-  <footer class="pt-4 my-md-5  border-top">
-    <div class="row">
-      <div class="col-12 col-md">
-        <small class="d-block mb-3 text-muted"><a class="link-secondary" href="https://t.me/tikhonnnnn">Напишите сюда, если что-то не работает</a></small>
-      </div>
-    </div>
-  </footer>
+{% block style %}
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@900&display=swap" rel="stylesheet">
+<style>
+  body {
+    background-color: #000000;
+  }
 
+  p,
+  h3,
+  h1,
+  h5 {
+    color: #ffffff;
+  }
+
+  .fonttitle {
+    font-family: 'Playfair Display SC', serif;
+    font-size: 60px;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid p-0">
+  <section class="row no-gutters align-items-center">
+    <div class="col-12 text-center d-flex">
+      <img class="img-fluid of" src="{% static 'background2.jpeg' %}" style="width:100%;">
+      <h1 class="position-absolute top-0 start-50 translate-middle text-light fonttitle"><br><br><br>
+        Спасибо за вашу покупку, {{ user.first_name }}</h1>
+    </div>
+  </section>
+</div>
+
+<div class="container">
+  <div class="text-center">
+    <p>Ожидайте электронного письма на вашу почту. Пожалуйста проверьте спам!</p>
+    <small class="d-block mb-3 text-muted"><a class="link-secondary" href="https://t.me/tikhonnnnn">Напишите сюда, если что-то не работает</a></small>
+  </div>
 </div>
 {% endblock %}
