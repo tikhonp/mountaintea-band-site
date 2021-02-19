@@ -4,30 +4,30 @@
 
 {% block body %}
 <div class="container">
-<h2>Билеты</h2>
+  <h2>Билеты</h2>
 
-<p class="pt-2">Всего собрано <mark>{{ amount_sum }}</mark> рублей.</p>
-<p><small class="pb-2">С учетом коммисии 2%</small></p>
+  <p class="pt-2">Всего собрано <mark>{{ amount_sum }}</mark> рублей. Куплено билетов - <mark>{{ tickets_sum }}</mark></p>
+  <p><small class="pb-2">С учетом коммисии 2%</small></p>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Номер билета</th>
-      <th scope="col">Дата создания</th>
-      <th scope="col">Имя и Фамилия</th>
-      <th scope="col">Цена билета</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for i in t %}
-    <tr>
-      <th scope="row">{{ i.number }}</th>
-      <td>{{ i.transaction.date_created }}</td>
-      <td>{{ i.transaction.user.first_name }}</td>
-      <td>{{ i.price.price }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Номер билета</th>
+        <th scope="col">Дата создания</th>
+        <th scope="col">Имя и Фамилия</th>
+        <th scope="col">Цена билета</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in t %}
+      <tr>
+        <th scope="row">{{ i.number }}</th>
+        <td>{{ i.transaction.date_created }}</td>
+        <td>{{ i.transaction.user.first_name }}</td>
+        <td>{{ i.price.price }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endblock %}

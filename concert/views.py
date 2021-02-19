@@ -272,4 +272,7 @@ def stat(request):
         is_done=True).aggregate(Sum('amount_sum'))['amount_sum__sum']
 
     return render(request, "stat.html", {
-        "t": t, "amount_sum": amount_sum})
+        "t": t,
+        "amount_sum": amount_sum,
+        "tickets_sum": len(t),
+    })
