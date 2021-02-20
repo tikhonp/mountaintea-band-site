@@ -12,9 +12,7 @@ from django.template.loader import render_to_string
 from django.contrib import messages
 from django.core.mail import mail_managers, EmailMultiAlternatives
 import pytz
-
-
-notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd'
+from django.conf import settings
 
 
 @require_http_methods(["GET"])
@@ -156,7 +154,6 @@ def buy_ticket(request, concert_id=None):
 @csrf_exempt
 @require_http_methods(["POST"])
 def incoming_payment(request):
-
     hash_str = "{}&{}&{}&{}&{}&{}&{}&{}&{}".format(
         request.POST.get('notification_type', ''),
         request.POST.get('operation_id', ''),
@@ -165,11 +162,14 @@ def incoming_payment(request):
         request.POST.get('datetime', ''),
         request.POST.get('sender', ''),
         request.POST.get('codepro', ''),
-        notification_secret,
+        settings.YANDEX_NOTIFICATION_SECRET,
         request.POST.get('label', ''),
     )
     hash_object = hashlib.sha1(hash_str.encode())
-    print(str(hash_object.hexdigest()))
+
+    if settings.DEBUG:
+        print(str(hash_object.hexdigest()))
+
     if str(hash_object.hexdigest()) != request.POST.get('sha1_hash', ''):
         return HttpResponseBadRequest("Failed to check SHA1 hash")
 
