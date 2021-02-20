@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Подверждение билета {{ ticket.number }}{% endblock %}
+
+{% block body %}
+<div class="container text-center pt-3">
+  <h1>Билет</h1>
+  <div class="card">
+    <div class="card-body">
+      <h3 class="card-title"><b>{{ ticket.number }}</b></h3>
+      <h6 class="card-subtitle mb-2">
+        {% if ticket.transaction.is_done %}
+        <div class="text-success">Оплачено ({{ ticket.price.price|floatformat:2 }} рублей)</div>
+        {% else %}
+        <div class="text-danger">Не оплачено ({{ ticket.price.price|floatformat:2 }} рублей)</div>
+        {% endif %}
+        {% if ticket.is_active %}
+        <div class="text-success">Активен</div>
+        {% else %}
+        <div class="text-danger">Использован</div>
+        {% endif %}
+      </h6>
+      <p class="card-text">ФИО оформителя: <b>{{ ticket.transaction.user.first_name }}</b></p>
+      <p class="card-text">Телефон: <b>{{ ticket.transaction.user.profile.phone }}</b></p>
+      <p class="card-text">Email: <b>{{ ticket.transaction.user.email }}</b></p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Использовать</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

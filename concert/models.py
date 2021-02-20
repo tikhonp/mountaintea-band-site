@@ -4,7 +4,12 @@ from django.utils import timezone
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from phonenumber_field.modelfields import PhoneNumberField
+import qrcode
+from io import BytesIO
+from PIL import Image
 import random
+from django.conf import settings
+import hashlib
 
 
 class Profile(models.Model):
@@ -53,7 +58,6 @@ class Price(models.Model):
 
 class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # price = models.ForeignKey(Price, on_delete=models.CASCADE)
     concert = models.ForeignKey(Concert, on_delete=models.CASCADE)
     is_done = models.BooleanField(default=False)
     date_created = models.DateTimeField(
@@ -72,13 +76,13 @@ class Transaction(models.Model):
 class Ticket(models.Model):
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE)
     price = models.ForeignKey(Price, on_delete=models.CASCADE)
-    number = models.CharField(max_length=6)
+    number = models.CharField(max_length=6, unique=True)
+    is_active = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:
             while True:
                 self.number = str(random.randint(100000, 999999))
-                print("Generating new ticket number {}".format(self.number))
                 t = Ticket.objects.filter(number=self.number)
                 if len(t) == 0:
                     break
@@ -97,3 +101,24 @@ class Ticket(models.Model):
     def __str__(self):
         return "{} | {} | {}".format(
             self.number, self.transaction, self.price)
+
+    def get_hash(self):
+        hash_str = '{}&{}&{}'.format(
+            self.transaction.pk,
+            self.price,
+            self.number
+        )
+        sha1_hash = hashlib.sha1(hash_str.encode())
+        return sha1_hash.hexdigest()
+
+    def get_qrcode(self):
+        qrcode_img = qrcode.make('{}/staff/submit/{}/{}/'.format(
+            settings.HOST,
+            self.number,
+            self.get_hash(),
+        ))
+        canvas = Image.new('RGB', (500, 500), 'white')
+        canvas.paste(qrcode_img)
+        buffer = BytesIO()
+        canvas.save(buffer, 'PNG')
+        return buffer.getvalue()

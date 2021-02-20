@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from concert.models import Concert, Price, Transaction, Ticket
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_http_methods
 from concert import forms
 from django.contrib.auth.models import User
@@ -10,10 +10,8 @@ import hashlib
 import datetime
 from django.template.loader import render_to_string
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
-from django.core.mail import send_mail, mail_managers
-from django.core import exceptions
-from django.db.models import Sum
+from django.core.mail import mail_managers, EmailMultiAlternatives
+import pytz
 
 
 notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd'
@@ -173,19 +171,18 @@ def incoming_payment(request):
     hash_object = hashlib.sha1(hash_str.encode())
     print(str(hash_object.hexdigest()))
     if str(hash_object.hexdigest()) != request.POST.get('sha1_hash', ''):
-        response = HttpResponse("Failed to check SHA1 hash")
-        response.status_code = 400
-        return response
+        return HttpResponseBadRequest("Failed to check SHA1 hash")
 
     label = request.POST.get('label', '')
 
     try:
         transaction = Transaction.objects.get(id=int(label))
     except exceptions.ObjectDoesNotExist:
-        return HttpResponse("Aborted object doesnt exist")
+        return HttpResponseBadRequest("Aborted object doesnt exist")
 
-    transaction.date_closed = datetime.datetime.strptime(
+    date_closed = datetime.datetime.strptime(
         request.POST.get('datetime', ''), '%Y-%m-%dT%H:%M:%SZ')
+    transaction.date_closed = pytz.utc.localize(date_closed)
     transaction.amount_sum = float(request.POST['amount'])
     transaction.is_done = True
     transaction.save()
@@ -216,15 +213,16 @@ def incoming_payment(request):
         ) for i in tickets])
     )
 
-    send_mail(
+    email = EmailMultiAlternatives(
         'Билет на концерт {}'.format(transaction.concert.title),
         msg_plain,
-        # 'Gornij Chaij Ltd. <noreply@mountainteaband.ru>',
         'Gornij Chaij Ltd. <noreply@mountainteaband.ru>',
         [u.email],
-        fail_silently=False,
-        html_message=msg
+        headers={'X-Mailgun-Track': 'yes'},
     )
+    email.attach_alternative(msg, "text/html")
+    email.send()
+
 
     mail_managers(
         'Куплен новый билет',
@@ -253,26 +251,19 @@ def done_payment(request):
             response.status_code = 400
             return response
     else:
-        response = HttpResponse("Invalid query params")
-        response.status_code = 400
-        return response
+        return HttpResponseBadRequest("Invalid query params")
 
     return render(request, 'success_payment.html', {
         'user': user,
     })
 
 
-@staff_member_required
 @require_http_methods(["GET"])
-def stat(request):
-    t = Ticket.objects.filter(
-        transaction__is_done=True).order_by('-transaction__date_created')
+def qr_codeimage(request, ticket):
+    try:
+        t = Ticket.objects.get(number=ticket)
+    except exceptions.ObjectDoesNotExist:
+        raise Http404('Ticket does not exists')
 
-    amount_sum = Transaction.objects.filter(
-        is_done=True).aggregate(Sum('amount_sum'))['amount_sum__sum']
-
-    return render(request, "stat.html", {
-        "t": t,
-        "amount_sum": amount_sum,
-        "tickets_sum": len(t),
-    })
+    image_data = t.get_qrcode()
+    return HttpResponse(image_data, content_type="image/png")

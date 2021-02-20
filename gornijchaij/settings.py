@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'qz2bqf9#$dl@8xe=^21%k#r92m15x!7ep=-j7j2-_n_jz6y2=s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '45.128.204.12',
@@ -33,6 +33,7 @@ ALLOWED_HOSTS = [
 ]
 if DEBUG:
     ALLOWED_HOSTS.append('127.0.0.1')
+    ALLOWED_HOSTS.append('10.0.1.106')
 
 
 # Application definition
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'phonenumber_field',
     'concert',
+    'concertstaff',
 ]
 
 MIDDLEWARE = [
@@ -151,3 +153,4 @@ EMAIL_USE_TLS = True
 SERVER_EMAIL = 'django@mountaintea.ru'
 
 YANDEX_notification_secret = '3tP6r6zJJmBVaWEvcaqqASwd'
+HOST = 'http://10.0.1.106:8000'# 'https://mountainteaband.ru'

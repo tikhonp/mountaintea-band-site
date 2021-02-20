@@ -1,3 +1,5 @@
 User-Agent: *
 Allow: /
+Allow: /concerts/*
 Disallow: /admin/*
+Disallow: /staff/*

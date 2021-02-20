@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Страница персонала{% endblock %}
+
+{% block body %}
+<div class="container pt-3">
+  <h1>Добро пожаловать, {{ user.first_name }}!</h1>
+  <h5>Статистика концертов</h5>
+  {% for concert in concerts %}
+  <p><a href="statistic/{{ concert.id }}/">{{ concert.title }}</a></p>
+  {% endfor %}
+  <p>© Горный Чай 2021</p>
+</div>
+{% endblock %}

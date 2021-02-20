@@ -20,6 +20,6 @@ from concert import views
 urlpatterns = [
     path('', views.main),
     path('admin/', admin.site.urls),
-    path('admin/statistic/', views.stat),
     path('concerts/', include('concert.urls')),
+    path('staff/', include('concertstaff.urls')),
 ]

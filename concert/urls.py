@@ -9,4 +9,5 @@ urlpatterns = [
         '<int:concert_id>/tickets/', views.buy_ticket, name='Покупка билета'),
     path('incomingpayment/', views.incoming_payment, name='Входящий платеж'),
     path('tickets/donepayment/', views.done_payment, name='Платеж совершен'),
+    path('ticket/<int:ticket>/', views.qr_codeimage, name='qr код'),
 ]
