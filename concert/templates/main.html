@@ -15,7 +15,9 @@
   }
 
   p,
-  h3,h1,h5 {
+  h3,
+  h1,
+  h5 {
     color: #ffffff;
   }
 
@@ -23,7 +25,9 @@
     font-family: 'Playfair Display SC', serif;
     font-size: 60px;
   }
-  h3,h5{
+
+  h3,
+  h5 {
     font-family: 'Playfair Display SC', serif;
   }
 </style>
@@ -42,60 +46,63 @@
 
 <div class="container">
   <div class="text-center">
-  <h3>Кто мы?</h3>
-  <center>
-    <div class="col-md-2 px-0">
-      <img src="{% static 'avatar_band.jpeg' %}" class="img-thumbnail rounded-circle img-fluid" alt="Мы на фото">
+    <h3>Кто мы?</h3>
+    <center>
+      <div class="col-md-2 px-0">
+        <img src="{% static 'avatar_band.jpeg' %}" class="img-thumbnail rounded-circle img-fluid" alt="Мы на фото">
+      </div>
+    </center>
+    <br>
+    <p>Горный Чай - молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка. 11 февраля выходит дебютный EP "Сборник прошлогодних песен".</p>
+    <br>
+    <h3 class="pb-2">Концерты</h3>
+    {% for concet in concerts %}
+    <div class="card bg-dark text-white rounded">
+      <div class="card-body">
+        <h4 class="card-title">{{ concet.title }}</h4>
+        <a href="{{ concet.place_url }}"></a>
+        <h6 class="card-subtitle mb-2 text-muted">{{ concet.place }}</h6></a>
+        <p class="card-text">{{ concet.description }}</p>
+        <h6 class="card-subtitle mb-2 text-muted">{{ concet.date }}</h6>
+        <a href="concerts/{{ concet.id }}/" class="stretched-link"></a>
+      </div>
     </div>
-  </center>
-  <br>
-  <p>Горный Чай - молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка. 11 февраля выходит дебютный EP "Сборник прошлогодних песен".</p>
-  <br>
-  <h3>Концерты</h3>
-  {% for concet in concerts %}
-  <div class="card bg-dark text-white rounded">
-    <div class="card-body">
-      <h4 class="card-title">{{ concet.title }}</h4>
-      <a href="{{ concet.place_url }}"></a>
-      <h6 class="card-subtitle mb-2 text-muted">{{ concet.place }}</h6></a>
-      <p class="card-text">{{ concet.description }}</p>
-      <h6 class="card-subtitle mb-2 text-muted">{{ concet.date }}</h6>
-      <a href="concerts/{{ concet.id }}/" class="stretched-link"></a>
+    {% endfor %}
+    <br>
+    <div class="d-grid gap-2">
+      <a href="concerts/" class="btn btn-outline-light" role="button">Все концерты -></a>
     </div>
-  </div>
-  {% endfor %}
-  <br>
-  <div class="d-grid gap-2">
-    <a href="concerts/" class="btn btn-outline-light" role="button">Все концерты -></a>
-  </div>
-  <br>
-  <h3>Релизы</h3>
-  <p>Тут скоро что-то будет :)</p>
+    <br>
+    <h3 class="pb-3">Релизы</h3>
+    <div style="max-width:100%;">
+      <div style="position:relative;padding-bottom:calc(56.25% + 52px);height: 0;"><iframe style="position:absolute;top:0;left:0;" width="100%" height="100%" src="https://embed.song.link/?url=https%3A%2F%2Falbum.link%2FpM8ps7SZRr6pV&theme=dark"
+          frameborder="0" allowfullscreen sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"></iframe></div>
+    </div>
 
 
-  <footer class="pt-4 my-md-5 pt-md-5 border-top">
-    <div class="row">
-      <div class="col-12 col-md">
-        <small class="d-block mb-3 text-muted">Горный Чай © 2021</small>
+    <footer class="pt-4 my-md-5 pt-md-5 border-top">
+      <div class="row">
+        <div class="col-12 col-md">
+          <small class="d-block mb-3 text-muted">Горный Чай © 2021</small>
+        </div>
+        <div class="col-6 col-md">
+          <h5>Контакты</h5>
+          <ul class="list-unstyled text-small">
+            <li><a class="link-secondary" href="https://www.instagram.com/mountainteaaa/">Instagram</a></li>
+            <li><a class="link-secondary" href="https://vk.com/mountainteaaa">ВКонтакте</a></li>
+            <li><a class="link-secondary" href="https://www.youtube.com/channel/UCaY2lcv8Lhri_Zg4s8pFUfA">Youtube</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md">
+          <h5>Мы</h5>
+          <ul class="list-unstyled text-small">
+            <li><a class="link-secondary" href="https://www.instagram.com/leshich999/">Леша</a></li>
+            <li><a class="link-secondary" href="https://www.instagram.com/stepa.aa/">Степа</a></li>
+            <li><a class="link-secondary" href="https://www.instagram.com/tikhonnnnn/">Тихон</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="col-6 col-md">
-        <h5>Контакты</h5>
-        <ul class="list-unstyled text-small">
-          <li><a class="link-secondary" href="https://www.instagram.com/mountainteaaa/">Instagram</a></li>
-          <li><a class="link-secondary" href="https://vk.com/mountainteaaa">ВКонтакте</a></li>
-          <li><a class="link-secondary" href="https://www.youtube.com/channel/UCaY2lcv8Lhri_Zg4s8pFUfA">Youtube</a></li>
-        </ul>
-      </div>
-      <div class="col-6 col-md">
-        <h5>Мы</h5>
-        <ul class="list-unstyled text-small">
-          <li><a class="link-secondary" href="https://www.instagram.com/leshich999/">Леша</a></li>
-          <li><a class="link-secondary" href="https://www.instagram.com/stepa.aa/">Степа</a></li>
-          <li><a class="link-secondary" href="https://www.instagram.com/tikhonnnnn/">Тихон</a></li>
-        </ul>
-      </div>
-    </div>
-  </footer>
+    </footer>
   </div>
 </div>
 {% endblock %}
