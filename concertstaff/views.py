@@ -64,6 +64,7 @@ def ticket_check(request, ticket, sha):
         return HttpResponse("OK")
 
 
+@staff_member_required
 def test(request, transaction):
     t = Transaction.objects.get(pk=transaction)
     ticket = Ticket.objects.filter(transaction=t)
