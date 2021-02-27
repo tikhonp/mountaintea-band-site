@@ -267,3 +267,17 @@ def qr_codeimage(request, ticket):
 
     image_data = t.get_qrcode()
     return HttpResponse(image_data, content_type="image/png")
+
+
+@require_http_methods(["GET"])
+def email_page(request, transaction, sha_hash):
+    t = Transaction.objects.get(pk=transaction)
+    ticket = Ticket.objects.filter(transaction=t)
+
+    return render(request, 'email/new_ticket.html', {
+        'transaction_pk': t.pk,
+        'transaction_hash': t.get_hash(),
+        'concert': t.concert,
+        'tickets': ticket,
+        'user': t.user
+    })

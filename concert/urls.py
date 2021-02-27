@@ -10,4 +10,7 @@ urlpatterns = [
     path('incomingpayment/', views.incoming_payment, name='Входящий платеж'),
     path('tickets/donepayment/', views.done_payment, name='Платеж совершен'),
     path('ticket/<int:ticket>/', views.qr_codeimage, name='qr код'),
+    path(
+        'email/<int:transaction>/<str:sha_hash>/',
+        views.email_page, name='Отображение емейла'),
 ]

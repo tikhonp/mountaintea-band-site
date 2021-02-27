@@ -72,6 +72,15 @@ class Transaction(models.Model):
             self.concert.title, self.user.username,
             "Оплачено" if self.is_done else "Не оплачено")
 
+    def get_hash(self):
+        hash_str = '{}&{}&{}'.format(
+            self.pk,
+            self.amount_sum,
+            self.user.pk,
+        )
+        sha1_hash = hashlib.sha1(hash_str.encode())
+        return sha1_hash.hexdigest()
+
 
 class Ticket(models.Model):
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE)

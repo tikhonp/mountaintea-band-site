@@ -5,6 +5,8 @@ from django.views.decorators.http import require_http_methods
 from django.db.models import Sum
 from concert.models import Transaction, Ticket, Concert
 from django.core import exceptions
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
 
 
 @staff_member_required
@@ -60,3 +62,31 @@ def ticket_check(request, ticket, sha):
         ticket.is_active = False
         ticket.save()
         return HttpResponse("OK")
+
+
+def test(request, transaction):
+    t = Transaction.objects.get(pk=transaction)
+    ticket = Ticket.objects.filter(transaction=t)
+    user = t.user
+    html = render_to_string('email/new_ticket.html', {
+        'subject': 'Билет на концерт {}'.format(t.concert.title),
+        'concert': t.concert,
+        'tickets': ticket,
+        'user': user
+    })
+    plaintext = render_to_string('email/new_ticket.txt', {
+        'subject': 'Билет на концерт {}'.format(t.concert.title),
+        'concert': t.concert,
+        'tickets': ticket,
+        'user': user
+    })
+
+    send_mail(
+        'Билет на концерт {}'.format(t.concert.title),
+        plaintext,
+        'Горный Чай <noreply@mountainteaband.ru>',
+        [user.email],
+        # headers={'X-Mailgun-Track': 'yes'},
+        html_message=html,
+    )
+    return HttpResponse("OK")
