@@ -6,7 +6,7 @@ from django.db.models import Sum
 from concert.models import Transaction, Ticket, Concert, Price
 from django.core import exceptions
 from django.template.loader import render_to_string
-from django.core.mail import send_mail
+from django.core.mail import send_mail, mail_managers
 from django.conf import settings
 from concertstaff import forms
 from django.utils import timezone
