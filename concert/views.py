@@ -10,7 +10,7 @@ import hashlib
 import datetime
 from django.template.loader import render_to_string
 from django.contrib import messages
-from django.core.mail import mail_managers, EmailMultiAlternatives
+from django.core.mail import mail_managers, send_mail
 import pytz
 from django.conf import settings
 
