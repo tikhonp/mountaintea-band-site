@@ -12,6 +12,7 @@
       <td align="center" valign="top" id="bodyCell" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;height: 100%;margin: 0;padding: 0;width: 100%;border-top: 0;">
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
           <tbody>
+            {% if not html %}
             <tr>
               <td align="center" valign="top" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templatePreheader"
@@ -33,7 +34,7 @@
                                             <tr>
                                               <td valign="top" class="mcnTextContent" style="padding: 0px 18px 9px; text-align: center; color: white;">
                                                 Если это сообщение отображается неправильно,
-                                                <a href="https://mountainteaband.ru/concerts/email/{{ transaction }}/{{ transaction_hash }}/" target="parent" style="color: white;">нажмите здесь.</a>
+                                                <a href="{{ host }}/concerts/email/{{ transaction }}/{{ transaction_hash }}/" target="parent" style="color: white;">нажмите здесь.</a>
                                               </td>
                                             </tr>
                                           </tbody>
@@ -52,7 +53,7 @@
                 </table>
               </td>
             </tr>
-
+            {% endif %}
 
             <tr>
               <td align="center" valign="top" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
@@ -77,7 +78,7 @@
                                               <td class="mcnImageContent" valign="top" style="padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0; text-align:center;">
 
 
-                                                <img align="center" alt="Punkfiction Logo" src="https://mountainteaband.ru{% static 'email/punkfiction_black.png' %}" width="300"
+                                                <img align="center" alt="Punkfiction Logo" src="{{ host }}{% static 'email/punkfiction_black.png' %}" width="300"
                                                   style="max-width:450px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
 
 
@@ -125,42 +126,47 @@
                                         {% include 'email/new_ticket_rules.html' %}
                                       </td>
                                     </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-
-            {% for ticket in tickets %}
-            <tr>
-              <td align="center" valign="top" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateBody"
-                  style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #5370BE;border-top: 0;border-bottom: 0;">
-                  <tbody>
-                    <tr>
-                      <td align="center" valign="top" style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
-                        <table border="0" cellpadding="0" cellspacing="0" width="600" class="templateContainer" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
-                          <tbody>
-                            <tr>
-                              <td align="center" valign="top" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" width="100%" id="bodyBackground"
-                                  style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #FFFFFF;">
-                                  <tbody>
+                                    {% for ticket in tickets %}
                                     <tr>
                                       <td align="center" valign="top" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
                                         {% include 'email/new_ticket_ticket.html' %}
                                       </td>
                                     </tr>
+                                    {% endfor %}
+                                    <tr>
+                                      <td align="center" valign="top" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" id="" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
+                                          <tbody>
+                                            <tr>
+                                              <td valign="top" class="bodyContainer" style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;" mc:container="body_container" mccontainer="body_container">
+                                                <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock" style="min-width:100%;">
+                                                  <tbody class="mcnTextBlockOuter">
+                                                    <tr>
+                                                      <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;">
+                                                        <table align="center" border="0" cellpadding="0" cellspacing="0" style="max-width:100%; min-width:100%;" width="100%" class="mcnTextContentContainer">
+                                                          <tbody>
+                                                            <tr>
+
+                                                              <td valign="top" class="mcnTextContent" style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
+                                                                Это письмо нужно показать на входе для того, чтобы вас пустили.<br>
+                                                                Приходите, мы вас очень ждем!
+                                                              </td>
+                                                            </tr>
+                                                          </tbody>
+                                                        </table>
+                                                      </td>
+                                                    </tr>
+                                                  </tbody>
+                                                </table>
+                                              </td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </td>
+                                    </tr>
                                     <tr>
                                       <td align="center" valign="top" class="backgroundColor" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #5370BE;">
-                                        <img alt="Ticket design" src="https://mountainteaband.ru{% static 'email/ticket_bottom.png' %}" height="10" width="600" class="mcnImage"
+                                        <img alt="Ticket design" src="{{ host }}{% static 'email/ticket_bottom.png' %}" height="10" width="600" class="mcnImage"
                                           style="display: block;max-width: 600px;border: 0;height: auto;outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;vertical-align: bottom;">
                                       </td>
                                     </tr>
@@ -176,7 +182,6 @@
                 </table>
               </td>
             </tr>
-            {% endfor %}
 
             <tr>
               <td align="center" valign="top" style="padding-bottom: 40px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">

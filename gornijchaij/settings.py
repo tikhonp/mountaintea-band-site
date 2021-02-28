@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'qz2bqf9#$dl@8xe=^21%k#r92m15x!7ep=-j7j2-_n_jz6y2=s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '45.128.204.12',
@@ -154,4 +154,4 @@ EMAIL_USE_TLS = True
 SERVER_EMAIL = 'django@mountaintea.ru'
 
 YANDEX_NOTIFICATION_SECRET = '3tP6r6zJJmBVaWEvcaqqASwd'
-HOST = 'https://mountainteaband.ru'
+HOST = 'https://mountainteaband.ru' if not DEBUG else 'http://127.0.0.1:8000'

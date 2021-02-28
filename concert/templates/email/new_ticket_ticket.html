@@ -1,7 +1,7 @@
 {% load static %}
 
 <center>
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" id="" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" id="" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #FFFFFF;border-top: 0;border-bottom: 1px solid #EFEFEF;">
     <tbody>
       <tr>
         <td valign="top" class="bodyContainer" style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;" mc:container="body_container" mccontainer="body_container">
@@ -36,7 +36,7 @@
 
                         <td valign="top" class="mcnTextContent" style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
                           <center>
-                            <img align="center" alt="ticket qr code" src="https://mountainteaband.ru/concerts/ticket/{{ ticket.number }}/" width="400" style="max-width:500px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
+                            <img align="center" alt="ticket qr code" src="{{ host }}/concerts/ticket/{{ ticket.number }}/" width="400" style="max-width:500px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
                           </center>
                         </td>
                       </tr>

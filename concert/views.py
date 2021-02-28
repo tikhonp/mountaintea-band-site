@@ -138,6 +138,8 @@ def buy_ticket(request, concert_id=None):
 
             paying = True
 
+            
+
     params = {
         'concert': concert,
         'price': prices.first(),
@@ -216,13 +218,12 @@ def incoming_payment(request):
     email = EmailMultiAlternatives(
         'Билет на концерт {}'.format(transaction.concert.title),
         msg_plain,
-        'Gornij Chaij Ltd. <noreply@mountainteaband.ru>',
+        'Горный Чай <noreply@mountainteaband.ru>',
         [u.email],
         headers={'X-Mailgun-Track': 'yes'},
     )
     email.attach_alternative(msg, "text/html")
     email.send()
-
 
     mail_managers(
         'Куплен новый билет',
@@ -272,17 +273,20 @@ def qr_codeimage(request, ticket):
 @require_http_methods(["GET"])
 def email_page(request, transaction, sha_hash):
     try:
-        t = Transaction.objects.get(pk=transaction)
+        transaction = Transaction.objects.get(pk=transaction)
     except exceptions.ObjectDoesNotExist:
         return HttpResponseBadRequest("Invalid transaction")
-    if t.get_hash() != sha_hash:
+    if transaction.get_hash() != sha_hash:
         return HttpResponseBadRequest("Invalid transaction hash")
-    ticket = Ticket.objects.filter(transaction=t)
 
     return render(request, 'email/new_ticket.html', {
-        'transaction_pk': t.pk,
-        'transaction_hash': t.get_hash(),
-        'concert': t.concert,
-        'tickets': ticket,
-        'user': t.user
+        'html': True,
+        'transaction': transaction.pk,
+        'transaction_hash': transaction.get_hash(),
+        'host': settings.HOST,
+        'transaction_pk': transaction.pk,
+        'transaction_hash': transaction.get_hash(),
+        'concert': transaction.concert,
+        'tickets': Ticket.objects.filter(transaction=transaction),
+        'user': transaction.user
     })

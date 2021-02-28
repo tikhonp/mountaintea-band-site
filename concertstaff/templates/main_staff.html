@@ -4,11 +4,31 @@
 
 {% block body %}
 <div class="container pt-3">
-  <h1>Добро пожаловать, {{ user.first_name }}!</h1>
-  <h5>Статистика концертов</h5>
-  {% for concert in concerts %}
-  <p><a href="statistic/{{ concert.id }}/">{{ concert.title }}</a></p>
-  {% endfor %}
-  <p>© Горный Чай 2021</p>
+  <ul class="nav justify-content-center mt-1 mb-3">
+    <li class="nav-item">
+      <a class="nav-link disabled" aria-current="page" href="#" aria-disabled="true">Добро пожаловать, {{ user.first_name }}!</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="newfreeticket/">Добавить бесплатный билет</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="submitnumber/">Проверить билет по номеру</a>
+    </li>
+  </ul>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Статистика концертов</h5>
+      {% for concert in concerts %}
+      <a href="statistic/{{ concert.id }}/" class="btn btn-light btn-sm">{{ concert.title }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  <footer class="pt-4 my-md-5  border-top">
+    <div class="row">
+      <div class="col-12 col-md">
+        <small class="d-block mb-3 text-muted">Горный Чай © 2021 <a class="link-secondary" href="https://t.me/tikhonnnnn">Напишите сюда, если что-то не работает</a></small>
+      </div>
+    </div>
+  </footer>
 </div>
 {% endblock %}
