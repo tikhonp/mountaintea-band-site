@@ -138,7 +138,7 @@ def buy_ticket(request, concert_id=None):
 
             paying = True
 
-            
+
 
     params = {
         'concert': concert,
@@ -193,37 +193,27 @@ def incoming_payment(request):
 
     u = transaction.user
 
-    msg = render_to_string("tickets_email.html", {
+    context = {
+        'transaction': transaction.pk,
+        'transaction_hash': transaction.get_hash(),
+        'host': settings.HOST,
+        'subject': 'Билет на концерт {}'.format(transaction.concert.title),
         'concert': transaction.concert,
         'tickets': tickets,
-        'u': u,
-    })
+        'user': transaction.user,
+    }
 
-    msg_plain = '''
-            {},
-            Поздравляем, {}! Вы теперь сможете попасть на этот концерт
-            ---
-            {}
-            Обратите внимание, что на мероприятие допускаются старше 14 лет. Необходимо наличие документа удостоверяющего личность.
-        '''.format(
-        transaction.concert.title,
-        u.first_name,
-        "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
-                i.price.description,
-                i.price.price,
-                i.number
-        ) for i in tickets])
-    )
+    html = render_to_string('email/new_ticket.html', context)
+    plaintext = render_to_string('email/new_ticket.txt', context)
 
-    email = EmailMultiAlternatives(
+    send_mail(
         'Билет на концерт {}'.format(transaction.concert.title),
-        msg_plain,
+        plaintext,
         'Горный Чай <noreply@mountainteaband.ru>',
-        [u.email],
-        headers={'X-Mailgun-Track': 'yes'},
+        [transaction.user.email],
+        html_message=html,
+        fail_silently=False,
     )
-    email.attach_alternative(msg, "text/html")
-    email.send()
 
     mail_managers(
         'Куплен новый билет',
