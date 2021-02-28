@@ -275,7 +275,7 @@ def email_page(request, transaction, sha_hash):
         t = Transaction.objects.get(pk=transaction)
     except exceptions.ObjectDoesNotExist:
         return HttpResponseBadRequest("Invalid transaction")
-    if transaction.get_hash() != sha_hash:
+    if t.get_hash() != sha_hash:
         return HttpResponseBadRequest("Invalid transaction hash")
     ticket = Ticket.objects.filter(transaction=t)
 
