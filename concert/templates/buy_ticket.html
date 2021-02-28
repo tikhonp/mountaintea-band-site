@@ -72,23 +72,11 @@
       <input type="hidden" name="sum" value="{{ amount_sum }}" data-type="number" />
 
       <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="paymentType" value="PC" {%
-          if
-          not
-          paying
-          %}disabled{%
-          endif
-          %} />
+        <input class="form-check-input" type="radio" name="paymentType" value="PC" {% if not paying %}disabled{% endif %} />
         <label class="form-check-label" for="inlineRadio1">ЮMoney (Яндекс.Деньги)</label>
       </div>
       <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="paymentType" value="AC" {%
-          if
-          not
-          paying
-          %}disabled{%
-          endif
-          %} />
+        <input class="form-check-input" type="radio" name="paymentType" value="AC" {% if not paying %}disabled{% endif %} />
         <label class="form-check-label" for="inlineRadio2">Банковской картой</label>
       </div>
 
@@ -115,6 +103,13 @@
 
 
 {% block script %}
+<script src="https://unpkg.com/imask"></script>
+<script>
+  var phoneMask = IMask(
+  document.getElementById('id_phone_number'), {
+    mask: '+{7}0000000000'
+  });
+</script>
 {% if paying %}
 <script type="text/javascript">
   window.scrollTo(0, document.body.scrollHeight);

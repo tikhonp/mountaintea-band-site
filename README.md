@@ -1,5 +1,5 @@
 # gornijchaij
-Офицальный сайт группы "Горный Чай"
+Официальный сайт группы "Горный Чай"
 
 ### TODO
 - ~~Добавить рассылку сообщений с qr кодом и возможность сканирования их и отметки как пройденные~~
@@ -9,6 +9,21 @@
 - Добавить время концерта
 - Добавить форму для бесплатного билета в стаф
 - Добавить поле для ввода номера билета
+- Изменить описание про выход альбома
+
+### Email fix
+
+```
+Атрибуты Alt обеспечивают текстовую альтернативу Вашим изображениям.
+Это полезный обходной путь для людей, страдающих от проблем со зрением и для случаев, когда Ваше изображение не может быть отображено.
+<img src="https://mountainteaband.ru/static/email/ticket_bottom.png" height="10" width="600" class="mcnImage" style="display: block;max-width: 600px;border:
+<img src="https://mountainteaband.ru/static/email/ticket_bottom.png" height="10" width="600" class="mcnImage" style="display: block;max-width: 600px;border:
+Если вы не хотите заполнять атрибут alt, выставите его как пустое значение: alt=""
+```
+
+```
+[404 - Error : Not found] https://mountainteaband.ru/concerts/email/
+```
 
 ### Скрипт для установки будет:
 

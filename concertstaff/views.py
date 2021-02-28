@@ -66,21 +66,19 @@ def ticket_check(request, ticket, sha):
 
 @staff_member_required
 def test(request, transaction):
-    t = Transaction.objects.get(pk=transaction)
-    ticket = Ticket.objects.filter(transaction=t)
-    user = t.user
-    html = render_to_string('email/new_ticket.html', {
-        'subject': 'Билет на концерт {}'.format(t.concert.title),
-        'concert': t.concert,
-        'tickets': ticket,
-        'user': user
-    })
-    plaintext = render_to_string('email/new_ticket.txt', {
-        'subject': 'Билет на концерт {}'.format(t.concert.title),
-        'concert': t.concert,
-        'tickets': ticket,
-        'user': user
-    })
+    transaction = Transaction.objects.get(pk=transaction)
+
+    context = {
+        'transaction': transaction.pk,
+        'transaction_hash': transaction.get_hash(),
+        'subject': 'Билет на концерт {}'.format(transaction.concert.title),
+        'concert': transaction.concert,
+        'tickets': Ticket.objects.filter(transaction=transaction),
+        'user': transaction.user,
+    }
+
+    html = render_to_string('email/new_ticket.html', context)
+    plaintext = render_to_string('email/new_ticket.txt', context)
 
     send_mail(
         'Билет на концерт {}'.format(t.concert.title),
