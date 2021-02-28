@@ -81,11 +81,12 @@ def test(request, transaction):
     plaintext = render_to_string('email/new_ticket.txt', context)
 
     send_mail(
-        'Билет на концерт {}'.format(t.concert.title),
+        'Билет на концерт {}'.format(transaction.concert.title),
         plaintext,
         'Горный Чай <noreply@mountainteaband.ru>',
-        [user.email],
+        [transaction.user.email],
         # headers={'X-Mailgun-Track': 'yes'},
         html_message=html,
     )
+
     return HttpResponse("OK")
