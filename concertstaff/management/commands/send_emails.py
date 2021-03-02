@@ -68,7 +68,10 @@ class Command(BaseCommand):
                 if email == "":
                     break
 
-                transaction = Transaction.objects.filter(user__email=email)
+                transaction = Transaction.objects.filter(
+                    user__email=email, is_done=True,
+                    date_created__lte=pytz.utc.localize(check),
+                )
                 if len(transaction) == 0:
                     print("THERE IS NO SUCH MAIL AS {}".format(email))
                     return
