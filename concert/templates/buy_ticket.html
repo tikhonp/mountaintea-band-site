@@ -14,6 +14,11 @@
   </div>
 
   <div class="shadow{% if paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded">
+    {% if soldout %}
+    <div class="text-center">
+      SOLDOUT
+    </div>
+    {% else %}
     <form role="form" method="post">
       {% csrf_token %} {% include "form.html" %}
       <br />
@@ -55,8 +60,10 @@
         </button>
       </div>
     </form>
+    {% endif %}
   </div>
 
+{% if not soldout %}
   {% if paying %}
   <div class="shadow{% if not paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded">
     <form method="POST" action="https://yoomoney.ru/quickpay/confirm.xml" class="row row-cols-lg-auto g-3 align-items-center">
@@ -88,6 +95,7 @@
     </form>
   </div>
 
+  {% endif %}
   {% endif %}
 
   <footer class="pt-4 my-md-5  border-top">

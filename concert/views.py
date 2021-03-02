@@ -53,6 +53,9 @@ def buy_ticket(request, concert_id=None):
         concert=concert,
         active=True,
     )
+    soldout = False
+    if len(prices) == 0:
+        soldout = True
 
     paying = False
     transaction = None
@@ -63,27 +66,31 @@ def buy_ticket(request, concert_id=None):
     if request.method == 'GET':
         form = forms.BuyTicketForm()
 
-        u = request.session.get('user', False)
-        if u:
-            try:
-                u = User.objects.get(id=u)
-                p = u.profile
+        if not soldout:
+            u = request.session.get('user', False)
+            if u:
+                try:
+                    u = User.objects.get(id=u)
+                    p = u.profile
 
-                form = forms.BuyTicketForm({
-                    'name': u.first_name,
-                    'email': u.email,
-                    'phone_number': p.phone,
-                })
-            except exceptions.ObjectDoesNotExist:
-                request.session.pop('user', None)
+                    form = forms.BuyTicketForm({
+                        'name': u.first_name,
+                        'email': u.email,
+                        'phone_number': p.phone,
+                    })
+                except exceptions.ObjectDoesNotExist:
+                    request.session.pop('user', None)
 
-        ft = request.session.get('f_tickets', False)
+            ft = request.session.get('f_tickets', False)
 
-        if ft:
-            ft = dict((int(name), val) for name, val in ft.items())
-            f_tickets = ft
+            if ft:
+                ft = dict((int(name), val) for name, val in ft.items())
+                f_tickets = ft
 
     else:
+        if soldout:
+            return HttpResponse("Ошибка soldout")
+
         form = forms.BuyTicketForm(request.POST)
 
         f_tickets = {}
@@ -94,8 +101,10 @@ def buy_ticket(request, concert_id=None):
             f_tickets[price.id] = int(t)
 
         if f_tickets == {}:
-            messages.error(request,
-                           "Вы должны добавить хотя бы один билет, чтобы совершить покупку")
+            messages.error(
+                request,
+                "Вы должны добавить хотя бы один билет, чтобы совершить покупку"
+            )
 
         if form.is_valid() and f_tickets != {}:
             cd = form.cleaned_data
@@ -138,9 +147,8 @@ def buy_ticket(request, concert_id=None):
 
             paying = True
 
-
-
     params = {
+        'soldout': soldout,
         'concert': concert,
         'price': prices.first(),
         'form': form,
