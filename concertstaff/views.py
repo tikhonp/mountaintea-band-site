@@ -6,12 +6,15 @@ from django.db.models import Sum
 from concert.models import Transaction, Ticket, Concert, Price
 from django.core import exceptions
 from django.template.loader import render_to_string
-from django.core.mail import send_mail, mail_managers
+from django.core.mail import send_mail, mail_managers, \
+    get_connection, EmailMultiAlternatives
 from django.conf import settings
 from concertstaff import forms
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
+import datetime
+import pytz
 
 
 @staff_member_required
@@ -161,7 +164,8 @@ def add_ticket(request):
                 'transaction': transaction.pk,
                 'transaction_hash': transaction.get_hash(),
                 'host': settings.HOST,
-                'subject': 'Билет на концерт {}'.format(transaction.concert.title),
+                'subject': 'Билет на концерт {}'.format(
+                    transaction.concert.title),
                 'concert': transaction.concert,
                 'tickets': Ticket.objects.filter(transaction=transaction),
                 'user': transaction.user,
@@ -218,4 +222,8 @@ def submit_number(request):
                 'number': number,
             })
 
-        return redirect('/staff/submit/{}/{}/'.format(number, ticket.get_hash()))
+        return redirect(
+            '/staff/submit/{}/{}/'.format(number, ticket.get_hash()))
+
+
+
