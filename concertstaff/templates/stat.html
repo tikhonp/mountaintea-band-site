@@ -9,12 +9,20 @@
   <p class="pt-2">Всего собрано <mark>{{ amount_sum }}</mark> рублей. Куплено билетов - <mark>{{ tickets_sum }}</mark></p>
   <p><small class="pb-2">С учетом коммисии 2%</small></p>
 
+  <h5>Человек прошло:</h5>
+
+    <div class="progress mt-3 mb-3">
+      <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{ entered_persent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ entered_persent }}%">{{ entered_persent }}%</div>
+    </div>
+
+
   <table class="table">
     <thead>
       <tr>
         <th scope="col">Номер билета</th>
         <th scope="col">Дата создания</th>
         <th scope="col">Имя и Фамилия</th>
+        <th scope="col">Испаользование</th>
         <th scope="col">Цена билета</th>
       </tr>
     </thead>
@@ -24,6 +32,7 @@
         <th scope="row">{{ i.number }}</th>
         <td>{{ i.transaction.date_created }}</td>
         <td>{{ i.transaction.user.first_name }}</td>
+        <td>{% if i.is_active %}Не прошел{% else %}<div class="text-success">Прошел</div>{% endif %}</td>
         <td>{{ i.price.price }}</td>
       </tr>
       {% endfor %}

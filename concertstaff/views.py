@@ -47,6 +47,8 @@ def stat(request, concert):
         "t": ticket,
         "amount_sum": amount_sum,
         "tickets_sum": len(ticket),
+        "entered_persent": int(len(
+            ticket.filter(is_active=False))*100/len(ticket))
     })
 
 
@@ -224,6 +226,3 @@ def submit_number(request):
 
         return redirect(
             '/staff/submit/{}/{}/'.format(number, ticket.get_hash()))
-
-
-
