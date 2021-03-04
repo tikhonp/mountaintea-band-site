@@ -47,7 +47,7 @@ QR code : {{ host }}/concerts/ticket/{{ ticket.number }}/
 
 ============================================================
 
-_Copyright © 2021 Горный Чай, All rights reserved._
+_Copyright © {% now 'Y' %} Горный Чай, All rights reserved._
 
 ЕСЛИ ЧТО-ТО НЕ РАБОТАЕТ И ПО ДРУГИМ ВОПРОСАМ
 ** Напиши сюда (https://t.me/tikhonnnnn/)

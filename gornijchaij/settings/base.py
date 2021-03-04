@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'qz2bqf9#$dl@8xe=^21%k#r92m15x!7ep=-j7j2-_n_jz6y2=s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     '45.128.204.12',
@@ -32,10 +32,6 @@ ALLOWED_HOSTS = [
     'www.mountainteaband.ru',
     'email.mountainteaband.ru',
 ]
-if DEBUG:
-    ALLOWED_HOSTS.append('127.0.0.1')
-    ALLOWED_HOSTS.append('10.0.1.106')
-
 
 # Application definition
 
@@ -136,14 +132,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
-MANAGERS = [
-    ('Tikhon', 'ticha56@mail.ru'),
-    ('Миша', 'mmescherin@1553.ru'),
-    ('Степан', 'Stepaqw@mail.ru'),
-    ('Леша', 'leshich99@yandex.ru'),
-]
-
-ADMINS = [('Tikhon', 'ticha56@mail.ru')] if not DEBUG else []
+MANAGERS = []
+ADMINS = []
 
 EMAIL_HOST = 'smtp.eu.mailgun.org'
 EMAIL_PORT = 587
@@ -154,4 +144,4 @@ EMAIL_USE_TLS = True
 SERVER_EMAIL = 'django@mountaintea.ru'
 
 YANDEX_NOTIFICATION_SECRET = '3tP6r6zJJmBVaWEvcaqqASwd'
-HOST = 'https://mountainteaband.ru' if not DEBUG else 'http://127.0.0.1:8000'
+HOST = 'https://mountainteaband.ru'
