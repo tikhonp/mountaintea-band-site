@@ -4,7 +4,7 @@ from .base import *
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    # '45.128.204.12',
+    '45.128.204.12',
     'mountainteaband.ru',
     'www.mountainteaband.ru',
     # 'email.mountainteaband.ru',
