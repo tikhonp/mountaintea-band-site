@@ -2,37 +2,33 @@
 Официальный сайт группы "Горный Чай"
 
 ### TODO
-- ~~Добавить рассылку сообщений с qr кодом и возможность сканирования их и отметки как пройденные~~
-- ~~Добавить время концерта~~
-- ~~Добавить рассылку с qr кодом, код уже есть~~
-- ~~Заново сверстать емайлы~~
-- ~~Переименовать Горный Чай ltd в горный чай~~
-- ~~Добавить форму для бесплатного билета в стаф~~
-- ~~Добавить поле для ввода номера билета~~
-- ~~Изменить описание про выход альбома~~
 
-### Скрипт для установки будет:
+- Добавить что-то в туду
+
+### Installation 
 
 ```bash
 sudo apt update
 sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl
 ```
-
+Создание базы данных
 ```
 sudo -u postgres psql
-CREATE DATABASE myproject;
-CREATE USER myprojectuser WITH PASSWORD 'password';
-GRANT ALL PRIVILEGES ON DATABASE myproject TO myprojectuser;
+CREATE DATABASE gornijchaij;
+CREATE USER gornijchaijuser WITH PASSWORD 'password';
+GRANT ALL PRIVILEGES ON DATABASE gornijchaij TO gornijchaijuser;
 \q
 ```
-
+Установка зависимостей python
 ```
 sudo -H pip3 install --upgrade pip
 sudo -H pip3 install virtualenv
+python3 -m venv env; . env/bin/activate
 pip install django gunicorn psycopg2-binary
 ```
+Создание сокета
 ```
-sudo nano /etc/systemd/system/gunicorn.socket
+sudo vim /etc/systemd/system/gunicorn.socket
 
 [Unit]
 Description=gunicorn socket
@@ -45,7 +41,7 @@ WantedBy=sockets.target
 ```
 
 ```
-sudo nano /etc/systemd/system/gunicorn.service
+sudo vim /etc/systemd/system/gunicorn.service
 
 [Unit]
 Description=gunicorn daemon
@@ -55,12 +51,12 @@ After=network.target
 [Service]
 User=sammy
 Group=www-data
-WorkingDirectory=/home/sammy/myprojectdir
-ExecStart=/home/sammy/myprojectdir/myprojectenv/bin/gunicorn \
+WorkingDirectory=/home/tikhon/gornijchaij
+ExecStart=/home/tikhon/gornijchaij/env/bin/gunicorn \
           --access-logfile - \
           --workers 3 \
           --bind unix:/run/gunicorn.sock \
-          myproject.wsgi:application
+          gornijchaij.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
@@ -77,6 +73,3 @@ file /run/gunicorn.sock
 curl --unix-socket /run/gunicorn.sock localhost
 sudo systemctl status gunicorn
 ```
-
-
-

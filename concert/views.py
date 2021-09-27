@@ -1,18 +1,19 @@
-from django.shortcuts import render
-from concert.models import Concert, Price, Transaction, Ticket
-from django.http import Http404, HttpResponse, HttpResponseBadRequest
-from django.views.decorators.http import require_http_methods
-from concert import forms
-from django.contrib.auth.models import User
-from django.core import exceptions
-from django.views.decorators.csrf import csrf_exempt
-import hashlib
 import datetime
-from django.template.loader import render_to_string
-from django.contrib import messages
-from django.core.mail import mail_managers, send_mail
+import hashlib
 import pytz
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.core.mail import mail_managers, send_mail
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
+from django.shortcuts import render, get_object_or_404
+from django.template import Template, Context, RequestContext
+from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+
+from concert import forms
+from concert.models import Concert, Price, Transaction, Ticket
 
 
 @require_http_methods(["GET"])
@@ -31,16 +32,21 @@ def concerts(request):
 
 @require_http_methods(["GET"])
 def concert_page(request, concert_id):
-    try:
-        concert = Concert.objects.get(id=concert_id)
-    except exceptions.ObjectDoesNotExist:
-        response = HttpResponse("Invalid concert (does not exist)")
-        response.status_code = 400
-        return response
+    base_t = """
+    {% extends "base.html" %}
 
-    return render(request, 'concert.html', {
-        'concert': concert
-    })
+    {% load static %}
+    
+    {% block metrika %}{% include "metrica.html" %}{% endblock %}
+    
+    {% block title %}{{ concert.title }}{% endblock %}
+    """
+
+    concert = get_object_or_404(Concert, pk=concert_id)
+    template = Template(base_t+concert.template)
+    context = RequestContext(request, {'concert': concert})
+
+    return HttpResponse(template.render(context))
 
 
 @require_http_methods(["GET", "POST"])
@@ -51,7 +57,7 @@ def buy_ticket(request, concert_id=None):
     concert = Concert.objects.get(id=concert_id)
     prices = Price.objects.filter(
         concert=concert,
-        active=True,
+        is_active=True,
     )
     soldout = False
     if len(prices) == 0:
@@ -78,7 +84,7 @@ def buy_ticket(request, concert_id=None):
                         'email': u.email,
                         'phone_number': p.phone,
                     })
-                except exceptions.ObjectDoesNotExist:
+                except User.DoesNotExist:
                     request.session.pop('user', None)
 
             ft = request.session.get('f_tickets', False)
@@ -185,10 +191,7 @@ def incoming_payment(request):
 
     label = request.POST.get('label', '')
 
-    try:
-        transaction = Transaction.objects.get(id=int(label))
-    except exceptions.ObjectDoesNotExist:
-        return HttpResponseBadRequest("Aborted object doesnt exist")
+    transaction = get_object_or_404(Transaction, id=int(label))
 
     date_closed = datetime.datetime.strptime(
         request.POST.get('datetime', ''), '%Y-%m-%dT%H:%M:%SZ')
@@ -240,40 +243,25 @@ def incoming_payment(request):
 
 
 def done_payment(request):
-    u = request.GET.get('t', False)
-
-    if u:
-        try:
-            user = Transaction.objects.get(pk=int(u))
-        except (exceptions.ObjectDoesNotExist, ValueError):
-            response = HttpResponse("Invalid query params")
-            response.status_code = 400
-            return response
-    else:
+    transaction_id = request.GET.get('t')
+    if not transaction_id or not transaction_id.isdigit():
         return HttpResponseBadRequest("Invalid query params")
 
-    return render(request, 'success_payment.html', {
-        'user': user,
-    })
+    user = get_object_or_404(Transaction, pk=int(transaction_id))
+    return render(request, 'success_payment.html', {'user': user})
 
 
 @require_http_methods(["GET"])
 def qr_codeimage(request, ticket):
-    try:
-        t = Ticket.objects.get(number=ticket)
-    except exceptions.ObjectDoesNotExist:
-        raise Http404('Ticket does not exists')
+    ticket = get_object_or_404(Ticket, number=ticket)
 
-    image_data = t.get_qrcode()
-    return HttpResponse(image_data, content_type="image/png")
+    return HttpResponse(ticket.get_qrcode(), content_type="image/png")
 
 
 @require_http_methods(["GET"])
 def email_page(request, transaction, sha_hash):
-    try:
-        transaction = Transaction.objects.get(pk=transaction)
-    except exceptions.ObjectDoesNotExist:
-        return HttpResponseBadRequest("Invalid transaction")
+    transaction = get_object_or_404(Transaction, pk=transaction)
+
     if transaction.get_hash() != sha_hash:
         return HttpResponseBadRequest("Invalid transaction hash")
 
@@ -283,7 +271,6 @@ def email_page(request, transaction, sha_hash):
         'transaction_hash': transaction.get_hash(),
         'host': settings.HOST,
         'transaction_pk': transaction.pk,
-        'transaction_hash': transaction.get_hash(),
         'concert': transaction.concert,
         'tickets': Ticket.objects.filter(transaction=transaction),
         'user': transaction.user

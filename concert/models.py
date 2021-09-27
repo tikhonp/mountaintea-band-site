@@ -1,21 +1,20 @@
-from django.db import models
-from django.contrib.auth.models import User
-from django.utils import timezone
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from phonenumber_field.modelfields import PhoneNumberField
-import qrcode
-from io import BytesIO
-from PIL import Image
-import random
-from django.conf import settings
 import hashlib
+import random
+from io import BytesIO
+
+import qrcode
+from PIL import Image
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
-    phone = PhoneNumberField(
-        blank=True, help_text='Contact phone number', null=True, default=None)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, verbose_name="the related user")
+    phone = PhoneNumberField("user's phone", blank=True, null=True, help_text='Контактный телефон', default=None)
 
     def __str__(self):
         return "{} {}".format(self.user.username, self.phone)
@@ -33,39 +32,47 @@ def save_user_profile(sender, instance, **kwargs):
 
 
 class Concert(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.TextField(('Описание концерта'))
-    place = models.CharField(max_length=255)
-    place_url = models.URLField()
-    date = models.DateField()
-    is_active = models.BooleanField(default=True)
+    title = models.CharField("concert title", max_length=255)
+    description = models.TextField("concert description")
+    place = models.CharField("name and address of place", max_length=255)
+    place_url = models.URLField("url to place page")
+    date_time = models.DateTimeField("concert date", auto_now=True)
+    is_active = models.BooleanField("concert active", default=True)
+
+    template = models.TextField("template to show concert page", default='<p>Добавьте страницу концерта</p>')
 
     def __str__(self):
-        return "{} {}".format(
-            self.title, "активен" if self.is_active else "Закончен")
+        return "{} {}".format(self.title, "активен" if self.is_active else "Закончен")
 
 
 class Price(models.Model):
-    price = models.FloatField()
-    description = models.CharField(max_length=255)
-    concert = models.ForeignKey(Concert, on_delete=models.CASCADE)
-    active = models.BooleanField(default=True)
-    max_count = models.IntegerField(default=None, null=True)
+    concert = models.ForeignKey(Concert, on_delete=models.CASCADE, verbose_name="the related concert")
+
+    CURRENCY_CHOICES = [
+        ('RUB', 'рубль'),
+        ('EUR', 'евро'),
+        ('USD', 'доллар'),
+        ('GBP', 'британский фунт')
+    ]
+    price = models.FloatField("price of ticket")
+    currency = models.CharField("price currency", max_length=3, choices=CURRENCY_CHOICES, default='RUB')
+    description = models.CharField("price description", max_length=255)
+
+    is_active = models.BooleanField("price active", default=True)
+    max_count = models.IntegerField("price max tickets", default=None, blank=True)
 
     def __str__(self):
         return "{} цена - {}".format(self.concert.title, self.price)
 
 
 class Transaction(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    concert = models.ForeignKey(Concert, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="the related user")
+    concert = models.ForeignKey(Concert, on_delete=models.CASCADE, verbose_name="the related concert")
+
     is_done = models.BooleanField(default=False)
-    date_created = models.DateTimeField(
-        ('Время создания'), default=timezone.now)
-    date_closed = models.DateTimeField(
-        ('Время закрытия'), default=None, null=True)
-    amount_sum = models.FloatField(
-        ('Фактически пришло'), default=None, null=True)
+    date_created = models.DateTimeField("date time created", auto_now_add=True)
+    date_closed = models.DateTimeField("date close", default=None, null=True)
+    amount_sum = models.FloatField("amount sum", default=None, null=True)
 
     def __str__(self):
         return "{} {} {}".format(
@@ -83,10 +90,12 @@ class Transaction(models.Model):
 
 
 class Ticket(models.Model):
-    transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE)
-    price = models.ForeignKey(Price, on_delete=models.CASCADE)
-    number = models.CharField(max_length=6, unique=True)
-    is_active = models.BooleanField(default=True)
+    transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE, verbose_name="the related transaction")
+    price = models.ForeignKey(Price, on_delete=models.CASCADE, verbose_name="the related price")
+
+    number = models.CharField("ticket number", max_length=6, unique=True)
+
+    is_active = models.BooleanField("is ticket valid", default=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -102,7 +111,7 @@ class Ticket(models.Model):
                 transaction__is_done=True
             )
             if len(t) >= self.price.max_count:
-                self.price.active = False
+                self.price.is_active = False
                 self.price.save()
 
         return super(Ticket, self).save(*args, **kwargs)
@@ -121,6 +130,8 @@ class Ticket(models.Model):
         return sha1_hash.hexdigest()
 
     def get_qrcode(self):
+        """get buffer io with qr code image for email"""
+
         qrcode_img = qrcode.make('{}/staff/submit/{}/{}/'.format(
             settings.HOST,
             self.number,

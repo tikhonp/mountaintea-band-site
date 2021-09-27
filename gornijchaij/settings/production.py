@@ -10,11 +10,22 @@ ALLOWED_HOSTS = [
     # 'email.mountainteaband.ru',
 ]
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'gornijchaij',
+        'USER': 'gornijchaijuser',
+        'PASSWORD': 'raspberry1',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+
 MANAGERS = [
-    ('Tikhon', 'ticha56@mail.ru'),
-    ('Миша', 'mmescherin@1553.ru'),
-    ('Степан', 'Stepaqw@mail.ru'),
-    ('Леша', 'leshich99@yandex.ru'),
+    # ('Tikhon', 'ticha56@mail.ru'),
+    # ('Миша', 'mmescherin@1553.ru'),
+    # ('Степан', 'Stepaqw@mail.ru'),
+    # ('Леша', 'leshich99@yandex.ru'),
 ]
 
 ADMINS = [('Tikhon', 'ticha56@mail.ru')]
