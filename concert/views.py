@@ -37,7 +37,7 @@ def concert_page(request, concert_id):
 
     {% load static %}
 
-    {% block metrika %}{% include "metrica.html" %}{% endblock %}
+    {% block metrika %}{% include "metric.html" %}{% endblock %}
 
     {% block title %}{{ concert.title }}{% endblock %}
     """
@@ -183,28 +183,24 @@ def incoming_payment(request):
     )
     hash_object = hashlib.sha1(hash_str.encode())
 
-    if settings.DEBUG:
-        print(str(hash_object.hexdigest()))
-
-    if str(hash_object.hexdigest()) != request.POST.get('sha1_hash', ''):
+    if str(hash_object.hexdigest()) != request.POST.get('sha1_hash'):
         return HttpResponseBadRequest("Failed to check SHA1 hash")
 
     label = request.POST.get('label')
     if label is None:
         return HttpResponse("ok")
+    if not lablel.isdigit():
+        return HttpResponseBadRequest("Label is not valid digit")
 
     transaction = get_object_or_404(Transaction, id=int(label))
 
-    date_closed = datetime.datetime.strptime(
-        request.POST.get('datetime', ''), '%Y-%m-%dT%H:%M:%SZ')
-    transaction.date_closed = pytz.utc.localize(date_closed)
-    transaction.amount_sum = float(request.POST['amount'])
+    transaction.date_closed = pytz.utc.localize(
+        datetime.datetime.strptime(request.POST.get('datetime'), '%Y-%m-%dT%H:%M:%SZ')
+    )
+    transaction.amount_sum = float(request.POST.get('amount'))
     transaction.is_done = True
     transaction.save()
-
     tickets = Ticket.objects.filter(transaction=transaction)
-
-    u = transaction.user
 
     context = {
         'transaction': transaction.pk,
@@ -231,7 +227,7 @@ def incoming_payment(request):
     mail_managers(
         'Куплен новый билет',
         '{}\n{}\n{}'.format(
-            u.first_name,
+            user.first_name,
             "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
                 i.price.description,
                 i.price.price,
@@ -254,7 +250,7 @@ def done_payment(request):
 
 
 @require_http_methods(["GET"])
-def qr_codeimage(request, ticket):
+def qr_code_image(request, ticket):
     ticket = get_object_or_404(Ticket, number=ticket)
 
     return HttpResponse(ticket.get_qrcode(), content_type="image/png")

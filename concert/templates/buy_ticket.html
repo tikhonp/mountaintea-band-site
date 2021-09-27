@@ -2,7 +2,7 @@
 
 {% load my_filters %}
 
-{% block metrika %}{% include "metrica.html" %}{% endblock %}
+{% block metrika %}{% include "metric.html" %}{% endblock %}
 
 {% block title %}Купить билет на {{ concert.title }}{% endblock %}
 
@@ -16,7 +16,7 @@
     <div class="shadow{% if paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded">
         {% if soldout %}
         <div class="text-center">
-            SOLDOUT
+            SOLD OUT
         </div>
         {% else %}
         <form method="post" role="form">

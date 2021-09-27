@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block metrika %}{% include "metrica.html" %}{% endblock %}
+{% block metrika %}{% include "metric.html" %}{% endblock %}
 
 {% block title %}Концерты - Горный Чай{% endblock %}
 
@@ -13,7 +13,7 @@
     <div class="card-body">
       <h4 class="card-title">{{ concet.title }}</h4>
       <a href="{{ concet.place_url }}"></a>
-      <h6 class="card-subtitle mb-2 text-muted">{{ concet.place }}</h6></a>
+      <h6 class="card-subtitle mb-2 text-muted">{{ concet.place }}</h6>
       <p class="card-text">{{ concet.description }}</p>
       <h6 class="card-subtitle mb-2 text-muted">{{ concet.date_time }}</h6>
       <a href="{{ concet.id }}/" class="stretched-link"></a>

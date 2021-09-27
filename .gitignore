@@ -133,5 +133,4 @@ dmypy.json
 *.swp
 
 /static/
-env/
 .idea/
