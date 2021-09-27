@@ -36,7 +36,7 @@ class Concert(models.Model):
     description = models.TextField("concert description")
     place = models.CharField("name and address of place", max_length=255)
     place_url = models.URLField("url to place page")
-    date_time = models.DateTimeField("concert date", auto_now=True)
+    date_time = models.DateTimeField("concert date")
     is_active = models.BooleanField("concert active", default=True)
 
     template = models.TextField("template to show concert page", default='<p>Добавьте страницу концерта</p>')

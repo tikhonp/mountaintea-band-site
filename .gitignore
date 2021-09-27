@@ -134,3 +134,4 @@ dmypy.json
 
 /static/
 env/
+.idea/

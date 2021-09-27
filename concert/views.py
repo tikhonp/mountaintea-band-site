@@ -36,9 +36,9 @@ def concert_page(request, concert_id):
     {% extends "base.html" %}
 
     {% load static %}
-    
+
     {% block metrika %}{% include "metrica.html" %}{% endblock %}
-    
+
     {% block title %}{{ concert.title }}{% endblock %}
     """
 
@@ -189,7 +189,9 @@ def incoming_payment(request):
     if str(hash_object.hexdigest()) != request.POST.get('sha1_hash', ''):
         return HttpResponseBadRequest("Failed to check SHA1 hash")
 
-    label = request.POST.get('label', '')
+    label = request.POST.get('label')
+    if label is None:
+        return HttpResponse("ok")
 
     transaction = get_object_or_404(Transaction, id=int(label))
 
