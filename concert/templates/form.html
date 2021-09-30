@@ -12,8 +12,8 @@
                     <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
                 </svg>
                 <span class="is-invalid text-danger">
-        {% for error in field.errors %}{{ error }}{% endfor %}
-      </span>
+                    {% for error in field.errors %}{{ error }}{% endfor %}
+                </span>
             </div>
         </div>
     {% else %}
@@ -24,4 +24,5 @@
                 <p class="help-inline"><small>{{ field.help_text }}</small></p>
             {% endif %}
         </div>
-    {% endif %} {% endfor %}
+    {% endif %}
+{% endfor %}

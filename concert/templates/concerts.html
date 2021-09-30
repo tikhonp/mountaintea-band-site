@@ -8,17 +8,18 @@
     <div class="container">
         <h1 class="title">Концерты и шоу</h1>
 
-        {% for concet in concerts %}
+        {% for concert in concerts %}
             <div class="card shadow p-3 mb-5 bg-white rounded">
                 <div class="card-body">
-                    <h4 class="card-title">{{ concet.title }}</h4>
-                    <a href="{{ concet.place_url }}"></a>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ concet.place }}</h6>
-                    <p class="card-text">{{ concet.description }}</p>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ concet.date_time }}</h6>
-                    <a class="stretched-link" href="{{ concet.id }}/"></a>
+                    <h4 class="card-title">{{ concert.title }}</h4>
+                    <a href="{{ concert.place_url }}"></a>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ concert.place }}</h6>
+                    <p class="card-text">{{ concert.description }}</p>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ concert.date_time }}</h6>
+                    <a class="stretched-link" href="{% url 'concert' concert_id=concert.id %}"></a>
                 </div>
             </div>
         {% endfor %}
+        {% include "footer.html" %}
     </div>
 {% endblock %}

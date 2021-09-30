@@ -38,7 +38,7 @@
     <div class="container-fluid p-0">
         <section class="row no-gutters align-items-center">
             <div class="col-12 text-center d-flex">
-                <img class="img-fluid of" src="{% static 'background2.jpeg' %}" style="width:100%;">
+                <img alt="background" class="img-fluid of" src="{% static 'background2.jpeg' %}" style="width:100%;">
                 <h1 class="position-absolute top-0 start-50 translate-middle text-light fonttitle"><br><br><br>
                     Горный Чай</h1>
             </div>
@@ -49,7 +49,7 @@
         <div class="text-center">
             <h3>Кто мы?</h3>
             <center>
-                <div class="col-md-2 px-0">
+                <div class="col-md-2 px-0" style="text-align: center;">
                     <img alt="Мы на фото" class="img-thumbnail rounded-circle img-fluid"
                          src="{% static 'avatar_band.jpeg' %}">
                 </div>
@@ -80,10 +80,10 @@
             <h3 class="pb-3">Релизы</h3>
             <div style="max-width:100%;">
                 <div style="position:relative;padding-bottom:calc(56.25% + 52px);height: 0;">
-                    <iframe allowfullscreen frameborder="0" height="100%"
+                    <iframe allowfullscreen height="100%"
                             sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
                             src="https://embed.song.link/?url=https%3A%2F%2Falbum.link%2FpM8ps7SZRr6pV&theme=dark"
-                            style="position:absolute;top:0;left:0;"
+                            style="position:absolute;top:0;left:0;border:none;"
                             width="100%"></iframe>
                 </div>
             </div>
@@ -97,10 +97,12 @@
                     <div class="col-6 col-md">
                         <h5>Контакты</h5>
                         <ul class="list-unstyled text-small">
-                            <li><a class="link-secondary" href="https://www.instagram.com/mountainteaaa/">Instagram</a>
+                            <li><a target="_blank" class="link-secondary"
+                                   href="https://www.instagram.com/mountainteaaa/">Instagram</a>
                             </li>
-                            <li><a class="link-secondary" href="https://vk.com/mountainteaaa">ВКонтакте</a></li>
-                            <li><a class="link-secondary"
+                            <li><a target="_blank" class="link-secondary"
+                                   href="https://vk.com/mountainteaaa">ВКонтакте</a></li>
+                            <li><a target="_blank" class="link-secondary"
                                    href="https://www.youtube.com/channel/UCaY2lcv8Lhri_Zg4s8pFUfA">Youtube</a>
                             </li>
                         </ul>
@@ -108,9 +110,12 @@
                     <div class="col-6 col-md">
                         <h5>Мы</h5>
                         <ul class="list-unstyled text-small">
-                            <li><a class="link-secondary" href="https://www.instagram.com/leshich999/">Леша</a></li>
-                            <li><a class="link-secondary" href="https://www.instagram.com/stepa.aa/">Степа</a></li>
-                            <li><a class="link-secondary" href="https://www.instagram.com/tikhonnnnn/">Тихон</a></li>
+                            <li><a target="_blank" class="link-secondary" href="https://www.instagram.com/leshich999/">Леша</a>
+                            </li>
+                            <li><a target="_blank" class="link-secondary" href="https://www.instagram.com/stepa.aa/">Степа</a>
+                            </li>
+                            <li><a target="_blank" class="link-secondary" href="https://www.instagram.com/tikhonnnnn/">Тихон</a>
+                            </li>
                         </ul>
                     </div>
                 </div>

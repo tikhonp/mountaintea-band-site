@@ -1,6 +1,6 @@
 ** {{ concert.title }}
 
-Для отображения html версии нажмите на ссылку. ({{ host }}/concerts/email/{{ transaction }}/{{ transaction_hash }}/)
+Для отображения html версии нажмите на ссылку. ({{ host }}{% url 'email-page' transaction=transaction sha_hash=transaction_hash %})
 ------------------------------------------------------------
 
 3 марта в баре «PUNK FICTION» пройдёт совместный концерт Миши Мещерина и группы «Горный Чай». Помимо уже известных песен Миши вы услышите композиции с дебютного EP «Горного Чая»
@@ -41,7 +41,7 @@ _3. Нельзя приносить алкоголь._
 ** {{ ticket.price.description }}
 ------------------------------------------------------------
 
-QR code : {{ host }}/concerts/ticket/{{ ticket.number }}/
+QR code : {{ host }}{% url 'qr-code' ticket=ticket.number %}
 
 {% endfor %}
 

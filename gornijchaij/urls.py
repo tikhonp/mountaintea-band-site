@@ -19,8 +19,8 @@ from django.urls import path, include
 from concert import views
 
 urlpatterns = [
-    path('', views.main),
-    path('admin/', admin.site.urls),
+    path('', views.main, name='main'),
+    path('admin/', admin.site.urls, name='admin'),
     path('concerts/', include('concert.urls')),
     path('staff/', include('concertstaff.urls')),
 ]

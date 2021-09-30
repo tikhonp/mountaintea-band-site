@@ -46,7 +46,7 @@
                                         style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
                                         <center>
                                             <img align="center" alt="ticket qr code"
-                                                 src="{{ host }}/concerts/ticket/{{ ticket.number }}/" width="400"
+                                                 src="{{ host }}{% url 'qr-code' ticket=ticket.number %}" width="400"
                                                  style="max-width:500px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
                                                  class="mcnImage">
                                         </center>

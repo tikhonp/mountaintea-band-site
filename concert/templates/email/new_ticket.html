@@ -58,7 +58,7 @@
                                                                                 valign="top">
                                                                                 Если это сообщение отображается
                                                                                 неправильно,
-                                                                                <a href="{{ host }}/concerts/email/{{ transaction }}/{{ transaction_hash }}/"
+                                                                                <a href="{{ host }}{% url 'email-page' transaction=transaction sha_hash=transaction_hash %}"
                                                                                    style="color: white;"
                                                                                    target="parent">нажмите
                                                                                     здесь.</a>
@@ -126,12 +126,9 @@
                                                                             <img align="center" alt="Punkfiction Logo"
                                                                                  class="mcnImage"
                                                                                  src="
-
                                                                                          {{ host }}{% static 'email/punkfiction_black.png' %}"
                                                                                  style="max-width:450px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
                                                                                  width="300">
-
-
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
@@ -265,6 +262,8 @@
                                                                 <img alt="Ticket design"
                                                                      class="mcnImage"
                                                                      height="10" src="
+
+
 
                                                                         {{ host }}{% static 'email/ticket_bottom.png' %}"
                                                                      style="display: block;max-width: 600px;border: 0;height: auto;outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;vertical-align: bottom;"
