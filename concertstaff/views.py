@@ -1,20 +1,18 @@
-from django.shortcuts import render
-from django.contrib.admin.views.decorators import staff_member_required
-from django.http import Http404, HttpResponse, HttpResponseBadRequest
-from django.views.decorators.http import require_http_methods
-from django.db.models import Sum
-from concert.models import Transaction, Ticket, Concert, Price
-from django.core import exceptions
-from django.template.loader import render_to_string
-from django.core.mail import send_mail, mail_managers, \
-    get_connection, EmailMultiAlternatives
 from django.conf import settings
-from concertstaff import forms
-from django.utils import timezone
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
+from django.core import exceptions
+from django.core.mail import send_mail, mail_managers
+from django.db.models import Sum
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
-import datetime
-import pytz
+from django.shortcuts import render
+from django.template.loader import render_to_string
+from django.utils import timezone
+from django.views.decorators.http import require_http_methods
+
+from concert.models import Transaction, Ticket, Concert, Price
+from concertstaff import forms
 
 
 @staff_member_required
@@ -34,8 +32,8 @@ def stat(request, concert):
         return Http404("Conert does not exist")
 
     ticket = Ticket.objects.filter(
-            transaction__is_done=True,
-            transaction__concert=concert,
+        transaction__is_done=True,
+        transaction__concert=concert,
     ).order_by('-transaction__date_created')
 
     amount_sum = Transaction.objects.filter(
@@ -43,12 +41,13 @@ def stat(request, concert):
         concert=concert,
     ).aggregate(Sum('amount_sum'))['amount_sum__sum']
 
+    entered_percent = int(len(ticket.filter(is_active=False)) * 100 / len(ticket)) if len(ticket) != 0 else 0
+
     return render(request, "stat.html", {
         "t": ticket,
         "amount_sum": amount_sum,
         "tickets_sum": len(ticket),
-        "entered_persent": int(len(
-            ticket.filter(is_active=False))*100/len(ticket))
+        "entered_persent": entered_percent
     })
 
 
@@ -115,37 +114,24 @@ def add_ticket(request):
         form = forms.AddTicketForm(request.POST)
 
         if form.is_valid():
-            cd = form.cleaned_data
-
-            user = User.objects.filter(
-                username=cd['name'].replace(" ", ""))
-            if len(user) == 0:
-                user = User.objects.create(
-                    username=cd['name'].replace(" ", ""),
-                    first_name=cd['name'],
-                    email=cd['email']
-                )
-                p = user.profile
-                p.phone = cd['phone_number']
-
-                user.save()
-                p.save()
-            else:
-                user = user.first()
-                user.email = cd['email']
-                user.profile.phone = cd['phone_number']
-                user.save()
-
-            concert = Concert.objects.get(pk=cd['concert'])
-
-            price = Price.objects.filter(
-                price=0.,
-                concert=concert
+            user, created = User.objects.get_or_create(
+                username=form.cleaned_data.get('name').replace(' ', ''),
+                first_name=form.cleaned_data.get('name'),
+                email=form.cleaned_data.get('email')
             )
-            if len(price) == 0:
+
+            if not created:
+                user.email = form.cleaned_data.get('email')
+
+            user.profile.phone = form.cleaned_data.get('phone_number')
+            user.save()
+
+            concert = Concert.objects.get(pk=form.cleaned_data.get('concert'))
+
+            try:
+                price = Price.objects.get(price=0., concert=concert)
+            except Price.DoesNotExist:
                 return HttpResponse("Необходимо создать Price с нулевой ценой, обратитесь к администратору")
-            else:
-                price = price.first()
 
             transaction = Transaction.objects.create(
                 user=user,
@@ -154,20 +140,13 @@ def add_ticket(request):
                 amount_sum=0.,
                 is_done=True,
             )
-            transaction.save()
-
-            ticket = Ticket.objects.create(
-                transaction = transaction,
-                price = price,
-            )
-            ticket.save()
+            Ticket.objects.create(transaction=transaction, price=price)
 
             context = {
                 'transaction': transaction.pk,
                 'transaction_hash': transaction.get_hash(),
                 'host': settings.HOST,
-                'subject': 'Билет на концерт {}'.format(
-                    transaction.concert.title),
+                'subject': 'Билет на концерт {}'.format(transaction.concert.title),
                 'concert': transaction.concert,
                 'tickets': Ticket.objects.filter(transaction=transaction),
                 'user': transaction.user,

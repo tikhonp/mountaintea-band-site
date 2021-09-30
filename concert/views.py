@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+
 import pytz
 from django.conf import settings
 from django.contrib import messages
@@ -7,7 +8,7 @@ from django.contrib.auth.models import User
 from django.core.mail import mail_managers, send_mail
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
-from django.template import Template, Context, RequestContext
+from django.template import Template, RequestContext
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -43,7 +44,7 @@ def concert_page(request, concert_id):
     """
 
     concert = get_object_or_404(Concert, pk=concert_id)
-    template = Template(base_t+concert.template)
+    template = Template(base_t + concert.template)
     context = RequestContext(request, {'concert': concert})
 
     return HttpResponse(template.render(context))
@@ -95,7 +96,7 @@ def buy_ticket(request, concert_id=None):
 
     else:
         if soldout:
-            return HttpResponse("Ошибка soldout")
+            return HttpResponse("Ошибка sold out")
 
         form = forms.BuyTicketForm(request.POST)
 
@@ -107,48 +108,33 @@ def buy_ticket(request, concert_id=None):
             f_tickets[price.id] = int(t)
 
         if f_tickets == {}:
-            messages.error(
-                request,
-                "Вы должны добавить хотя бы один билет, чтобы совершить покупку"
-            )
+            messages.error(request, "Вы должны добавить хотя бы один билет, чтобы совершить покупку")
 
         if form.is_valid() and f_tickets != {}:
-            cd = form.cleaned_data
-            user = User.objects.filter(
-                username=cd['name'].replace(" ", ""))
-            if len(user) == 0:
-                user = User.objects.create(
-                    username=cd['name'].replace(" ", ""),
-                    first_name=cd['name'],
-                    email=cd['email']
-                )
-                p = user.profile
-                p.phone = cd['phone_number']
+            user, created = User.objects.get_or_create(
+                username=form.cleaned_data.get('name').replace(' ', ''),
+                first_name=form.cleaned_data.get('name'),
+                email=form.cleaned_data.get('email')
+            )
 
-                user.save()
-                p.save()
-            else:
-                user = user.first()
-                user.email = cd['email']
-                user.profile.phone = cd['phone_number']
-                user.save()
+            if not created:
+                user.email = form.cleaned_data.get('email')
+
+            user.profile.phone = form.cleaned_data.get('phone_number')
+            user.save()
 
             request.session['user'] = user.id
             request.session['price'] = prices.first().id
             request.session['f_tickets'] = f_tickets
 
-            transaction = Transaction.objects.create(
-                user=user,
-                concert=concert
-            )
-            transaction.save()
+            transaction = Transaction.objects.create(user=user, concert=concert)
+
             for tick in f_tickets:
                 for i in range(f_tickets[tick]):
                     ticket = Ticket.objects.create(
                         transaction=transaction,
                         price=Price.objects.get(id=tick)
                     )
-                    ticket.save()
                     amount_sum += ticket.price.price
 
             paying = True

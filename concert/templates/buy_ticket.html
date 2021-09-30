@@ -7,133 +7,139 @@
 {% block title %}Купить билет на {{ concert.title }}{% endblock %}
 
 {% block body %}
-<div class="container">
-    <div class="shadow p-3 mb-5 bg-white rounded">
-        <h2>Билет на концерт - {{ concert.title }}</h2>
-        <p>{{ concert.date_time }}</p>
-    </div>
-
-    <div class="shadow{% if paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded">
-        {% if soldout %}
-        <div class="text-center">
-            SOLD OUT
+    <div class="container">
+        <div class="shadow p-3 mb-5 bg-white rounded">
+            <h2>Билет на концерт - {{ concert.title }}</h2>
+            <p>{{ concert.date_time }}</p>
         </div>
-        {% else %}
-        <form method="post" role="form">
-            {% csrf_token %} {% include "form.html" %}
-            <br/>
-            {% if messages %} {% for message in messages %}
-            <div class="alert alert-danger" role="alert">
-                {{ message }}
-            </div>
-            {% endfor %} {% endif %}
 
-            <div class="row">
-                {% for price in prices %}
-                <div class="col-sm">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-subtitle mb-2 text-muted">
-                                {{ price.price|floatformat:2 }} р.
-                            </h6>
-                            <p class="card-text">{{ price.description }}</p>
-                            <div class="row mb-3">
-                                <label class="col-sm-2 col-form-label">Количество:
-                                </label>
-                                <div class="col-sm-10">
-                                    <div class="input-group">
+        <div class="shadow{% if paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded">
+            {% if soldout %}
+                <div class="text-center">
+                    SOLD OUT
+                </div>
+            {% else %}
+                <form method="post" role="form">
+                    {% csrf_token %} {% include "form.html" %}
+                    <br/>
+                    {% if messages %} {% for message in messages %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %} {% endif %}
+
+                    <div class="row">
+                        {% for price in prices %}
+                            <div class="col-sm">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-muted">
+                                            {{ price.price|floatformat:2 }} р.
+                                        </h6>
+                                        <p class="card-text">{{ price.description }}</p>
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Количество:
+                                            </label>
+                                            <div class="col-sm-10">
+                                                <div class="input-group">
                                         <span class="input-group-text"
                                               onclick="this.parentNode.parentNode.querySelector('#ticketsCount').stepDown()">-</span>
-                                        <input class="form-control" id="ticketsCount" min="0" name="pricecount{{ price.id }}"
-                                               step="1"
-                                               type="number"
-                                               value="{% if price.id in f_tickets %}{{ f_tickets|get_item:price.id }}{% else %}0{% endif %}"/>
-                                        <span class="input-group-text"
-                                              onclick="this.parentNode.parentNode.querySelector('#ticketsCount').stepUp()">+</span>
+                                                    <input class="form-control" id="ticketsCount" min="0"
+                                                           name="pricecount{{ price.id }}"
+                                                           step="1"
+                                                           type="number"
+                                                           value="
+                                                                   {% if price.id in f_tickets %}{{ f_tickets|get_item:price.id }}{% else %}0{% endif %}"/>
+                                                    <span class="input-group-text"
+                                                          onclick="this.parentNode.parentNode.querySelector('#ticketsCount').stepUp()">+</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        {% endfor %}
                     </div>
-                </div>
-                {% endfor %}
-            </div>
-            <br/>
-            <div class="d-grid">
-                <button class="btn btn-outline-secondary" type="submit">
-                    {% if paying %}Изменить{% else %}Продолжить{% endif %}
-                </button>
-            </div>
-        </form>
-        {% endif %}
-    </div>
-
-    {% if not soldout %}
-    {% if paying %}
-    <div class="shadow{% if not paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded">
-        <form action="https://yoomoney.ru/quickpay/confirm.xml" class="row row-cols-lg-auto g-3 align-items-center"
-              method="POST">
-            <legend>К оплате {{ amount_sum|floatformat:2 }} руб.</legend>
-
-            <input name="successURL" type="hidden"
-                   value="https://mountainteaband.ru/concerts/tickets/donepayment/?t={{ transaction.id }}"/>
-            <input name="receiver" type="hidden" value="410017742960837"/>
-            <input name="formcomment" type="hidden" value="Горный Чай: {{ concert.title }}"/>
-            <input name="short-dest" type="hidden" value="Горный Чай: {{ concert.title }}"/>
-            <input name="label" type="hidden" value="{{ transaction.id }}"/>
-            <input name="quickpay-form" type="hidden" value="shop"/>
-            <input name="targets" type="hidden" value="Горный Чай: {{ concert.title }}"/>
-            <input data-type="number" name="sum" type="hidden" value="{{ amount_sum }}"/>
-
-            <div class="form-check form-check-inline">
-                <input %} %}disabled{% class="form-check-input" endif if name="paymentType" not paying type="radio"
-                       value="PC" {%/>
-                <label class="form-check-label">ЮMoney (Яндекс.Деньги)</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input %} %}disabled{% class="form-check-input" endif if name="paymentType" not paying type="radio"
-                       value="AC" {%/>
-                <label class="form-check-label">Банковской картой</label>
-            </div>
-
-            <div class="col-auto">
-                <button class="btn btn-outline-secondary {% if not paying %}disabled{% endif %}" type="submit">
-                    Перевести
-                </button>
-            </div>
-        </form>
-    </div>
-
-    {% endif %}
-    {% endif %}
-
-    <footer class="pt-4 my-md-5  border-top">
-        <div class="row">
-            <div class="col-12 col-md">
-                <small class="d-block mb-3 text-muted">Горный Чай © {% now 'Y' %} <a class="link-secondary"
-                                                                                     href="https://t.me/tikhonnnnn">Напишите
-                    сюда, если что-то не работает</a></small>
-            </div>
+                    <br/>
+                    <div class="d-grid">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            {% if paying %}Изменить{% else %}Продолжить{% endif %}
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
         </div>
-    </footer>
 
-</div>
+        {% if not soldout %}
+            {% if paying %}
+                <div class="shadow{% if not paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded">
+                    <form action="https://yoomoney.ru/quickpay/confirm.xml"
+                          class="row row-cols-lg-auto g-3 align-items-center"
+                          method="POST">
+                        <legend>К оплате {{ amount_sum|floatformat:2 }} руб.</legend>
+
+                        <input name="successURL" type="hidden"
+                               value="https://mountainteaband.ru/concerts/tickets/donepayment/?t={{ transaction.id }}"/>
+                        <input name="receiver" type="hidden" value="410017742960837"/>
+                        <input name="formcomment" type="hidden" value="Горный Чай: {{ concert.title }}"/>
+                        <input name="short-dest" type="hidden" value="Горный Чай: {{ concert.title }}"/>
+                        <input name="label" type="hidden" value="{{ transaction.id }}"/>
+                        <input name="quickpay-form" type="hidden" value="shop"/>
+                        <input name="targets" type="hidden" value="Горный Чай: {{ concert.title }}"/>
+                        <input data-type="number" name="sum" type="hidden" value="{{ amount_sum }}"/>
+
+                        <div class="form-check form-check-inline">
+                            <input %}
+                                   %}disabled{% class="form-check-input" endif if name="paymentType" not paying type="radio"
+                                   value="PC" {% />
+                            <label class="form-check-label">ЮMoney (Яндекс.Деньги)</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input %}
+                                   %}disabled{% class="form-check-input" endif if name="paymentType" not paying type="radio"
+                                   value="AC" {% />
+                            <label class="form-check-label">Банковской картой</label>
+                        </div>
+
+                        <div class="col-auto">
+                            <button class="btn btn-outline-secondary {% if not paying %}disabled{% endif %}"
+                                    type="submit">
+                                Перевести
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            {% endif %}
+        {% endif %}
+
+        <footer class="pt-4 my-md-5  border-top">
+            <div class="row">
+                <div class="col-12 col-md">
+                    <small class="d-block mb-3 text-muted">Горный Чай © {% now 'Y' %} <a class="link-secondary"
+                                                                                         href="https://t.me/tikhonnnnn">Напишите
+                        сюда, если что-то не работает</a></small>
+                </div>
+            </div>
+        </footer>
+
+    </div>
 {% endblock %}
 
 
 {% block script %}
-<script src="https://unpkg.com/imask"></script>
-<script>
-  var phoneMask = IMask(
-  document.getElementById('id_phone_number'), {
-    mask: '+{7}0000000000'
-  });
+    <script src="https://unpkg.com/imask"></script>
+    <script>
+        var phoneMask = IMask(
+            document.getElementById('id_phone_number'), {
+                mask: '+{7}0000000000'
+            });
 
-</script>
-{% if paying %}
-<script type="text/javascript">
-  window.scrollTo(0, document.body.scrollHeight);
+    </script>
+    {% if paying %}
+        <script type="text/javascript">
+            window.scrollTo(0, document.body.scrollHeight);
 
-</script>
-{% endif %}
+        </script>
+    {% endif %}
 {% endblock %}

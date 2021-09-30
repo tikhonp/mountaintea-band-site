@@ -19,18 +19,18 @@
         </blockquote>
         <br>
         <figcaption class="blockquote-footer">
-            Поздравляем, {{ u.first_name}}! Вы теперь сможете попасть на этот концерт
+            Поздравляем, {{ u.first_name }}! Вы теперь сможете попасть на этот концерт
         </figcaption>
     </figure>
 
     {% for ticket in tickets %}
-    <div class="card shadow p-3 mb-5 bg-white rounded">
-        <div class="card-body">
-            <h5 class="card-title">{{ ticket.price.description }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{ ticket.price.price }} р. (оплачено)</h6>
-            <h2>Номер: <kbd class="">{{ ticket.number }}</kbd></h2>
+        <div class="card shadow p-3 mb-5 bg-white rounded">
+            <div class="card-body">
+                <h5 class="card-title">{{ ticket.price.description }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ ticket.price.price }} р. (оплачено)</h6>
+                <h2>Номер: <kbd class="">{{ ticket.number }}</kbd></h2>
+            </div>
         </div>
-    </div>
     {% endfor %}
 
     <div class="container">

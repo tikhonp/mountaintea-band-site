@@ -7,110 +7,114 @@
 {% block title %}Горный Чай - Офицальный сайт{% endblock %}
 
 {% block style %}
-<link href="https://fonts.gstatic.com" rel="preconnect">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@900&display=swap" rel="stylesheet">
-<style>
-  body {
-    background-color: #000000;
-  }
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #000000;
+        }
 
-  p,
-  h3,
-  h1,
-  h5 {
-    color: #ffffff;
-  }
+        p,
+        h3,
+        h1,
+        h5 {
+            color: #ffffff;
+        }
 
-  .fonttitle {
-    font-family: 'Playfair Display SC', serif;
-    font-size: 60px;
-  }
+        .fonttitle {
+            font-family: 'Playfair Display SC', serif;
+            font-size: 60px;
+        }
 
-  h3,
-  h5 {
-    font-family: 'Playfair Display SC', serif;
-  }
+        h3,
+        h5 {
+            font-family: 'Playfair Display SC', serif;
+        }
 
-</style>
+    </style>
 {% endblock %}
 
 {% block body %}
-<div class="container-fluid p-0">
-    <section class="row no-gutters align-items-center">
-        <div class="col-12 text-center d-flex">
-            <img class="img-fluid of" src="{% static 'background2.jpeg' %}" style="width:100%;">
-            <h1 class="position-absolute top-0 start-50 translate-middle text-light fonttitle"><br><br><br>
-                Горный Чай</h1>
-        </div>
-    </section>
-</div>
-
-<div class="container">
-    <div class="text-center">
-        <h3>Кто мы?</h3>
-        <center>
-            <div class="col-md-2 px-0">
-                <img alt="Мы на фото" class="img-thumbnail rounded-circle img-fluid"
-                     src="{% static 'avatar_band.jpeg' %}">
+    <div class="container-fluid p-0">
+        <section class="row no-gutters align-items-center">
+            <div class="col-12 text-center d-flex">
+                <img class="img-fluid of" src="{% static 'background2.jpeg' %}" style="width:100%;">
+                <h1 class="position-absolute top-0 start-50 translate-middle text-light fonttitle"><br><br><br>
+                    Горный Чай</h1>
             </div>
-        </center>
-        <br>
-        <p>Горный Чай - молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка. 11 февраля вышел
-            дебютный EP "Сборник прошлогодних песен".</p>
-        <br>
-        <h3 class="pb-2">Концерты</h3>
-        {% for concert in concerts %}
-        <div class="card bg-dark text-white rounded">
-            <div class="card-body">
-                <h4 class="card-title">{{ concert.title }}</h4>
-                <a href="{{ concert.place_url }}"></a>
-                <h6 class="card-subtitle mb-2 text-muted">{{ concert.place }}</h6>
-                <p class="card-text">{{ concert.description }}</p>
-                <h6 class="card-subtitle mb-2 text-muted">{{ concert.date_time }}</h6>
-                <a class="stretched-link" href="{% url 'concert' concert.id %}"></a>
-            </div>
-        </div>
-        {% endfor %}
-        <br>
-        <div class="d-grid gap-2">
-            <a class="btn btn-outline-light" href="{% url 'concerts' %}" role="button">Все концерты -></a>
-        </div>
-        <br>
-        <h3 class="pb-3">Релизы</h3>
-        <div style="max-width:100%;">
-            <div style="position:relative;padding-bottom:calc(56.25% + 52px);height: 0;">
-                <iframe allowfullscreen frameborder="0" height="100%"
-                        sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
-                        src="https://embed.song.link/?url=https%3A%2F%2Falbum.link%2FpM8ps7SZRr6pV&theme=dark" style="position:absolute;top:0;left:0;"
-                        width="100%"></iframe>
-            </div>
-        </div>
-
-
-        <footer class="pt-4 my-md-5 pt-md-5 border-top">
-            <div class="row">
-                <div class="col-12 col-md">
-                    <small class="d-block mb-3 text-muted">Горный Чай © {% now 'Y' %}</small>
-                </div>
-                <div class="col-6 col-md">
-                    <h5>Контакты</h5>
-                    <ul class="list-unstyled text-small">
-                        <li><a class="link-secondary" href="https://www.instagram.com/mountainteaaa/">Instagram</a></li>
-                        <li><a class="link-secondary" href="https://vk.com/mountainteaaa">ВКонтакте</a></li>
-                        <li><a class="link-secondary" href="https://www.youtube.com/channel/UCaY2lcv8Lhri_Zg4s8pFUfA">Youtube</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-6 col-md">
-                    <h5>Мы</h5>
-                    <ul class="list-unstyled text-small">
-                        <li><a class="link-secondary" href="https://www.instagram.com/leshich999/">Леша</a></li>
-                        <li><a class="link-secondary" href="https://www.instagram.com/stepa.aa/">Степа</a></li>
-                        <li><a class="link-secondary" href="https://www.instagram.com/tikhonnnnn/">Тихон</a></li>
-                    </ul>
-                </div>
-            </div>
-        </footer>
+        </section>
     </div>
-</div>
+
+    <div class="container">
+        <div class="text-center">
+            <h3>Кто мы?</h3>
+            <center>
+                <div class="col-md-2 px-0">
+                    <img alt="Мы на фото" class="img-thumbnail rounded-circle img-fluid"
+                         src="{% static 'avatar_band.jpeg' %}">
+                </div>
+            </center>
+            <br>
+            <p>Горный Чай - молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка. 11 февраля
+                вышел
+                дебютный EP "Сборник прошлогодних песен".</p>
+            <br>
+            <h3 class="pb-2">Концерты</h3>
+            {% for concert in concerts %}
+                <div class="card bg-dark text-white rounded">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ concert.title }}</h4>
+                        <a href="{{ concert.place_url }}"></a>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ concert.place }}</h6>
+                        <p class="card-text">{{ concert.description }}</p>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ concert.date_time }}</h6>
+                        <a class="stretched-link" href="{% url 'concert' concert.id %}"></a>
+                    </div>
+                </div>
+            {% endfor %}
+            <br>
+            <div class="d-grid gap-2">
+                <a class="btn btn-outline-light" href="{% url 'concerts' %}" role="button">Все концерты -></a>
+            </div>
+            <br>
+            <h3 class="pb-3">Релизы</h3>
+            <div style="max-width:100%;">
+                <div style="position:relative;padding-bottom:calc(56.25% + 52px);height: 0;">
+                    <iframe allowfullscreen frameborder="0" height="100%"
+                            sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
+                            src="https://embed.song.link/?url=https%3A%2F%2Falbum.link%2FpM8ps7SZRr6pV&theme=dark"
+                            style="position:absolute;top:0;left:0;"
+                            width="100%"></iframe>
+                </div>
+            </div>
+
+
+            <footer class="pt-4 my-md-5 pt-md-5 border-top">
+                <div class="row">
+                    <div class="col-12 col-md">
+                        <small class="d-block mb-3 text-muted">Горный Чай © {% now 'Y' %}</small>
+                    </div>
+                    <div class="col-6 col-md">
+                        <h5>Контакты</h5>
+                        <ul class="list-unstyled text-small">
+                            <li><a class="link-secondary" href="https://www.instagram.com/mountainteaaa/">Instagram</a>
+                            </li>
+                            <li><a class="link-secondary" href="https://vk.com/mountainteaaa">ВКонтакте</a></li>
+                            <li><a class="link-secondary"
+                                   href="https://www.youtube.com/channel/UCaY2lcv8Lhri_Zg4s8pFUfA">Youtube</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-6 col-md">
+                        <h5>Мы</h5>
+                        <ul class="list-unstyled text-small">
+                            <li><a class="link-secondary" href="https://www.instagram.com/leshich999/">Леша</a></li>
+                            <li><a class="link-secondary" href="https://www.instagram.com/stepa.aa/">Степа</a></li>
+                            <li><a class="link-secondary" href="https://www.instagram.com/tikhonnnnn/">Тихон</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
 {% endblock %}

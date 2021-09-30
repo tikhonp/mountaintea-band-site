@@ -1,6 +1,6 @@
 from django.contrib import admin
-from concert import models
 
+from concert import models
 
 admin.site.register(models.Profile)
 admin.site.register(models.Concert)

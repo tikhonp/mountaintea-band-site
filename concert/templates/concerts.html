@@ -5,20 +5,20 @@
 {% block title %}Концерты - Горный Чай{% endblock %}
 
 {% block body %}
-<div class="container">
-  <h1 class="title">Концерты и шоу</h1>
+    <div class="container">
+        <h1 class="title">Концерты и шоу</h1>
 
-  {% for concet in concerts %}
-  <div class="card shadow p-3 mb-5 bg-white rounded">
-    <div class="card-body">
-      <h4 class="card-title">{{ concet.title }}</h4>
-      <a href="{{ concet.place_url }}"></a>
-      <h6 class="card-subtitle mb-2 text-muted">{{ concet.place }}</h6>
-      <p class="card-text">{{ concet.description }}</p>
-      <h6 class="card-subtitle mb-2 text-muted">{{ concet.date_time }}</h6>
-      <a href="{{ concet.id }}/" class="stretched-link"></a>
+        {% for concet in concerts %}
+            <div class="card shadow p-3 mb-5 bg-white rounded">
+                <div class="card-body">
+                    <h4 class="card-title">{{ concet.title }}</h4>
+                    <a href="{{ concet.place_url }}"></a>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ concet.place }}</h6>
+                    <p class="card-text">{{ concet.description }}</p>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ concet.date_time }}</h6>
+                    <a class="stretched-link" href="{{ concet.id }}/"></a>
+                </div>
+            </div>
+        {% endfor %}
     </div>
-  </div>
-  {% endfor %}
-</div>
 {% endblock %}

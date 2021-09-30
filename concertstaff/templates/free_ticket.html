@@ -5,56 +5,48 @@
 {% block title %}Добавить бесплантный билет{% endblock %}
 
 {% block body %}
-<div class="container">
-  <h2 class="mt-2">Добавить бесплатный билет</h2>
-  {% if created %}
-  <div class="alert alert-success" role="alert">
-    Билет успешно создан.
-  </div>
-  {% endif %}
-  <span class="text-warning">Обратите внимение, что добавлять бесплатный билеты можно только по согласованию.</span>
-  <div class="shadow bg-white p-3 mt-3 mb-5 rounded">
-    <form role="form" method="post">
-      {% csrf_token %}
+    <div class="container">
+        <h2 class="mt-2">Добавить бесплатный билет</h2>
+        {% if created %}
+            <div class="alert alert-success" role="alert">
+                Билет успешно создан.
+            </div>
+        {% endif %}
+        <span class="text-warning">Обратите внимение, что добавлять бесплатный билеты можно только по согласованию.</span>
+        <div class="shadow bg-white p-3 mt-3 mb-5 rounded">
+            <form method="post" role="form">
+                {% csrf_token %}
 
-      {% include "form.html" %}
+                {% include "form.html" %}
 
-      {% if messages %}
-      <br />
-      {% for message in messages %}
-      <div class="alert alert-danger" role="alert">
-        {{ message }}
-      </div>
-      {% endfor %}
-      <br />
-      {% endif %}
+                {% if messages %}
+                    <br/>
+                    {% for message in messages %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    <br/>
+                {% endif %}
 
-      <div class="d-grid">
-        <button type="submit" class="btn btn-outline-secondary">
-          Подтвердить
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <footer class="pt-4 my-md-5  border-top">
-    <div class="row">
-      <div class="col-12 col-md">
-        <small class="d-block mb-3 text-muted">Горный Чай © {% now 'Y' %} <a class="link-secondary" href="https://t.me/tikhonnnnn">Напишите сюда, если что-то не работает</a></small>
-      </div>
+                <div class="d-grid">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        Подтвердить
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% include "footer.html" %}
     </div>
-  </footer>
-
-</div>
 {% endblock %}
 
 
 {% block script %}
-<script src="https://unpkg.com/imask"></script>
-<script>
-  var phoneMask = IMask(
-  document.getElementById('id_phone_number'), {
-    mask: '+{7}0000000000'
-  });
-</script>
+    <script src="https://unpkg.com/imask"></script>
+    <script>
+        var phoneMask = IMask(
+            document.getElementById('id_phone_number'), {
+                mask: '+{7}0000000000'
+            });
+    </script>
 {% endblock %}

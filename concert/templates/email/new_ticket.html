@@ -5,256 +5,296 @@
 {% block title %}{{ subject }}{% endblock %}
 
 {% block body %}
-<table align="center" border="0" cellpadding="0" cellspacing="0" height="100%" id="bodyTable" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;height: 100%;margin: 0;padding: 0;width: 100%;background-color: #5370BE;"
-       width="100%">
-    <tbody>
-    <tr>
-        <td align="center" id="bodyCell" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;height: 100%;margin: 0;padding: 0;width: 100%;border-top: 0;"
-            valign="top">
-            <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                   width="100%">
-                <tbody>
-                {% if not html %}
-                <tr>
-                    <td align="center" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                        valign="top">
-                        <table border="0" cellpadding="0" cellspacing="0" id="templatePreheader" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #5370BE;border-top: 0;border-bottom: 0;"
-                               width="100%">
-                            <tbody>
-                            <tr>
-                                <td align="center" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                    valign="top">
-                                    <table border="0" cellpadding="0" cellspacing="0" class="templateContainer"
-                                           style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                           width="600">
-                                        <tbody>
-                                        <tr>
-                                            <td class="preheaderContainer" container="preheader_container"
-                                                mccontainer="preheader_container"
-                                                style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                                valign="top">
-                                                <table border="0" cellpadding="0" cellspacing="0" class="mcnTextBlock"
-                                                       style="min-width:100%;" width="100%">
-                                                    <tbody class="mcnTextBlockOuter">
-                                                    <tr>
-                                                        <td class="mcnTextBlockInner" style="padding-top:9px;"
-                                                            valign="top">
-                                                            <table align="left" border="0" cellpadding="0"
-                                                                   cellspacing="0"
-                                                                   class="mcnTextContentContainer" style="max-width:100%; min-width:100%;"
-                                                                   width="100%">
-                                                                <tbody>
-                                                                <tr>
-                                                                    <td class="mcnTextContent" style="padding: 0px 18px 9px; text-align: center; color: white;"
-                                                                        valign="top">
-                                                                        Если это сообщение отображается неправильно,
-                                                                        <a href="{{ host }}/concerts/email/{{ transaction }}/{{ transaction_hash }}/"
-                                                                           style="color: white;" target="parent">нажмите
-                                                                            здесь.</a>
-                                                                    </td>
-                                                                </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                {% endif %}
+    <table align="center" border="0" cellpadding="0" cellspacing="0" height="100%" id="bodyTable"
+           style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;height: 100%;margin: 0;padding: 0;width: 100%;background-color: #5370BE;"
+           width="100%">
+        <tbody>
+        <tr>
+            <td align="center" id="bodyCell"
+                style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;height: 100%;margin: 0;padding: 0;width: 100%;border-top: 0;"
+                valign="top">
+                <table border="0" cellpadding="0" cellspacing="0"
+                       style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                       width="100%">
+                    <tbody>
+                    {% if not html %}
+                        <tr>
+                            <td align="center"
+                                style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                valign="top">
+                                <table border="0" cellpadding="0" cellspacing="0" id="templatePreheader"
+                                       style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #5370BE;border-top: 0;border-bottom: 0;"
+                                       width="100%">
+                                    <tbody>
+                                    <tr>
+                                        <td align="center"
+                                            style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                            valign="top">
+                                            <table border="0" cellpadding="0" cellspacing="0" class="templateContainer"
+                                                   style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                                   width="600">
+                                                <tbody>
+                                                <tr>
+                                                    <td class="preheaderContainer" container="preheader_container"
+                                                        mccontainer="preheader_container"
+                                                        style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                                        valign="top">
+                                                        <table border="0" cellpadding="0" cellspacing="0"
+                                                               class="mcnTextBlock"
+                                                               style="min-width:100%;" width="100%">
+                                                            <tbody class="mcnTextBlockOuter">
+                                                            <tr>
+                                                                <td class="mcnTextBlockInner" style="padding-top:9px;"
+                                                                    valign="top">
+                                                                    <table align="left" border="0" cellpadding="0"
+                                                                           cellspacing="0"
+                                                                           class="mcnTextContentContainer"
+                                                                           style="max-width:100%; min-width:100%;"
+                                                                           width="100%">
+                                                                        <tbody>
+                                                                        <tr>
+                                                                            <td class="mcnTextContent"
+                                                                                style="padding: 0px 18px 9px; text-align: center; color: white;"
+                                                                                valign="top">
+                                                                                Если это сообщение отображается
+                                                                                неправильно,
+                                                                                <a href="{{ host }}/concerts/email/{{ transaction }}/{{ transaction_hash }}/"
+                                                                                   style="color: white;"
+                                                                                   target="parent">нажмите
+                                                                                    здесь.</a>
+                                                                            </td>
+                                                                        </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    {% endif %}
 
-                <tr>
-                    <td align="center" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                        valign="top">
-                        <!-- BEGIN HEADER // -->
-                        <table border="0" cellpadding="0" cellspacing="0" id="templateHeader" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #5370BE;border-top: 0;border-bottom: 0;"
-                               width="100%">
-                            <tbody>
-                            <tr>
-                                <td align="center" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                    valign="top">
-                                    <table border="0" cellpadding="0" cellspacing="0" class="templateContainer"
-                                           style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                           width="600">
-                                        <tbody>
-                                        <tr>
-                                            <td class="headerContainer" container="header_container"
-                                                mccontainer="header_container"
-                                                style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                                valign="top">
-                                                <table border="0" cellpadding="0" cellspacing="0" class="mcnImageBlock"
-                                                       style="min-width:100%;" width="100%">
-                                                    <tbody class="mcnImageBlockOuter">
-                                                    <tr>
-                                                        <td class="mcnImageBlockInner" style="padding:9px" valign="top">
-                                                            <table align="left" border="0" cellpadding="0" cellspacing="0"
-                                                                   class="mcnImageContentContainer" style="min-width:100%;"
-                                                                   width="100%">
-                                                                <tbody>
-                                                                <tr>
-                                                                    <td class="mcnImageContent" style="padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0; text-align:center;"
-                                                                        valign="top">
-
-
-                                                                        <img align="center" alt="Punkfiction Logo"
-                                                                             class="mcnImage"
-                                                                             src="{{ host }}{% static 'email/punkfiction_black.png' %}"
-                                                                             style="max-width:450px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
-                                                                             width="300">
-
-
-                                                                    </td>
-                                                                </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
+                    <tr>
+                        <td align="center"
+                            style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                            valign="top">
+                            <!-- BEGIN HEADER // -->
+                            <table border="0" cellpadding="0" cellspacing="0" id="templateHeader"
+                                   style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #5370BE;border-top: 0;border-bottom: 0;"
+                                   width="100%">
+                                <tbody>
+                                <tr>
+                                    <td align="center"
+                                        style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                        valign="top">
+                                        <table border="0" cellpadding="0" cellspacing="0" class="templateContainer"
+                                               style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                               width="600">
+                                            <tbody>
+                                            <tr>
+                                                <td class="headerContainer" container="header_container"
+                                                    mccontainer="header_container"
+                                                    style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                                    valign="top">
+                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                           class="mcnImageBlock"
+                                                           style="min-width:100%;" width="100%">
+                                                        <tbody class="mcnImageBlockOuter">
+                                                        <tr>
+                                                            <td class="mcnImageBlockInner" style="padding:9px"
+                                                                valign="top">
+                                                                <table align="left" border="0" cellpadding="0"
+                                                                       cellspacing="0"
+                                                                       class="mcnImageContentContainer"
+                                                                       style="min-width:100%;"
+                                                                       width="100%">
+                                                                    <tbody>
+                                                                    <tr>
+                                                                        <td class="mcnImageContent"
+                                                                            style="padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0; text-align:center;"
+                                                                            valign="top">
 
 
-                <tr>
-                    <td align="center" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                        valign="top">
-                        <table border="0" cellpadding="0" cellspacing="0" id="templateBody" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #5370BE;border-top: 0;border-bottom: 0;"
-                               width="100%">
-                            <tbody>
-                            <tr>
-                                <td align="center" style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                    valign="top">
-                                    <table border="0" cellpadding="0" cellspacing="0" class="templateContainer"
-                                           style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                           width="600">
-                                        <tbody>
-                                        <tr>
-                                            <td align="center" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                                valign="top">
-                                                <table border="0" cellpadding="0" cellspacing="0" id="bodyBackground"
-                                                       style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #FFFFFF;"
-                                                       width="100%">
-                                                    <tbody>
-                                                    <tr>
-                                                        <td align="center" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                                            valign="top">
-                                                            {% include 'email/new_ticket_concert.html' %}
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td align="center" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                                            valign="top">
-                                                            {% include 'email/new_ticket_rules.html' %}
-                                                        </td>
-                                                    </tr>
-                                                    {% for ticket in tickets %}
-                                                    <tr>
-                                                        <td align="center" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                                            valign="top">
-                                                            {% include 'email/new_ticket_ticket.html' %}
-                                                        </td>
-                                                    </tr>
-                                                    {% endfor %}
-                                                    <tr>
-                                                        <td align="center" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                                            valign="top">
-                                                            <table border="0" cellpadding="0" cellspacing="0"
-                                                                   id="" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                                                   width="100%">
-                                                                <tbody>
-                                                                <tr>
-                                                                    <td class="bodyContainer" container="body_container"
-                                                                        mccontainer="body_container"
-                                                                        style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                                                        valign="top">
-                                                                        <table border="0" cellpadding="0"
-                                                                               cellspacing="0" class="mcnTextBlock"
-                                                                               style="min-width:100%;"
-                                                                               width="100%">
-                                                                            <tbody class="mcnTextBlockOuter">
-                                                                            <tr>
-                                                                                <td class="mcnTextBlockInner"
-                                                                                    style="padding-top:9px;"
-                                                                                    valign="top">
-                                                                                    <table align="center" border="0"
-                                                                                           cellpadding="0"
-                                                                                           cellspacing="0"
-                                                                                           class="mcnTextContentContainer"
-                                                                                           style="max-width:100%; min-width:100%;"
-                                                                                           width="100%">
-                                                                                        <tbody>
-                                                                                        <tr>
+                                                                            <img align="center" alt="Punkfiction Logo"
+                                                                                 class="mcnImage"
+                                                                                 src="
 
-                                                                                            <td class="mcnTextContent"
-                                                                                                style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;"
-                                                                                                valign="top">
-                                                                                                Это письмо нужно
-                                                                                                показать на входе для
-                                                                                                того, чтобы вас пустили.<br>
-                                                                                                Приходите, мы вас очень
-                                                                                                ждем!
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </td>
-                                                                            </tr>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </td>
-                                                                </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td align="center" class="backgroundColor" style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #5370BE;"
-                                                            valign="top">
-                                                            <img alt="Ticket design"
-                                                                 class="mcnImage"
-                                                                 height="10" src="{{ host }}{% static 'email/ticket_bottom.png' %}" style="display: block;max-width: 600px;border: 0;height: auto;outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;vertical-align: bottom;"
-                                                                 width="600">
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
+                                                                                         {{ host }}{% static 'email/punkfiction_black.png' %}"
+                                                                                 style="max-width:450px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
+                                                                                 width="300">
 
-                <tr>
-                    <td align="center" style="padding-bottom: 40px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                        valign="top">
-                        {% include 'email/new_ticket_footer.html' %}
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    </tbody>
-</table>
+
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td align="center"
+                            style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                            valign="top">
+                            <table border="0" cellpadding="0" cellspacing="0" id="templateBody"
+                                   style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #5370BE;border-top: 0;border-bottom: 0;"
+                                   width="100%">
+                                <tbody>
+                                <tr>
+                                    <td align="center"
+                                        style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                        valign="top">
+                                        <table border="0" cellpadding="0" cellspacing="0" class="templateContainer"
+                                               style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                               width="600">
+                                            <tbody>
+                                            <tr>
+                                                <td align="center"
+                                                    style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                                    valign="top">
+                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                           id="bodyBackground"
+                                                           style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #FFFFFF;"
+                                                           width="100%">
+                                                        <tbody>
+                                                        <tr>
+                                                            <td align="center"
+                                                                style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                                                valign="top">
+                                                                {% include 'email/new_ticket_concert.html' %}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center"
+                                                                style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                                                valign="top">
+                                                                {% include 'email/new_ticket_rules.html' %}
+                                                            </td>
+                                                        </tr>
+                                                        {% for ticket in tickets %}
+                                                            <tr>
+                                                                <td align="center"
+                                                                    style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                                                    valign="top">
+                                                                    {% include 'email/new_ticket_ticket.html' %}
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                        <tr>
+                                                            <td align="center"
+                                                                style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                                                valign="top">
+                                                                <table border="0" cellpadding="0" cellspacing="0"
+                                                                       id=""
+                                                                       style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                                                       width="100%">
+                                                                    <tbody>
+                                                                    <tr>
+                                                                        <td class="bodyContainer"
+                                                                            container="body_container"
+                                                                            mccontainer="body_container"
+                                                                            style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                                                            valign="top">
+                                                                            <table border="0" cellpadding="0"
+                                                                                   cellspacing="0" class="mcnTextBlock"
+                                                                                   style="min-width:100%;"
+                                                                                   width="100%">
+                                                                                <tbody class="mcnTextBlockOuter">
+                                                                                <tr>
+                                                                                    <td class="mcnTextBlockInner"
+                                                                                        style="padding-top:9px;"
+                                                                                        valign="top">
+                                                                                        <table align="center" border="0"
+                                                                                               cellpadding="0"
+                                                                                               cellspacing="0"
+                                                                                               class="mcnTextContentContainer"
+                                                                                               style="max-width:100%; min-width:100%;"
+                                                                                               width="100%">
+                                                                                            <tbody>
+                                                                                            <tr>
+
+                                                                                                <td class="mcnTextContent"
+                                                                                                    style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;"
+                                                                                                    valign="top">
+                                                                                                    Это письмо нужно
+                                                                                                    показать на входе
+                                                                                                    для
+                                                                                                    того, чтобы вас
+                                                                                                    пустили.<br>
+                                                                                                    Приходите, мы вас
+                                                                                                    очень
+                                                                                                    ждем!
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" class="backgroundColor"
+                                                                style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #5370BE;"
+                                                                valign="top">
+                                                                <img alt="Ticket design"
+                                                                     class="mcnImage"
+                                                                     height="10" src="
+
+                                                                        {{ host }}{% static 'email/ticket_bottom.png' %}"
+                                                                     style="display: block;max-width: 600px;border: 0;height: auto;outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;vertical-align: bottom;"
+                                                                     width="600">
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center"
+                            style="padding-bottom: 40px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                            valign="top">
+                            {% include 'email/new_ticket_footer.html' %}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 {% endblock %}

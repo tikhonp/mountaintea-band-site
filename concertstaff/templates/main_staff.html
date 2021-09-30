@@ -3,32 +3,27 @@
 {% block title %}Страница персонала{% endblock %}
 
 {% block body %}
-<div class="container pt-3">
-  <ul class="nav justify-content-center mt-1 mb-3">
-    <li class="nav-item">
-      <a class="nav-link disabled" aria-current="page" href="#" aria-disabled="true">Добро пожаловать, {{ user.first_name }}!</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="newfreeticket/">Добавить бесплатный билет</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="submitnumber/">Проверить билет по номеру</a>
-    </li>
-  </ul>
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">Статистика концертов</h5>
-      {% for concert in concerts %}
-      <a href="statistic/{{ concert.id }}/" class="btn btn-light btn-sm">{{ concert.title }}</a>
-      {% endfor %}
+    <div class="container pt-3">
+        <ul class="nav justify-content-center mt-1 mb-3">
+            <li class="nav-item">
+                <a aria-current="page" aria-disabled="true" class="nav-link disabled" href="{% url 'staff' %}">Добро
+                    пожаловать, {{ user.first_name|default:"аноним" }}!</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'staff-free-ticket'  %}">Добавить бесплатный билет</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'submit-number' %}">Проверить билет по номеру</a>
+            </li>
+        </ul>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Статистика концертов</h5>
+                {% for concert in concerts %}
+                    <a class="btn btn-light btn-sm" href="{% url 'staff-concert-statistic' concert=concert.id %}">{{ concert.title }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        {% include "footer.html" %}
     </div>
-  </div>
-  <footer class="pt-4 my-md-5  border-top">
-    <div class="row">
-      <div class="col-12 col-md">
-        <small class="d-block mb-3 text-muted">Горный Чай © {% now 'Y' %} <a class="link-secondary" href="https://t.me/tikhonnnnn">Напишите сюда, если что-то не работает</a></small>
-      </div>
-    </div>
-  </footer>
-</div>
 {% endblock %}

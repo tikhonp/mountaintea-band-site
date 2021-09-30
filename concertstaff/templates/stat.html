@@ -3,47 +3,56 @@
 {% block title %}Продажи билетов{% endblock %}
 
 {% block body %}
-<div class="container">
-  <h2>Билеты</h2>
+    <div class="container">
+        <h2>Билеты</h2>
 
-  <p class="pt-2">Всего собрано <mark>{{ amount_sum }}</mark> рублей. Куплено билетов - <mark>{{ tickets_sum }}</mark></p>
-  <p><small class="pb-2">С учетом коммисии 2%</small></p>
+        {% if not tickets_sum is 0 %}
+            <p class="pt-2">Всего собрано
+                <mark>{{ amount_sum|default:"0" }}</mark>
+                рублей. Куплено билетов -
+                <mark>{{ tickets_sum }}</mark>
+            </p>
+            <p><small class="pb-2">С учетом коммисии 2%</small></p>
 
-  <h5>Человек прошло:</h5>
+            <h5>Человек прошло:</h5>
 
-    <div class="progress mt-3 mb-3">
-      <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{ entered_persent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ entered_persent }}%">{{ entered_persent }}%</div>
+            <div class="progress mt-3 mb-3">
+                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                     role="progressbar" aria-valuenow="{{ entered_persent }}"
+                     aria-valuemin="0" aria-valuemax="100"
+                >{{ entered_persent }}%
+                </div>
+            </div>
+
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Номер билета</th>
+                    <th scope="col">Дата создания</th>
+                    <th scope="col">Имя и Фамилия</th>
+                    <th scope="col">Испаользование</th>
+                    <th scope="col">Цена билета</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in t %}
+                    <tr>
+                        <th scope="row">{{ i.number }}</th>
+                        <td>{{ i.transaction.date_created }}</td>
+                        <td>{{ i.transaction.user.first_name }}</td>
+                        <td>{% if i.is_active %}Не прошел{% else %}
+                            <div class="text-success">Прошел</div>
+                        {% endif %}
+                        </td>
+                        <td>{{ i.price.price }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Еще не куплено ни одного билета на этот концерт.</p>
+        {% endif %}
+        {% include "footer.html" %}
     </div>
-
-
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">Номер билета</th>
-        <th scope="col">Дата создания</th>
-        <th scope="col">Имя и Фамилия</th>
-        <th scope="col">Испаользование</th>
-        <th scope="col">Цена билета</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for i in t %}
-      <tr>
-        <th scope="row">{{ i.number }}</th>
-        <td>{{ i.transaction.date_created }}</td>
-        <td>{{ i.transaction.user.first_name }}</td>
-        <td>{% if i.is_active %}Не прошел{% else %}<div class="text-success">Прошел</div>{% endif %}</td>
-        <td>{{ i.price.price }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <footer class="pt-4 my-md-5  border-top">
-    <div class="row">
-      <div class="col-12 col-md">
-        <small class="d-block mb-3 text-muted">Горный Чай © {% now 'Y' %} <a class="link-secondary" href="https://t.me/tikhonnnnn">Напишите сюда, если что-то не работает</a></small>
-      </div>
-    </div>
-  </footer>
-</div>
 {% endblock %}

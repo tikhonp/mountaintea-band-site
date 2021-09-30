@@ -1,14 +1,15 @@
-from django.core.management.base import BaseCommand
-from django.core.mail import get_connection, EmailMultiAlternatives
 import datetime
-from concert.models import Transaction, Ticket
+
 import pytz
 from django.conf import settings
+from django.core.mail import get_connection, EmailMultiAlternatives
+from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 
+from concert.models import Transaction, Ticket
 
-def send_mass_html_mail(datatuple, fail_silently=False, user=None,
-                        password=None, connection=None):
+
+def send_mass_html_mail(datatuple, fail_silently=False, connection=None):
     """
     Given a datatuple of (subject, text_content, html_content, from_email,
     recipient_list), sends each message to each recipient list. Returns the

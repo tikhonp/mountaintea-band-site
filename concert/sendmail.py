@@ -3,11 +3,11 @@ from email.message import EmailMessage
 
 
 def send_mail(
-    subject: str,
-    message_plain: str,
-    sender: str,
-    to: str,
-    message_html=None,
+        subject: str,
+        message_plain: str,
+        sender: str,
+        to: str,
+        message_html=None,
 ):
     """Send mail to the specified email address
     sender:  ("email", "fullname", "shortname")
