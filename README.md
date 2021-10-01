@@ -4,7 +4,7 @@
 
 ### TODO
 
-- Добавить что-то в туду
+- Сделать description
 
 ### Installation
 

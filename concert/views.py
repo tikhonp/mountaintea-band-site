@@ -56,13 +56,9 @@ def buy_ticket(request, concert_id=None):
         return Http404('Please provide concert id')
 
     concert = Concert.objects.get(id=concert_id)
-    prices = Price.objects.filter(
-        concert=concert,
-        is_active=True,
-    )
-    soldout = False
-    if len(prices) == 0:
-        soldout = True
+    prices = Price.objects.filter(concert=concert, is_active=True)
+
+    sold_out = False if prices else True
 
     paying = False
     transaction = None
@@ -73,29 +69,26 @@ def buy_ticket(request, concert_id=None):
     if request.method == 'GET':
         form = forms.BuyTicketForm()
 
-        if not soldout:
-            u = request.session.get('user', False)
-            if u:
+        if not sold_out:
+            user_id = request.session.get('user', False)
+            if user_id:
                 try:
-                    u = User.objects.get(id=u)
-                    p = u.profile
-
+                    user = User.objects.get(id=user_id)
                     form = forms.BuyTicketForm({
-                        'name': u.first_name,
-                        'email': u.email,
-                        'phone_number': p.phone,
+                        'name': user.first_name,
+                        'email': user.email,
+                        'phone_number': user.profile.phone,
                     })
                 except User.DoesNotExist:
                     request.session.pop('user', None)
 
             ft = request.session.get('f_tickets', False)
-
             if ft:
                 ft = dict((int(name), val) for name, val in ft.items())
                 f_tickets = ft
 
     else:
-        if soldout:
+        if sold_out:
             return HttpResponse("Ошибка sold out")
 
         form = forms.BuyTicketForm(request.POST)
@@ -140,7 +133,7 @@ def buy_ticket(request, concert_id=None):
             paying = True
 
     params = {
-        'soldout': soldout,
+        'soldout': sold_out,
         'concert': concert,
         'price': prices.first(),
         'form': form,
@@ -175,7 +168,7 @@ def incoming_payment(request):
     label = request.POST.get('label')
     if label is None:
         return HttpResponse("ok")
-    if not lablel.isdigit():
+    if not label.isdigit():
         return HttpResponseBadRequest("Label is not valid digit")
 
     transaction = get_object_or_404(Transaction, id=int(label))
