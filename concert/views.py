@@ -50,6 +50,21 @@ def concert_page(request, concert_id):
     return HttpResponse(template.render(context))
 
 
+def create_user_payment(cleaned_data: dict) -> User:
+    user, created = User.objects.get_or_create(
+        username=cleaned_data.get('name').replace(' ', ''),
+        first_name=cleaned_data.get('name'),
+        email=cleaned_data.get('email')
+    )
+
+    if not created:
+        user.email = cleaned_data.get('email')
+
+    user.profile.phone = cleaned_data.get('phone_number')
+    user.save()
+    return user
+
+
 @require_http_methods(["GET", "POST"])
 def buy_ticket(request, concert_id=None):
     if concert_id is None:
@@ -95,7 +110,7 @@ def buy_ticket(request, concert_id=None):
 
         f_tickets = {}
         for price in prices:
-            t = request.POST.get('pricecount{}'.format(price.id), '')
+            t = request.POST.get('price_count_{}'.format(price.id), '')
             if t == '' or int(t) == 0:
                 continue
             f_tickets[price.id] = int(t)
@@ -104,17 +119,7 @@ def buy_ticket(request, concert_id=None):
             messages.error(request, "Вы должны добавить хотя бы один билет, чтобы совершить покупку")
 
         if form.is_valid() and f_tickets != {}:
-            user, created = User.objects.get_or_create(
-                username=form.cleaned_data.get('name').replace(' ', ''),
-                first_name=form.cleaned_data.get('name'),
-                email=form.cleaned_data.get('email')
-            )
-
-            if not created:
-                user.email = form.cleaned_data.get('email')
-
-            user.profile.phone = form.cleaned_data.get('phone_number')
-            user.save()
+            user = create_user_payment(form.cleaned_data)
 
             request.session['user'] = user.id
             request.session['price'] = prices.first().id
@@ -133,7 +138,7 @@ def buy_ticket(request, concert_id=None):
             paying = True
 
     params = {
-        'soldout': sold_out,
+        'sold_out': sold_out,
         'concert': concert,
         'price': prices.first(),
         'form': form,
@@ -172,13 +177,13 @@ def incoming_payment(request):
         return HttpResponseBadRequest("Label is not valid digit")
 
     transaction = get_object_or_404(Transaction, id=int(label))
-
     transaction.date_closed = pytz.utc.localize(
         datetime.datetime.strptime(request.POST.get('datetime'), '%Y-%m-%dT%H:%M:%SZ')
     )
     transaction.amount_sum = float(request.POST.get('amount'))
     transaction.is_done = True
     transaction.save()
+
     tickets = Ticket.objects.filter(transaction=transaction)
 
     context = {
@@ -191,22 +196,19 @@ def incoming_payment(request):
         'user': transaction.user,
     }
 
-    html = render_to_string('email/new_ticket.html', context)
-    plaintext = render_to_string('email/new_ticket.txt', context)
-
     send_mail(
         'Билет на концерт {}'.format(transaction.concert.title),
-        plaintext,
+        render_to_string('email/new_ticket.txt', context),
         'Горный Чай <noreply@mountainteaband.ru>',
         [transaction.user.email],
-        html_message=html,
+        html_message=render_to_string('email/new_ticket.html', context),
         fail_silently=False,
     )
 
     mail_managers(
         'Куплен новый билет',
         '{}\n{}\n{}'.format(
-            user.first_name,
+            transaction.user.first_name,
             "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
                 i.price.description,
                 i.price.price,

@@ -9,9 +9,9 @@ from django.template.loader import render_to_string
 from concert.models import Transaction, Ticket
 
 
-def send_mass_html_mail(datatuple, fail_silently=False, connection=None):
+def send_mass_html_mail(data_tuple, fail_silently=False, connection=None):
     """
-    Given a datatuple of (subject, text_content, html_content, from_email,
+    Given a data tuple of (subject, text_content, html_content, from_email,
     recipient_list), sends each message to each recipient list. Returns the
     number of emails sent.
 
@@ -23,7 +23,7 @@ def send_mass_html_mail(datatuple, fail_silently=False, connection=None):
     """
     connection = connection or get_connection(fail_silently=fail_silently)
     messages = []
-    for subject, text, html, from_email, recipient in datatuple:
+    for subject, text, html, from_email, recipient in data_tuple:
         message = EmailMultiAlternatives(subject, text, from_email, recipient)
         message.attach_alternative(html, 'text/html')
         messages.append(message)
@@ -41,13 +41,13 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
-            '--nosend',
+            '--no_send',
             action='store_true',
             help='Disable sending messages only generate',
         )
 
         parser.add_argument(
-            '--sendtolist',
+            '--send_to_list',
             action='store_true',
             help='Input emails into console and send its to this list',
         )
@@ -59,7 +59,7 @@ class Command(BaseCommand):
             date_created__lte=pytz.utc.localize(check), is_done=True,
         )
 
-        if options['sendtolist']:
+        if options['send_to_list']:
             transactions = []
             print("Input email, divide enter")
 
@@ -80,7 +80,7 @@ class Command(BaseCommand):
                 for t in transaction:
                     transactions.append(t)
 
-        datatuple = []
+        data_tuple = []
         for transaction in transactions:
             context = {
                 'transaction': transaction.pk,
@@ -93,25 +93,22 @@ class Command(BaseCommand):
                 'user': transaction.user,
             }
 
-            html = render_to_string('email/new_ticket.html', context)
-            plaintext = render_to_string('email/new_ticket.txt', context)
-
             tuple_value = (
                 'Билет на концерт {}'.format(transaction.concert.title),
-                plaintext,
-                html,
+                render_to_string('email/new_ticket.txt', context),
+                render_to_string('email/new_ticket.html', context),
                 'Горный Чай <noreply@mountainteaband.ru>',
                 [transaction.user.email],
             )
-            datatuple.append(tuple_value)
+            data_tuple.append(tuple_value)
 
-        print(len(datatuple))
+        print(len(data_tuple))
 
         if options['emails']:
-            for i in datatuple:
+            for i in data_tuple:
                 print(i[4][0])
 
-        if not options['nosend']:
-            send_mass_html_mail(datatuple)
+        if not options['no_send']:
+            send_mass_html_mail(data_tuple)
         else:
             print("Send denied")

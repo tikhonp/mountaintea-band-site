@@ -8,7 +8,7 @@ from concert.models import Transaction, Ticket
 
 
 class Command(BaseCommand):
-    help = 'Sends email message if user didn\'t got it'
+    help = 'Sends email message if user did not got it'
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -38,9 +38,6 @@ class Command(BaseCommand):
             'user': transaction.user,
         }
 
-        html = render_to_string('email/new_ticket.html', context)
-        plaintext = render_to_string('email/new_ticket.txt', context)
-
         print("USER: {}\nEMAIL {}".format(
             context['user'].first_name,
             context['user'].email,
@@ -48,10 +45,10 @@ class Command(BaseCommand):
 
         send_mail(
             'Билет на концерт {}'.format(transaction.concert.title),
-            plaintext,
+            render_to_string('email/new_ticket.txt', context),
             'Горный Чай <noreply@mountainteaband.ru>',
             [transaction.user.email],
-            html_message=html,
+            html_message=render_to_string('email/new_ticket.html', context),
             fail_silently=False,
         )
 

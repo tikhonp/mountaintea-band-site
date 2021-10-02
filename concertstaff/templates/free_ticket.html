@@ -44,6 +44,7 @@
 {% block script %}
     <script src="https://unpkg.com/imask"></script>
     <script>
+        // noinspection ES6ConvertVarToLetConst
         var phoneMask = IMask(
             document.getElementById('id_phone_number'), {
                 mask: '+{7}0000000000'

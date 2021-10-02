@@ -12,6 +12,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 from concert.models import Transaction, Ticket, Concert, Price
+from concert.views import create_user_payment
 from concertstaff import forms
 
 
@@ -29,7 +30,7 @@ def stat(request, concert):
     try:
         concert = Concert.objects.get(id=concert)
     except exceptions.ObjectDoesNotExist:
-        return Http404("Conert does not exist")
+        return Http404("Concert does not exist")
 
     ticket = Ticket.objects.filter(
         transaction__is_done=True,
@@ -47,7 +48,7 @@ def stat(request, concert):
         "t": ticket,
         "amount_sum": amount_sum,
         "tickets_sum": len(ticket),
-        "entered_persent": entered_percent
+        "entered_percent": entered_percent
     })
 
 
@@ -74,36 +75,6 @@ def ticket_check(request, ticket, sha):
 
 
 @staff_member_required
-def test(request, transaction):
-    transaction = Transaction.objects.get(pk=transaction)
-
-    context = {
-        'transaction': transaction.pk,
-        'transaction_hash': transaction.get_hash(),
-        'host': settings.HOST,
-        'subject': 'Билет на концерт {}'.format(transaction.concert.title),
-        'concert': transaction.concert,
-        'tickets': Ticket.objects.filter(transaction=transaction),
-        'user': transaction.user,
-    }
-
-    html = render_to_string('email/new_ticket.html', context)
-    plaintext = render_to_string('email/new_ticket.txt', context)
-
-    send_mail(
-        'Билет на концерт {}'.format(transaction.concert.title),
-        plaintext,
-        'Горный Чай <noreply@mountainteaband.ru>',
-        [transaction.user.email],
-        # headers={'X-Mailgun-Track': 'yes'},
-        html_message=html,
-        fail_silently=False,
-    )
-
-    return HttpResponse("OK")
-
-
-@staff_member_required
 @require_http_methods(["GET", "POST"])
 def add_ticket(request):
     created = False
@@ -114,17 +85,7 @@ def add_ticket(request):
         form = forms.AddTicketForm(request.POST)
 
         if form.is_valid():
-            user, created = User.objects.get_or_create(
-                username=form.cleaned_data.get('name').replace(' ', ''),
-                first_name=form.cleaned_data.get('name'),
-                email=form.cleaned_data.get('email')
-            )
-
-            if not created:
-                user.email = form.cleaned_data.get('email')
-
-            user.profile.phone = form.cleaned_data.get('phone_number')
-            user.save()
+            user = create_user_payment(form.cleaned_data)
 
             concert = Concert.objects.get(pk=form.cleaned_data.get('concert'))
 
@@ -152,15 +113,12 @@ def add_ticket(request):
                 'user': transaction.user,
             }
 
-            html = render_to_string('email/new_ticket.html', context)
-            plaintext = render_to_string('email/new_ticket.txt', context)
-
             send_mail(
                 'Билет на концерт {}'.format(transaction.concert.title),
-                plaintext,
+                render_to_string('email/new_ticket.txt', context),
                 'Горный Чай <noreply@mountainteaband.ru>',
                 [transaction.user.email],
-                html_message=html,
+                html_message=render_to_string('email/new_ticket.html', context),
                 fail_silently=False,
             )
 

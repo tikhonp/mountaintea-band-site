@@ -21,7 +21,6 @@ def send_mail(
     msg.set_content(message_plain)
 
     if message_html:
-        # asparagus_cid = make_msgid()
         msg.add_alternative(message_html, subtype='html')
     try:
         with smtplib.SMTP('localhost', port=25) as s:

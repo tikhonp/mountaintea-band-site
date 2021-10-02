@@ -20,12 +20,14 @@ class Profile(models.Model):
         return "{} {}".format(self.user.username, self.phone)
 
 
+# noinspection PyUnusedLocal
 @receiver(post_save, sender=User)
 def create_user_profile(instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
 
 
+# noinspection PyUnusedLocal
 @receiver(post_save, sender=User)
 def save_user_profile(instance, **kwargs):
     instance.profile.save()

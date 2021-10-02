@@ -14,9 +14,9 @@
         </div>
 
         <div class="shadow{% if paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded">
-            {% if soldout %}
+            {% if sold_out %}
                 <div class="text-center">
-                    SOLDOUT
+                    SOLD OUT
                 </div>
             {% else %}
                 <form role="form" method="post">
@@ -44,9 +44,9 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"
                                                           onclick="this.parentNode.parentNode.querySelector('#ticketsCount').stepDown()">-</span>
-                                                    <input class="form-control" name="pricecount{{ price.id }}" min="0"
-                                                           step="1" type="number" value="
-                                                            {% if price.id in f_tickets %}{{ f_tickets|get_item:price.id }}{% else %}0{% endif %}"
+                                                    <input class="form-control" name="price_count_{{ price.id }}"
+                                                           min="0"
+                                                           step="1" type="number" value="{% if price.id in f_tickets %}{{ f_tickets|get_item:price.id }}{% else %}0{% endif %}"
                                                            id="ticketsCount"/>
                                                     <span class="input-group-text"
                                                           onclick="this.parentNode.parentNode.querySelector('#ticketsCount').stepUp()">+</span>
@@ -68,7 +68,7 @@
             {% endif %}
         </div>
 
-        {% if not soldout %}
+        {% if not sold_out %}
             {% if paying %}
                 <div class="shadow{% if not paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded">
                     <form method="POST" action="https://yoomoney.ru/quickpay/confirm.xml"
