@@ -6,7 +6,7 @@ from django.core.mail import send_mail, mail_managers
 from django.db.models import Sum
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
@@ -27,10 +27,7 @@ def main(request):
 @staff_member_required
 @require_http_methods(["GET"])
 def stat(request, concert):
-    try:
-        concert = Concert.objects.get(id=concert)
-    except exceptions.ObjectDoesNotExist:
-        return Http404("Concert does not exist")
+    concert = get_object_or_404(Concert, id=concert)
 
     ticket = Ticket.objects.filter(
         transaction__is_done=True,
@@ -53,35 +50,27 @@ def stat(request, concert):
 
 
 @staff_member_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(['GET', 'POST'])
 def ticket_check(request, ticket, sha):
-    try:
-        ticket = Ticket.objects.get(number=ticket)
-    except exceptions.ObjectDoesNotExist:
-        raise Http404('Ticket does not exists')
+    ticket = get_object_or_404(Ticket, number=ticket)
 
     if sha != ticket.get_hash():
         return HttpResponseBadRequest('Invalid sha hash')
 
-    if request.method == 'GET':
-        return render(request, 'submit_ticket.html', {
-            'ticket': ticket,
-        })
-
-    else:
+    if request.method == 'POST':
         ticket.is_active = False
         ticket.save()
-        return HttpResponse("OK")
+
+    return render(request, 'submit_ticket.html', {'ticket': ticket})
 
 
 @staff_member_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(['GET', 'POST'])
 def add_ticket(request):
     created = False
+    form = forms.AddTicketForm()
 
-    if request.method == 'GET':
-        form = forms.AddTicketForm()
-    else:
+    if request.method == 'POST':
         form = forms.AddTicketForm(request.POST)
 
         if form.is_valid():
@@ -92,7 +81,7 @@ def add_ticket(request):
             try:
                 price = Price.objects.get(price=0., concert=concert)
             except Price.DoesNotExist:
-                return HttpResponse("Необходимо создать Price с нулевой ценой, обратитесь к администратору")
+                return HttpResponse("Необходимо создать Price с нулевой ценой, обратитесь к администратору.")
 
             transaction = Transaction.objects.create(
                 user=user,
@@ -139,11 +128,7 @@ def add_ticket(request):
             created = True
             form = forms.AddTicketForm()
 
-    params = {
-        'form': form,
-        'created': created,
-    }
-    return render(request, 'free_ticket.html', params)
+    return render(request, 'free_ticket.html', {'form': form, 'created': created})
 
 
 @staff_member_required
@@ -157,9 +142,6 @@ def submit_number(request):
         try:
             ticket = Ticket.objects.get(number=number)
         except exceptions.ObjectDoesNotExist:
-            return render(request, 'submit_ticket_number.html', {
-                'number': number,
-            })
+            return render(request, 'submit_ticket_number.html', {'number': number})
 
-        return redirect(
-            '/staff/submit/{}/{}/'.format(number, ticket.get_hash()))
+        return redirect('staff-ticket-check', ticket=number, sha=ticket.get_hash())
