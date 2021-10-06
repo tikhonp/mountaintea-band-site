@@ -3,3 +3,4 @@ Allow: /
 Allow: /concerts/*
 Disallow: /admin/*
 Disallow: /staff/*
+Disallow: /concerts/tickets/donepayment/*

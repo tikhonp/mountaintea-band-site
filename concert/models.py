@@ -43,7 +43,9 @@ class Concert(models.Model):
 
     template = models.TextField("template to show concert page", default='<p>Добавьте страницу концерта</p>')
 
-    def __str__(self):
+    # max_tickets_count = models.IntegerField("максимальное количество билетов", blank=True, default=None, null=True)
+
+    def __str__(self) -> str:
         return "{} {}".format(self.title, "активен" if self.is_active else "Закончен")
 
 
@@ -63,7 +65,7 @@ class Price(models.Model):
     is_active = models.BooleanField("price active", default=True)
     max_count = models.IntegerField("price max tickets", default=None, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "{} цена - {}".format(self.concert.title, self.price)
 
 
@@ -76,19 +78,12 @@ class Transaction(models.Model):
     date_closed = models.DateTimeField("date close", default=None, null=True)
     amount_sum = models.FloatField("amount sum", default=None, null=True)
 
-    def __str__(self):
-        return "{} {} {}".format(
-            self.concert.title, self.user.username,
-            "Оплачено" if self.is_done else "Не оплачено")
+    def __str__(self) -> str:
+        return "{} {} {}".format(self.concert.title, self.user.username, "Оплачено" if self.is_done else "Не оплачено")
 
-    def get_hash(self):
-        hash_str = '{}&{}&{}'.format(
-            self.pk,
-            self.amount_sum,
-            self.user.pk,
-        )
-        sha1_hash = hashlib.sha1(hash_str.encode())
-        return sha1_hash.hexdigest()
+    def get_hash(self) -> str:
+        hash_str = '{}&{}&{}'.format(self.pk, self.amount_sum, self.user.pk)
+        return hashlib.sha1(hash_str.encode()).hexdigest()
 
 
 class Ticket(models.Model):
@@ -103,35 +98,33 @@ class Ticket(models.Model):
         if not self.pk:
             while True:
                 self.number = str(random.randint(100000, 999999))
-                t = Ticket.objects.filter(number=self.number)
-                if len(t) == 0:
+                if Ticket.objects.filter(number=self.number).count() == 0:
                     break
 
         if self.price.max_count:
-            t = Ticket.objects.filter(
-                price=self.price,
-                transaction__is_done=True
-            )
-            if len(t) >= self.price.max_count:
+            if Ticket.objects.filter(price=self.price, transaction__is_done=True).count() >= self.price.max_count:
                 self.price.is_active = False
                 self.price.save()
 
+        # if self.transaction.concert.max_tickets_count:
+        #     if Ticket.objects.filter(
+        #             price__concert=concert, transaction__is_done=True
+        #     ).count() >= self.transaction.concert.max_tickets_count:
+        #         for price in Price.objects.filter(concert=concert):
+        #             price.is_active = False
+        #             price.save()
+
         return super(Ticket, self).save(*args, **kwargs)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "{} | {} | {}".format(
             self.number, self.transaction, self.price)
 
-    def get_hash(self):
-        hash_str = '{}&{}&{}'.format(
-            self.transaction.pk,
-            self.price,
-            self.number
-        )
-        sha1_hash = hashlib.sha1(hash_str.encode())
-        return sha1_hash.hexdigest()
+    def get_hash(self) -> str:
+        hash_str = '{}&{}&{}'.format(self.transaction.pk, self.price, self.number)
+        return hashlib.sha1(hash_str.encode()).hexdigest()
 
-    def get_qrcode(self):
+    def get_qrcode(self) -> bytes:
         """get buffer io with qr code image for email"""
 
         qrcode_img = qrcode.make('{}/staff/submit/{}/{}/'.format(

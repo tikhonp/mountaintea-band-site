@@ -66,10 +66,7 @@ def create_user_payment(cleaned_data: dict) -> User:
 
 
 @require_http_methods(["GET", "POST"])
-def buy_ticket(request, concert_id=None):
-    if concert_id is None:
-        return Http404('Please provide concert id')
-
+def buy_ticket(request, concert_id):
     concert = Concert.objects.get(id=concert_id)
     prices = Price.objects.filter(concert=concert, is_active=True)
 
@@ -104,21 +101,21 @@ def buy_ticket(request, concert_id=None):
 
     else:
         if sold_out:
-            return HttpResponse("Ошибка sold out")
+            return HttpResponse("Ошибка: билеты закончились.")
 
         form = forms.BuyTicketForm(request.POST)
 
         f_tickets = {}
         for price in prices:
-            t = request.POST.get('price_count_{}'.format(price.id), '')
-            if t == '' or int(t) == 0:
+            t = request.POST.get('price_count_{}'.format(price.id))
+            if t or int(t) == 0:
                 continue
             f_tickets[price.id] = int(t)
 
         if f_tickets == {}:
             messages.error(request, "Вы должны добавить хотя бы один билет, чтобы совершить покупку")
 
-        if form.is_valid() and f_tickets != {}:
+        elif form.is_valid():
             user = create_user_payment(form.cleaned_data)
 
             request.session['user'] = user.id
@@ -129,10 +126,7 @@ def buy_ticket(request, concert_id=None):
 
             for tick in f_tickets:
                 for i in range(f_tickets[tick]):
-                    ticket = Ticket.objects.create(
-                        transaction=transaction,
-                        price=Price.objects.get(id=tick)
-                    )
+                    ticket = Ticket.objects.create(transaction=transaction, price=Price.objects.get(id=tick))
                     amount_sum += ticket.price.price
 
             paying = True
