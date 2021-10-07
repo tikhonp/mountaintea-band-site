@@ -34,8 +34,7 @@
         <section class="row no-gutters align-items-center">
             <div class="col-12 text-center d-flex">
                 <img alt='background' class="img-fluid of" src="{% static 'background2.jpeg' %}" style="width:100%;">
-                <h1 class="position-absolute top-0 start-50 translate-middle text-light fonttitle"><br><br><br>
-                    404</h1>
+                <h1 class="position-absolute top-0 start-50 translate-middle text-light fonttitle"><br><br><br>404</h1>
             </div>
         </section>
     </div>
@@ -44,7 +43,8 @@
         <div class="text-center">
             <p>Такой страницы нет. Не расстраивайтся, завари горного чая и ищи дальше!</p>
             <p><a href="/">На главную.</a></p>
+
+            {% include "footer.html" %}
         </div>
-        {% include "footer.html" %}
     </div>
 {% endblock %}

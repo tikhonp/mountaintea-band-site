@@ -5,6 +5,7 @@ import pytz
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.mail import mail_managers, send_mail
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
@@ -33,21 +34,12 @@ def concerts(request):
 
 @require_http_methods(["GET"])
 def concert_page(request, concert_id):
-    base_t = """
-    {% extends "base.html" %}
-
-    {% load static %}
-
-    {% block metrika %}{% include "metric.html" %}{% endblock %}
-
-    {% block title %}{{ concert.title }}{% endblock %}
-    """
-
     concert = get_object_or_404(Concert, pk=concert_id)
-    template = Template(base_t + concert.template)
-    context = RequestContext(request, {'concert': concert})
+    template = Template(concert.template)
 
-    return HttpResponse(template.render(context))
+    return HttpResponse(
+        template.render(RequestContext(request, {'concert': concert}))
+    )
 
 
 def create_user_payment(cleaned_data: dict) -> User:

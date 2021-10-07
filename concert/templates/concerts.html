@@ -4,6 +4,10 @@
 
 {% block title %}Концерты - Горный Чай{% endblock %}
 
+{% block description %}
+    Концерты группы Горный чай. Купить билеты.
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <h1 class="title">Концерты и шоу</h1>
@@ -20,6 +24,7 @@
                 </div>
             </div>
         {% endfor %}
+
         {% include "footer.html" %}
     </div>
 {% endblock %}

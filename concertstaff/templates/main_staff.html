@@ -2,6 +2,8 @@
 
 {% block title %}Страница персонала{% endblock %}
 
+{% block description %}Страница персонала{% endblock %}
+
 {% block body %}
     <div class="container pt-3">
         <ul class="nav justify-content-center mt-1 mb-3">
@@ -16,29 +18,17 @@
                 <a class="nav-link" href="{% url 'submit-number' %}">Проверить билет по номеру</a>
             </li>
         </ul>
+
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Статистика концертов</h5>
                 {% for concert in concerts %}
                     <a class="btn btn-light btn-sm"
-                       href="{% url 'staff-concert-statistic' concert=concert.id %}">{{ concert.title }}</a>
+                       href="{% url 'staff-concert-statistic' concert=concert.id %}">{{ concert.title|title }}</a>
                 {% endfor %}
             </div>
         </div>
 
-        <footer class="pt-4 my-md-5  border-top">
-            <div class="row">
-                <div class="col-12 col-md">
-                    <small class="d-block mb-3 text-muted">
-                        Горный Чай © {% now 'Y' %}
-                        <a class="link-secondary" href="https://t.me/tikhonnnnn/" target="_blank">Напишите сюда, если
-                            что-то не
-                            работает</a>
-                        <a class="link-secondary" href="/admin/" target="_blank">Админка</a>
-                    </small>
-                </div>
-            </div>
-        </footer>
-
+        {% include "footer.html" %}
     </div>
 {% endblock %}

@@ -5,3 +5,8 @@
 {% block metrika %}{% include "metric.html" %}{% endblock %}
 
 {% block title %}{{ concert.title }}{% endblock %}
+
+{% block description %}
+    Купить билет на {{ concert.title }}
+    {{ concert.description }}
+{% endblock %}

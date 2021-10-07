@@ -6,36 +6,38 @@
 
 {% block title %}Купить билет на {{ concert.title }}{% endblock %}
 
+{% block description %}
+    Купить билет на концерт {{ concert.title }}.
+    {{ concert.description }}
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <div class="shadow p-3 mb-5 bg-white rounded">
-            <h2>Билет на концерт - {{ concert.title }}</h2>
+            <h2>Билет на концерт - {{ concert.title|title }}</h2>
             <p>{{ concert.date_time }}</p>
         </div>
 
         <div class="shadow{% if paying %}-none bg-light{% else %} bg-white{% endif %} p-3 mb-5 rounded">
             {% if sold_out %}
-                <div class="text-center">
-                    SOLD OUT
-                </div>
+                <div class="text-center">К сожалению, билеты закончились.</div>
             {% else %}
                 <form role="form" method="post">
-                    {% csrf_token %} {% include "form.html" %}
+                    {% csrf_token %}
+                    {% include "form.html" %}
                     <br/>
-                    {% if messages %} {% for message in messages %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ message }}
-                        </div>
-                    {% endfor %} {% endif %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-danger" role="alert">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
 
                     <div class="row">
                         {% for price in prices %}
                             <div class="col-sm">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h6 class="card-subtitle mb-2 text-muted">
-                                            {{ price.price|floatformat:2 }} р.
-                                        </h6>
+                                        <h6 class="card-subtitle mb-2 text-muted">{{ price.price|floatformat:2 }} {{ price.currency }}</h6>
                                         <p class="card-text">{{ price.description }}</p>
                                         <div class="row mb-3">
                                             <label for="inputEmail3" class="col-sm-2 col-form-label">Количество:
@@ -46,7 +48,9 @@
                                                           onclick="this.parentNode.parentNode.querySelector('#ticketsCount').stepDown()">-</span>
                                                     <input class="form-control" name="price_count_{{ price.id }}"
                                                            min="0"
-                                                           step="1" type="number" value="{% if price.id in f_tickets %}{{ f_tickets|get_item:price.id }}{% else %}0{% endif %}"
+                                                           step="1" type="number" value="
+
+                                                            {% if price.id in f_tickets %}{{ f_tickets|get_item:price.id }}{% else %}0{% endif %}"
                                                            id="ticketsCount"/>
                                                     <span class="input-group-text"
                                                           onclick="this.parentNode.parentNode.querySelector('#ticketsCount').stepUp()">+</span>

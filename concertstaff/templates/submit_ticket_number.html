@@ -2,15 +2,19 @@
 
 {% block title %}Подверждение билета по номеру{% endblock %}
 
+{% block description %}Страница персонала{% endblock %}
+
 {% block body %}
     <!--suppress ES6ConvertVarToLetConst -->
     <div class="container text-center pt-3 form-floating">
         <h1>Найти билет по номеру</h1>
+
         {% if number %}
             <div class="alert alert-danger" role="alert">
                 Такого билета не существет! Попробуйте еще или обратитесь к администратору.
             </div>
         {% endif %}
+
         <form method="post" class="form-floating">
             {% csrf_token %}
             <input type="number" placeholder="123456" class="form-control" id="ticket_number" name="ticket" required
@@ -18,6 +22,7 @@
             <label for="ticket_number">Номер билета</label>
             <button type="submit" class="btn mt-3 btn-secondary">Найти билет</button>
         </form>
+
         {% include "footer.html" %}
     </div>
 {% endblock %}

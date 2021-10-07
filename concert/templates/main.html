@@ -6,6 +6,11 @@
 
 {% block title %}Горный Чай - Офицальный сайт{% endblock %}
 
+{% block description %}
+    Горный Чай - молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка.
+    11 февраля вышел дебютный EP "Сборник прошлогодних песен".
+{% endblock %}
+
 {% block style %}
     <link href="https://fonts.gstatic.com" rel="preconnect">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@900&display=swap" rel="stylesheet">
@@ -56,14 +61,13 @@
             </center>
             <br>
             <p>Горный Чай - молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка. 11 февраля
-                вышел
-                дебютный EP "Сборник прошлогодних песен".</p>
+                вышел дебютный EP "Сборник прошлогодних песен".</p>
             <br>
             <h3 class="pb-2">Концерты</h3>
             {% for concert in concerts %}
                 <div class="card bg-dark text-white rounded">
                     <div class="card-body">
-                        <h4 class="card-title">{{ concert.title }}</h4>
+                        <h4 class="card-title">{{ concert.title|title }}</h4>
                         <a href="{{ concert.place_url }}"></a>
                         <h6 class="card-subtitle mb-2 text-muted">{{ concert.place }}</h6>
                         <p class="card-text">{{ concert.description }}</p>
@@ -88,7 +92,6 @@
                 </div>
             </div>
 
-
             <footer class="pt-4 my-md-5 pt-md-5 border-top">
                 <div class="row">
                     <div class="col-12 col-md">
@@ -110,16 +113,20 @@
                     <div class="col-6 col-md">
                         <h5>Мы</h5>
                         <ul class="list-unstyled text-small">
-                            <li><a target="_blank" class="link-secondary" href="https://www.instagram.com/leshich999/">Леша</a>
+                            <li><a target="_blank" class="link-secondary"
+                                   href="https://www.instagram.com/leshich999/">Леша</a>
                             </li>
-                            <li><a target="_blank" class="link-secondary" href="https://www.instagram.com/stepa.aa/">Степа</a>
+                            <li><a target="_blank" class="link-secondary"
+                                   href="https://www.instagram.com/stepa.aa/">Степа</a>
                             </li>
-                            <li><a target="_blank" class="link-secondary" href="https://www.instagram.com/tikhonnnnn/">Тихон</a>
+                            <li><a target="_blank" class="link-secondary"
+                                   href="https://www.instagram.com/tikhonnnnn/">Тихон</a>
                             </li>
                         </ul>
                     </div>
                 </div>
             </footer>
+
         </div>
     </div>
 {% endblock %}

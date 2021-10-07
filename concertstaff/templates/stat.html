@@ -2,6 +2,8 @@
 
 {% block title %}Продажи билетов{% endblock %}
 
+{% block description %}Страница персонала{% endblock %}
+
 {% block body %}
     <div class="container">
         <h2>Билеты</h2>
@@ -53,6 +55,7 @@
         {% else %}
             <p>Еще не куплено ни одного билета на этот концерт.</p>
         {% endif %}
+
         {% include "footer.html" %}
     </div>
 {% endblock %}

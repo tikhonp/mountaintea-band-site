@@ -2,6 +2,8 @@
 
 {% block title %}Подверждение билета {{ ticket.number }}{% endblock %}
 
+{% block description %}Страница персонала{% endblock %}
+
 {% block body %}
     <div class="container text-center pt-3">
         <h1>Билет</h1>
@@ -23,6 +25,7 @@
                 <p class="card-text">ФИО оформителя: <b>{{ ticket.transaction.user.first_name }}</b></p>
                 <p class="card-text">Телефон: <b>{{ ticket.transaction.user.profile.phone }}</b></p>
                 <p class="card-text">Email: <b>{{ ticket.transaction.user.email }}</b></p>
+
                 {% if ticket.transaction.is_done %}
                     {% if ticket.is_active %}
                         <form method="post">
@@ -31,9 +34,11 @@
                         </form>
                     {% endif %}
                 {% endif %}
+
                 <a href="{% url 'submit-number' %}">Проверить билет по номеру</a>
             </div>
         </div>
+
         {% include "footer.html" %}
     </div>
 {% endblock %}

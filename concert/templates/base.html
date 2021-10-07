@@ -6,9 +6,8 @@
 <head>
     <meta charset="utf-8"/>
 
-    <meta content="Горный Чай - молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка. 11 февраля вышел дебютный EP 'Сборник прошлогодних песен\'."
-          name="description"/>
-    <meta content="Горный Чай." name="author"/>
+    <meta content="{% block description %}Офицальный сайт горного чая.{% endblock %}" name="description"/>
+    <meta content="{% block author %}Горный Чай.{% endblock %}" name="author"/>
 
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
 
@@ -46,13 +45,14 @@
     <meta content="mstile-310x150.png" name="msapplication-wide310x150logo"/>
     <meta content="mstile-310x310.png" name="msapplication-square310x310logo"/>
 
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}Горный Чай{% endblock %}</title>
 
     {% block style %}
     {% endblock %}
 </head>
 <body>
 {% block body %}
+    <p>Возникла ошибка в отображении сайта, пожалуйста, напишите нам о проблеме.</p>
 {% endblock %}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"

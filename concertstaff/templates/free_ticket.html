@@ -4,9 +4,12 @@
 
 {% block title %}Добавить бесплантный билет{% endblock %}
 
+{% block description %}Страница персонала{% endblock %}
+
 {% block body %}
     <div class="container">
         <h2 class="mt-2">Добавить бесплатный билет</h2>
+
         {% if created %}
             <div class="alert alert-success" role="alert">
                 Билет успешно создан.
@@ -36,6 +39,7 @@
                 </div>
             </form>
         </div>
+
         {% include "footer.html" %}
     </div>
 {% endblock %}
