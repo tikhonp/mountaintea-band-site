@@ -52,81 +52,103 @@
 
     <div class="container">
         <div class="text-center">
-            <h3>Кто мы?</h3>
-            <center>
-                <div class="col-md-2 px-0" style="text-align: center;">
-                    <img alt="Мы на фото" class="img-thumbnail rounded-circle img-fluid"
-                         src="{% static 'avatar_band.jpeg' %}">
+            <div itemscope itemtype="http://schema.org/MusicGroup">
+                <h3>Кто мы?</h3>
+                <center>
+                    <div class="col-md-2 px-0" style="text-align: center;">
+                        <img alt="Мы на фото" class="img-thumbnail rounded-circle img-fluid"
+                             src="{% static 'avatar_band.jpeg' %}">
+                    </div>
+                </center>
+                <br>
+                <p>
+                    <span itemprop="name">Горный Чай</span> -
+                    <span itemprop="description">молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка.</span>
+                    <span itemprop="album" itemscope itemtype="http://schema.org/MusicAlbum">
+                        <span itemprop="dateCreated">11 февраля 2021 года</span> вышел дебютный EP
+                        "<span itemprop="name">Сборник прошлогодних песен</span>".
+                        <meta content="4" itemprop="numTracks"/>
+                        <meta content="Alt/Rock" itemprop="genre"/>
+                    </span>
+                </p>
+                <br>
+                <h3 class="pb-2">Концерты</h3>
+                {% for concert in concerts %}
+                    <div itemprop="event" itemscope itemtype="https://schema.org/Event">
+                        <div class="card bg-dark text-white rounded">
+                            <div class="card-body">
+                                <h4 class="card-title" itemprop="name">{{ concert.title|title }}</h4>
+                                <a href="{{ concert.place_url }}"></a>
+                                <h6 class="card-subtitle mb-2 text-muted" itemprop="location">{{ concert.place }}</h6>
+                                <p class="card-text" itemprop="description">{{ concert.description }}</p>
+                                <h6 class="card-subtitle mb-2 text-muted"
+                                    itemprop="startDate">{{ concert.date_time }}</h6>
+                                <a class="stretched-link" href="{% url 'concert' concert.id %}" itemprop="url"></a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <br>
+                <div class="d-grid gap-2">
+                    <a class="btn btn-outline-light" href="{% url 'concerts' %}" role="button">Все концерты -></a>
                 </div>
-            </center>
-            <br>
-            <p>Горный Чай - молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка. 11 февраля
-                вышел дебютный EP "Сборник прошлогодних песен".</p>
-            <br>
-            <h3 class="pb-2">Концерты</h3>
-            {% for concert in concerts %}
-                <div class="card bg-dark text-white rounded">
-                    <div class="card-body">
-                        <h4 class="card-title">{{ concert.title|title }}</h4>
-                        <a href="{{ concert.place_url }}"></a>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ concert.place }}</h6>
-                        <p class="card-text">{{ concert.description }}</p>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ concert.date_time }}</h6>
-                        <a class="stretched-link" href="{% url 'concert' concert.id %}"></a>
+                <br>
+                <h3 class="pb-3">Релизы</h3>
+                <div style="max-width:100%;">
+                    <div style="position:relative;padding-bottom:calc(56.25% + 52px);height: 0;">
+                        <iframe allowfullscreen height="100%"
+                                sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
+                                src="https://embed.song.link/?url=https%3A%2F%2Falbum.link%2FpM8ps7SZRr6pV&theme=dark"
+                                style="position:absolute;top:0;left:0;border:none;"
+                                width="100%"></iframe>
                     </div>
                 </div>
-            {% endfor %}
-            <br>
-            <div class="d-grid gap-2">
-                <a class="btn btn-outline-light" href="{% url 'concerts' %}" role="button">Все концерты -></a>
-            </div>
-            <br>
-            <h3 class="pb-3">Релизы</h3>
-            <div style="max-width:100%;">
-                <div style="position:relative;padding-bottom:calc(56.25% + 52px);height: 0;">
-                    <iframe allowfullscreen height="100%"
-                            sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
-                            src="https://embed.song.link/?url=https%3A%2F%2Falbum.link%2FpM8ps7SZRr6pV&theme=dark"
-                            style="position:absolute;top:0;left:0;border:none;"
-                            width="100%"></iframe>
-                </div>
-            </div>
 
-            <footer class="pt-4 my-md-5 pt-md-5 border-top">
-                <div class="row">
-                    <div class="col-12 col-md">
-                        <small class="d-block mb-3 text-muted">Горный Чай © {% now 'Y' %}</small>
+                <footer class="pt-4 my-md-5 pt-md-5 border-top">
+                    <div class="row">
+                        <div class="col-12 col-md">
+                            <small class="d-block mb-3 text-muted">Горный Чай © {% now 'Y' %}</small>
+                        </div>
+                        <div class="col-6 col-md">
+                            <h5>Контакты</h5>
+                            <ul class="list-unstyled text-small">
+                                <li><a target="_blank" class="link-secondary" itemprop="url"
+                                       href="https://www.instagram.com/mountainteaaa/">Instagram</a>
+                                </li>
+                                <li><a target="_blank" class="link-secondary" itemprop="url"
+                                       href="https://vk.com/mountainteaaa">ВКонтакте</a></li>
+                                <li><a target="_blank" class="link-secondary" itemprop="url"
+                                       href="https://www.youtube.com/channel/UCaY2lcv8Lhri_Zg4s8pFUfA">Youtube</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-6 col-md">
+                            <h5>Мы</h5>
+                            <ul class="list-unstyled text-small">
+                                <span itemprop="employee" itemscope itemtype="https://schema.org/Person">
+                                    <li><a target="_blank" class="link-secondary" itemprop="url"
+                                           href="https://www.instagram.com/leshich999/">
+                                        <span itemprop="name">Леша</span></a>
+                                    </li>
+                                </span>
+                                <span itemprop="employee" itemscope itemtype="https://schema.org/Person">
+                                    <li><a target="_blank" class="link-secondary" itemprop="url"
+                                           href="https://www.instagram.com/stepa.aa/">
+                                        <span itemprop="name">Степа</span></a>
+                                    </li>
+                                </span>
+                                <span itemprop="employee" itemscope itemtype="https://schema.org/Person">
+                                    <li><a target="_blank" class="link-secondary" itemprop="url"
+                                           href="https://www.instagram.com/tikhonnnnn/">
+                                        <span itemprop="name">Тихон</span></a>
+                                    </li>
+                                </span>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="col-6 col-md">
-                        <h5>Контакты</h5>
-                        <ul class="list-unstyled text-small">
-                            <li><a target="_blank" class="link-secondary"
-                                   href="https://www.instagram.com/mountainteaaa/">Instagram</a>
-                            </li>
-                            <li><a target="_blank" class="link-secondary"
-                                   href="https://vk.com/mountainteaaa">ВКонтакте</a></li>
-                            <li><a target="_blank" class="link-secondary"
-                                   href="https://www.youtube.com/channel/UCaY2lcv8Lhri_Zg4s8pFUfA">Youtube</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-6 col-md">
-                        <h5>Мы</h5>
-                        <ul class="list-unstyled text-small">
-                            <li><a target="_blank" class="link-secondary"
-                                   href="https://www.instagram.com/leshich999/">Леша</a>
-                            </li>
-                            <li><a target="_blank" class="link-secondary"
-                                   href="https://www.instagram.com/stepa.aa/">Степа</a>
-                            </li>
-                            <li><a target="_blank" class="link-secondary"
-                                   href="https://www.instagram.com/tikhonnnnn/">Тихон</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </footer>
+                </footer>
 
+            </div>
         </div>
     </div>
 {% endblock %}
