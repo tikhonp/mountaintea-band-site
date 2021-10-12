@@ -12,18 +12,45 @@
     <div class="container">
         <h1 class="title">Концерты и шоу</h1>
 
-        {% for concert in concerts %}
-            <div class="card shadow p-3 mb-5 bg-white rounded">
+        {% for concert in concerts_active %}
+            <div class="card shadow p-3 mb-5 bg-white rounded" itemscope itemtype="https://schema.org/Event">
                 <div class="card-body">
-                    <h4 class="card-title">{{ concert.title }}</h4>
-                    <a href="{{ concert.place_url }}"></a>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ concert.place }}</h6>
-                    <p class="card-text">{{ concert.description }}</p>
+                    <h4 class="card-title" itemprop="name">{{ concert.title|title }}</h4>
+                    <div itemprop="location" itemscope itemtype="https://schema.org/Place">
+                        <a class="link-secondary" href="{{ concert.place_url }}" itemprop="url">
+                            <h6 class="card-subtitle mb-2 text-muted"
+                                itemprop="address">{{ concert.place }}</h6>
+                        </a>
+                    </div>
+                    <p class="card-text" itemprop="description">{{ concert.description }}</p>
+                    <meta itemprop="startDate" content="{{ concert.date_time|date:"c" }}">
                     <h6 class="card-subtitle mb-2 text-muted">{{ concert.date_time }}</h6>
-                    <a class="stretched-link" href="{% url 'concert' concert_id=concert.id %}"></a>
+                    <a class="stretched-link" href="{% url 'concert' concert_id=concert.id %}" itemprop="url"></a>
                 </div>
             </div>
         {% endfor %}
+
+        {% if concerts_disabled %}
+            <divider></divider>
+            <h3>Завершенные концерты</h3>
+            {% for concert in concerts_disabled %}
+                <div class="card shadow p-3 mb-5 bg-white rounded" itemscope itemtype="https://schema.org/Event">
+                    <div class="card-body">
+                        <h4 class="card-title" itemprop="name">{{ concert.title|title }}</h4>
+                        <div itemprop="location" itemscope itemtype="https://schema.org/Place">
+                            <a class="link-secondary" href="{{ concert.place_url }}" itemprop="url">
+                                <h6 class="card-subtitle mb-2 text-muted" itemprop="location.address"
+                                    itemprop="address">{{ concert.place }}</h6>
+                            </a>
+                        </div>
+                        <p class="card-text" itemprop="description">{{ concert.description }}</p>
+                        <meta itemprop="startDate" content="{{ concert.date_time|date:"c" }}">
+                        <h6 class="card-subtitle mb-2 text-muted">{{ concert.date_time }}</h6>
+                        <a class="stretched-link" href="{% url 'concert' concert_id=concert.id %}" itemprop="url"></a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
 
         {% include "footer.html" %}
     </div>

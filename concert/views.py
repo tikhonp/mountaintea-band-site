@@ -27,7 +27,10 @@ def main(request):
 
 @require_http_methods(["GET"])
 def concerts(request):
-    return render(request, 'concerts.html', {'concerts': Concert.objects.all()})
+    return render(request, 'concerts.html', {
+        'concerts_active': Concert.objects.filter(is_active=True),
+        'concerts_disabled': Concert.objects.filter(is_active=False),
+    })
 
 
 @require_http_methods(["GET"])

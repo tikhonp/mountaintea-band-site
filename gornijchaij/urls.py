@@ -24,7 +24,7 @@ from concert.sitemaps import concert_sitemaps
 
 
 class StaticViewSitemap(sitemaps.Sitemap):
-    priority = 0.5
+    priority = 0.9
     changefreq = 'daily'
 
     def items(self):
@@ -44,6 +44,6 @@ urlpatterns = [
     path('admin/', admin.site.urls, name='admin'),
     path('concerts/', include('concert.urls')),
     path('staff/', include('concertstaff.urls')),
-    # path('sitemap.xml', sitemap, {'sitemaps': sitemaps},
-    #      name='django.contrib.sitemaps.views.sitemap'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps},
+         name='django.contrib.sitemaps.views.sitemap'),
 ]

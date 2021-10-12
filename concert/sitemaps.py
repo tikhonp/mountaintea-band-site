@@ -1,4 +1,4 @@
-from django.contrib.sitemaps import GenericSitemap, Sitemap
+from django.contrib.sitemaps import Sitemap, GenericSitemap
 from django.urls import reverse
 
 from concert.models import Concert
@@ -17,5 +17,9 @@ class ConcertStaticViewSitemap(Sitemap):
 
 concert_sitemaps = {
     'static_concert': ConcertStaticViewSitemap,
-    'concerts': GenericSitemap({'queryset': Concert.objects.all()}, priority=0.6),
+    'concerts': GenericSitemap({'queryset': Concert.objects.all()}, priority=0.5, changefreq='daily')
+}
+
+sitemaps = {
+    'concerts': GenericSitemap({'queryset': Concert.objects.all()}, priority=0.5, changefreq='daily')
 }

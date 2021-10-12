@@ -76,15 +76,14 @@
                 <br>
                 <h3 class="pb-2">Концерты</h3>
                 {% for concert in concerts %}
-                    <div itemprop="event" itemscope itemtype="https://schema.org/Event">
+                    <div class="pb-2" itemprop="event" itemscope itemtype="https://schema.org/Event">
                         <div class="card bg-dark text-white rounded">
                             <div class="card-body">
                                 <h4 class="card-title" itemprop="name">{{ concert.title|title }}</h4>
                                 <div itemprop="location" itemscope itemtype="https://schema.org/Place">
-                                    <a href="{{ concert.place_url }}" itemprop="url">
-                                        <h6 class="card-subtitle mb-2 text-muted"
-                                            itemprop="location.address" itemprop="address">{{ concert.place }}</h6>
-                                    </a>
+                                    <a href="{{ concert.place_url }}" itemprop="url"></a>
+                                    <h6 class="card-subtitle mb-2 text-muted"
+                                        itemprop="location.address" itemprop="address">{{ concert.place }}</h6>
                                 </div>
                                 <p class="card-text" itemprop="description">{{ concert.description }}</p>
                                 <meta itemprop="startDate" content="{{ concert.date_time|date:"c" }}">
@@ -95,7 +94,7 @@
                     </div>
                 {% endfor %}
                 <br>
-                <div class="d-grid gap-2">
+                <div class="d-grid">
                     <a class="btn btn-outline-light" href="{% url 'concerts' %}" role="button">Все концерты -></a>
                 </div>
                 <br>
