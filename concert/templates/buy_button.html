@@ -1,0 +1,8 @@
+<div class="d-grid gap-2 pb-5">
+    {% if concert.is_active %}
+        <a href="tickets/" role="button" class="btn btn-outline-light">Купить билет</a>
+    {% else %}
+        <a href="{% url 'buy-ticket' concert.id %}" aria-disabled="true" role="button"
+           class="btn disabled btn-outline-light">Концерт прошел</a>
+    {% endif %}
+</div>

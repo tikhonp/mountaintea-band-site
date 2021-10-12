@@ -2,13 +2,7 @@ from .base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    # '45.128.204.12',
-    '194.87.234.138',
-    'mountainteaband.ru',
-    'www.mountainteaband.ru',
-    # 'email.mountainteaband.ru',
-]
+ALLOWED_HOSTS = ['.mountainteaband.ru']
 
 DATABASES = {
     'default': {
