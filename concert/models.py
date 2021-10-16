@@ -73,6 +73,8 @@ class Concert(models.Model):
 
     yandex_notification_secret = models.CharField("yandex notification secret", max_length=255, null=True, default=None,
                                                   blank=True)
+    yandex_wallet_receiver = models.CharField("receiver for yoomoney", max_length=255, null=True, default=None,
+                                              blank=True)
 
     @property
     def is_active(self) -> bool:
@@ -107,6 +109,9 @@ class ConcertImage(models.Model):
     caption = models.CharField("alt text for image", max_length=255)
     image = models.ImageField("image", upload_to="concert_page_images")
     concert = models.ForeignKey(Concert, on_delete=models.CASCADE, verbose_name="the related concert")
+
+    def __str__(self):
+        return self.caption + ' ({})'.format(self.pk)
 
 
 class Price(models.Model):

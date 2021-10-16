@@ -146,5 +146,4 @@ DEFAULT_FROM_EMAIL = 'Gornij Chaij Ltd. <noreply@mountainteaband.ru>'
 EMAIL_USE_TLS = True
 SERVER_EMAIL = 'django@mountaintea.ru'
 
-YANDEX_NOTIFICATION_SECRET = '3tP6r6zJJmBVaWEvcaqqASwd'
 HOST = 'https://mountainteaband.ru'

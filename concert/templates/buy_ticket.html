@@ -79,7 +79,7 @@
 
                         <input type="hidden" name="successURL"
                                value="https://mountainteaband.ru/concerts/tickets/donepayment/?t={{ transaction.id }}"/>
-                        <input type="hidden" name="receiver" value="410017742960837"/>
+                        <input type="hidden" name="receiver" value="{{ concert.yandex_wallet_receiver }}"/>
                         <input type="hidden" name="formcomment" value="Горный Чай: {{ concert.title }}"/>
                         <input type="hidden" name="short-dest" value="Горный Чай: {{ concert.title }}"/>
                         <input type="hidden" name="label" value="{{ transaction.id }}"/>
