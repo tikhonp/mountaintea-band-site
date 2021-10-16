@@ -59,8 +59,7 @@
                                                                                 valign="top">
                                                                                 Если это сообщение отображается
                                                                                 неправильно,
-                                                                                <a href="
-                                                                                        {{ host }}{% url 'email-page' transaction=transaction sha_hash=transaction_hash %}"
+                                                                                <a href="{{ host }}{% url 'email-page' transaction=transaction sha_hash=transaction_hash %}"
                                                                                    style="color: white;"
                                                                                    target="parent">нажмите
                                                                                     здесь.</a>
@@ -123,15 +122,7 @@
                                                                         <td class="mcnImageContent"
                                                                             style="padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0; text-align:center;"
                                                                             valign="top">
-
-
-                                                                            <img align="center" alt="Punkfiction Logo"
-                                                                                 class="mcnImage"
-                                                                                 src="
-
-                                                                                         {{ host }}{% static 'email/punkfiction_black.png' %}"
-                                                                                 style="max-width:450px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
-                                                                                 width="300">
+                                                                            {% block header %}{% endblock %}
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
@@ -177,29 +168,7 @@
                                                            style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #FFFFFF;"
                                                            width="100%">
                                                         <tbody>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                                                valign="top">
-                                                                {% include 'email/new_ticket_concert.html' %}
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                                                valign="top">
-                                                                {% include 'email/new_ticket_rules.html' %}
-                                                            </td>
-                                                        </tr>
-                                                        {% for ticket in tickets %}
-                                                            <tr>
-                                                                <td align="center"
-                                                                    style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
-                                                                    valign="top">
-                                                                    {% include 'email/new_ticket_ticket.html' %}
-                                                                </td>
-                                                            </tr>
-                                                        {% endfor %}
+                                                        {% block template_body %}{% endblock %}
                                                         <tr>
                                                             <td align="center"
                                                                 style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
@@ -264,12 +233,8 @@
                                                                 valign="top">
                                                                 <img alt="Ticket design"
                                                                      class="mcnImage"
-                                                                     height="10" src="
-
-
-
-
-                                                                        {{ host }}{% static 'email/ticket_bottom.png' %}"
+                                                                     height="10"
+                                                                     src="{{ host }}{% static 'email/ticket_bottom.png' %}"
                                                                      style="display: block;max-width: 600px;border: 0;height: auto;outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;vertical-align: bottom;"
                                                                      width="600">
                                                             </td>

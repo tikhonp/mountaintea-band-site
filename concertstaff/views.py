@@ -1,17 +1,19 @@
+import re
+
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.models import User
 from django.core import exceptions
 from django.core.mail import send_mail, mail_managers
 from django.db.models import Sum
-from django.http import Http404, HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
-from django.template.loader import render_to_string
+from django.template import Template, RequestContext
 from django.utils import timezone
+from django.utils.html import strip_tags
 from django.views.decorators.http import require_http_methods
 
-from concert.models import Transaction, Ticket, Concert, Price
+from concert.models import Transaction, Ticket, Concert, Price, ConcertImage
 from concert.views import create_user_payment
 from concertstaff import forms
 
@@ -20,7 +22,7 @@ from concertstaff import forms
 def main(request):
     return render(request, 'main_staff.html', {
         'user': request.user,
-        'concerts': Concert.objects.filter(is_active=True),
+        'concerts': [obj for obj in Concert.objects.all() if obj.is_active],
     })
 
 
@@ -83,15 +85,11 @@ def add_ticket(request):
             except Price.DoesNotExist:
                 return HttpResponse("Необходимо создать Price с нулевой ценой, обратитесь к администратору.")
 
-            transaction = Transaction.objects.create(
-                user=user,
-                concert=concert,
-                date_closed=timezone.now(),
-                amount_sum=0.,
-                is_done=True,
-            )
+            transaction = Transaction.objects.create(user=user, concert=concert, date_closed=timezone.now(),
+                                                     amount_sum=0., is_done=True)
             Ticket.objects.create(transaction=transaction, price=price)
 
+            images = ConcertImage.objects.filter(concert=transaction.concert)
             context = {
                 'transaction': transaction.pk,
                 'transaction_hash': transaction.get_hash(),
@@ -100,14 +98,19 @@ def add_ticket(request):
                 'concert': transaction.concert,
                 'tickets': Ticket.objects.filter(transaction=transaction),
                 'user': transaction.user,
+                **{'image_' + str(obj.id): obj for obj in images}
             }
+
+            html_email = Template(
+                transaction.concert.email_template
+            ).render(RequestContext(request, context))
 
             send_mail(
                 'Билет на концерт {}'.format(transaction.concert.title),
-                render_to_string('email/new_ticket.txt', context),
+                re.sub('[ \t]+', ' ', strip_tags(html_email)).replace('\n ', '\n').strip(),
                 'Горный Чай <noreply@mountainteaband.ru>',
                 [transaction.user.email],
-                html_message=render_to_string('email/new_ticket.html', context),
+                html_message=html_email,
                 fail_silently=False,
             )
 

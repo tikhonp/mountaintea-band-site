@@ -76,18 +76,35 @@
                 <br>
                 <h3 class="pb-2">Концерты</h3>
                 {% for concert in concerts %}
-                    <div class="pb-2" itemprop="event" itemscope itemtype="https://schema.org/Event">
+                    <div class="pb-2" itemprop="event" itemscope itemtype="https://schema.org/MusicEvent">
                         <div class="card bg-dark text-white rounded">
                             <div class="card-body">
-                                <h4 class="card-title" itemprop="name">{{ concert.title|title }}</h4>
+                                <h4 class="card-title" itemprop="name">{{ concert.full_title|title }}</h4>
+
                                 <div itemprop="location" itemscope itemtype="https://schema.org/Place">
-                                    <a href="{{ concert.place_url }}" itemprop="url"></a>
-                                    <h6 class="card-subtitle mb-2 text-muted"
-                                        itemprop="location.address" itemprop="address">{{ concert.place }}</h6>
+                                    {% if concert.place_url %}
+                                        <a class="link-secondary" href="{{ concert.place_url }}" itemprop="url"></a>
+                                    {% endif %}
+                                    <h6 class="card-subtitle mb-2 text-muted" itemprop="name">
+                                        <span itemprop="name">{{ concert.place_name }}</span>:
+                                        <span itemprop="address">{{ concert.place_address }}</span>
+                                    </h6>
                                 </div>
-                                <p class="card-text" itemprop="description">{{ concert.description }}</p>
-                                <meta itemprop="startDate" content="{{ concert.date_time|date:"c" }}">
-                                <h6 class="card-subtitle mb-2 text-muted">{{ concert.date_time }}</h6>
+
+                                {% if concert.description %}
+                                    <p class="card-text" itemprop="description">{{ concert.description }}</p>
+                                {% endif %}
+                                <meta itemprop="startDate" content="{{ concert.start_date_time|date:"c" }}">
+                                {% if concert.end_date_time %}
+                                    <meta itemprop="endDate" content="{{ concert.end_date_time|date:"c" }}">
+                                {% endif %}
+                                <meta itemprop="eventStatus" content="{{ concert.status }}">
+                                <meta itemprop="eventAttendanceMode" content="OnlineEventAttendanceMode">
+                                {% if concert.image %}
+                                    <meta itemprop="image" content="{{ concert.image.url }}">
+                                {% endif %}
+                                <h6 class="card-subtitle mb-2 text-muted">{{ concert.start_date_time }}</h6>
+
                                 <a class="stretched-link" href="{% url 'concert' concert.id %}" itemprop="url"></a>
                             </div>
                         </div>
@@ -105,7 +122,8 @@
                                 sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
                                 src="https://embed.song.link/?url=https%3A%2F%2Falbum.link%2FpM8ps7SZRr6pV&theme=dark"
                                 style="position:absolute;top:0;left:0;border:none;"
-                                width="100%"></iframe>
+                                width="100%">
+                        </iframe>
                     </div>
                 </div>
 

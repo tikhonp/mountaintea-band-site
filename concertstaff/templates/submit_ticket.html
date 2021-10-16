@@ -7,6 +7,9 @@
 {% block body %}
     <div class="container text-center pt-3">
         <h1>Билет</h1>
+
+        <p><a href="{% url 'staff' %}">На главную</a></p>
+
         <div class="card">
             <div class="card-body">
                 <h3 class="card-title"><b>{{ ticket.number }}</b></h3>

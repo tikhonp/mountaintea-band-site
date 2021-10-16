@@ -1,54 +1,66 @@
 import datetime
 import hashlib
+import re
 
 import pytz
+import django
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.mail import mail_managers, send_mail
-from django.http import Http404, HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
 from django.template import Template, RequestContext
-from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from concert import forms
-from concert.models import Concert, Price, Transaction, Ticket
+from concert.models import Concert, Price, Transaction, Ticket, ConcertImage
 
 
 @require_http_methods(["GET"])
 def main(request):
-    return render(request, 'main.html', {
-        'concerts': Concert.objects.filter(is_active=True)[:3]
-    })
+    return render(request, 'main.html', {'concerts': [obj for obj in Concert.objects.all() if obj.is_active][:3]})
 
 
 @require_http_methods(["GET"])
 def concerts(request):
+    concerts_active, concerts_disabled = [], []
+    for obj in Concert.objects.all():
+        if obj.is_active:
+            concerts_active.append(obj)
+        else:
+            concerts_disabled.append(obj)
     return render(request, 'concerts.html', {
-        'concerts_active': Concert.objects.filter(is_active=True),
-        'concerts_disabled': Concert.objects.filter(is_active=False),
+        'concerts_active': concerts_active, 'concerts_disabled': concerts_disabled
     })
 
 
 @require_http_methods(["GET"])
 def concert_page(request, concert_id):
     concert = get_object_or_404(Concert, pk=concert_id)
-    template = Template(concert.template)
+    template = Template(concert.page_template)
+
+    images = ConcertImage.objects.filter(concert=concert)
 
     return HttpResponse(
-        template.render(RequestContext(request, {'concert': concert}))
+        template.render(RequestContext(request, {
+            'concert': concert,
+            **{'image_' + str(obj.id): obj for obj in images}
+        }))
     )
 
 
 def create_user_payment(cleaned_data: dict) -> User:
-    user, created = User.objects.get_or_create(
-        username=cleaned_data.get('name').replace(' ', ''),
-        first_name=cleaned_data.get('name'),
-        email=cleaned_data.get('email')
-    )
+    try:
+        user, created = User.objects.get_or_create(
+            username=cleaned_data.get('name').replace(' ', ''),
+            first_name=cleaned_data.get('name'),
+            email=cleaned_data.get('email')
+        )
+    except django.db.utils.IntegrityError:
+        user, created = User.objects.get(username=cleaned_data.get('name').replace(' ', '')), False
 
     if not created:
         user.email = cleaned_data.get('email')
@@ -101,9 +113,11 @@ def buy_ticket(request, concert_id):
         f_tickets = {}
         for price in prices:
             t = request.POST.get('price_count_{}'.format(price.id))
-            if t or int(t) == 0:
-                continue
-            f_tickets[price.id] = int(t)
+            if t and t.isdigit():
+                if int(t) == 0:
+                    continue
+                else:
+                    f_tickets[price.id] = int(t)
 
         if f_tickets == {}:
             messages.error(request, "Вы должны добавить хотя бы один билет, чтобы совершить покупку")
@@ -141,6 +155,14 @@ def buy_ticket(request, concert_id):
 @csrf_exempt
 @require_http_methods(["POST"])
 def incoming_payment(request):
+    label = request.POST.get('label')
+    if label is None:
+        return HttpResponse("ok")
+    if not label.isdigit():
+        return HttpResponseBadRequest("Label is not valid digit")
+
+    transaction = get_object_or_404(Transaction, id=int(label))
+
     hash_str = "{}&{}&{}&{}&{}&{}&{}&{}&{}".format(
         request.POST.get('notification_type', ''),
         request.POST.get('operation_id', ''),
@@ -149,21 +171,16 @@ def incoming_payment(request):
         request.POST.get('datetime', ''),
         request.POST.get('sender', ''),
         request.POST.get('codepro', ''),
-        settings.YANDEX_NOTIFICATION_SECRET,
+        transaction.concert.yandex_notification_secret,
         request.POST.get('label', ''),
     )
     hash_object = hashlib.sha1(hash_str.encode())
 
+    print(str(hash_object.hexdigest()))
+
     if str(hash_object.hexdigest()) != request.POST.get('sha1_hash'):
         return HttpResponseBadRequest("Failed to check SHA1 hash")
 
-    label = request.POST.get('label')
-    if label is None:
-        return HttpResponse("ok")
-    if not label.isdigit():
-        return HttpResponseBadRequest("Label is not valid digit")
-
-    transaction = get_object_or_404(Transaction, id=int(label))
     transaction.date_closed = pytz.utc.localize(
         datetime.datetime.strptime(request.POST.get('datetime'), '%Y-%m-%dT%H:%M:%SZ')
     )
@@ -173,6 +190,7 @@ def incoming_payment(request):
 
     tickets = Ticket.objects.filter(transaction=transaction)
 
+    images = ConcertImage.objects.filter(concert=transaction.concert)
     context = {
         'transaction': transaction.pk,
         'transaction_hash': transaction.get_hash(),
@@ -181,14 +199,18 @@ def incoming_payment(request):
         'concert': transaction.concert,
         'tickets': tickets,
         'user': transaction.user,
+        **{'image_' + str(obj.id): obj for obj in images}
     }
+    html_email = Template(
+        transaction.concert.email_template
+    ).render(RequestContext(request, context))
 
     send_mail(
         'Билет на концерт {}'.format(transaction.concert.title),
-        render_to_string('email/new_ticket.txt', context),
+        re.sub('[ \t]+', ' ', strip_tags(html_email)).replace('\n ', '\n').strip(),
         'Горный Чай <noreply@mountainteaband.ru>',
         [transaction.user.email],
-        html_message=render_to_string('email/new_ticket.html', context),
+        html_message=html_email,
         fail_silently=False,
     )
 
@@ -231,13 +253,19 @@ def email_page(request, transaction, sha_hash):
     if transaction.get_hash() != sha_hash:
         return HttpResponseBadRequest("Invalid transaction hash")
 
-    return render(request, 'email/new_ticket.html', {
-        'html': True,
-        'transaction': transaction.pk,
-        'transaction_hash': transaction.get_hash(),
-        'host': settings.HOST,
-        'transaction_pk': transaction.pk,
-        'concert': transaction.concert,
-        'tickets': Ticket.objects.filter(transaction=transaction),
-        'user': transaction.user
-    })
+    images = ConcertImage.objects.filter(concert=transaction.concert)
+    template = Template(transaction.concert.email_template)
+
+    return HttpResponse(
+        template.render(RequestContext(request, {
+            'html': True,
+            'transaction': transaction.pk,
+            'transaction_hash': transaction.get_hash(),
+            'host': settings.HOST,
+            'transaction_pk': transaction.pk,
+            'concert': transaction.concert,
+            'tickets': Ticket.objects.filter(transaction=transaction),
+            'user': transaction.user,
+            **{'image_' + str(obj.id): obj for obj in images}
+        }))
+    )

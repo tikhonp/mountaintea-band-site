@@ -8,6 +8,8 @@
     <div class="container">
         <h2>Билеты</h2>
 
+        <p><a href="{% url 'staff' %}">На главную</a></p>
+
         {% if not tickets_sum is 0 %}
             <p class="pt-2">Всего собрано
                 <mark>{{ amount_sum|default:"0" }}</mark>

@@ -1,10 +1,13 @@
+import re
+
 from django.conf import settings
 from django.core import exceptions
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
-from django.template.loader import render_to_string
+from django.template import Template, Context
+from django.utils.html import strip_tags
 
-from concert.models import Transaction, Ticket
+from concert.models import Transaction, ConcertImage, Ticket
 
 
 class Command(BaseCommand):
@@ -28,6 +31,7 @@ class Command(BaseCommand):
             print("Invalid transaction id. Does not exist.")
             return
 
+        images = ConcertImage.objects.filter(concert=transaction.concert)
         context = {
             'transaction': transaction.pk,
             'transaction_hash': transaction.get_hash(),
@@ -36,19 +40,21 @@ class Command(BaseCommand):
             'concert': transaction.concert,
             'tickets': Ticket.objects.filter(transaction=transaction),
             'user': transaction.user,
+            **{'image_' + str(obj.id): obj for obj in images}
         }
 
-        print("USER: {}\nEMAIL {}".format(
-            context['user'].first_name,
-            context['user'].email,
-        ))
+        print("USER: {}\nEMAIL {}".format(context['user'].first_name, context['user'].email))
+
+        html_email = Template(
+            transaction.concert.email_template
+        ).render(Context(context))
 
         send_mail(
             'Билет на концерт {}'.format(transaction.concert.title),
-            render_to_string('email/new_ticket.txt', context),
+            re.sub('[ \t]+', ' ', strip_tags(html_email)).replace('\n ', '\n').strip(),
             'Горный Чай <noreply@mountainteaband.ru>',
             [transaction.user.email],
-            html_message=render_to_string('email/new_ticket.html', context),
+            html_message=html_email,
             fail_silently=False,
         )
 

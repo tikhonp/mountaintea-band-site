@@ -25,3 +25,4 @@ MANAGERS = [
 ADMINS = [('Tikhon', 'ticha56@mail.ru')]
 HOST = 'https://mountainteaband.ru'
 SECURE_SSL_HOST = 'https://mountainteaband.ru'
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

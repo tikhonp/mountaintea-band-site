@@ -9,6 +9,8 @@
     <div class="container text-center pt-3 form-floating">
         <h1>Найти билет по номеру</h1>
 
+        <p><a href="{% url 'staff' %}">На главную</a></p>
+
         {% if number %}
             <div class="alert alert-danger" role="alert">
                 Такого билета не существет! Попробуйте еще или обратитесь к администратору.

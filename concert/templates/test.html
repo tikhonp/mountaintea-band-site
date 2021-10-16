@@ -1,0 +1,322 @@
+{% extends "new_ticket.html" %}
+
+{% load static %}
+
+{% block header %}
+    <img align="center" alt="Punkfiction Logo"
+         class="mcnImage"
+         src="{{ host }}{% static 'email/punkfiction_black.png' %}"
+         style="max-width:450px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
+         width="300">
+{% endblock %}
+
+{% block body %}
+    <tr>
+        <td align="center"
+            style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+            valign="top">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateColumns"
+                   style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #FFFFFF;border-top: 0;border-bottom: 1px solid #EFEFEF;">
+                <tbody>
+                <tr>
+                    <td align="left" valign="top" class="columnsContainer" width="50%"
+                        style="padding-top: 9px;padding-bottom: 9px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="templateColumn"
+                               style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
+                            <tbody>
+                            <tr>
+                                <td valign="top" class="leftColumnContainer" container="left_column_container"
+                                    style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                    mccontainer="left_column_container">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock"
+                                           style="min-width:100%;">
+                                        <tbody class="mcnTextBlockOuter">
+                                        <tr>
+                                            <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;">
+                                                <table align="left" border="0" cellpadding="0" cellspacing="0"
+                                                       style="max-width:100%; min-width:100%;" width="100%"
+                                                       class="mcnTextContentContainer">
+                                                    <tbody>
+                                                    <tr>
+                                                        <td valign="top" class="mcnTextContent"
+                                                            style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
+                                                            <h2>{{ concert.title }}</h2>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock"
+                                           style="min-width:100%;">
+                                        <tbody class="mcnTextBlockOuter">
+                                        <tr>
+                                            <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;">
+                                                <table align="left" border="0" cellpadding="0" cellspacing="0"
+                                                       style="max-width:100%; min-width:100%;" width="100%"
+                                                       class="mcnTextContentContainer">
+                                                    <tbody>
+                                                    <tr>
+
+                                                        <td valign="top" class="mcnTextContent"
+                                                            style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
+
+                                                            3 марта в баре «PUNK FICTION» пройдёт совместный концерт
+                                                            Миши Мещерина и
+                                                            группы «Горный Чай». Помимо уже известных песен Миши вы
+                                                            услышите
+                                                            композиции с дебютного EP «Горного Чая»
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td align="left" valign="top" class="columnsContainer" width="50%"
+                        style="padding-top: 9px;padding-bottom: 9px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="templateColumn"
+                               style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
+                            <tbody>
+                            <tr>
+                                <td valign="top" class="rightColumnContainer" container="right_column_container"
+                                    style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                    mccontainer="right_column_container">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock"
+                                           style="min-width:100%;">
+                                        <tbody class="mcnTextBlockOuter">
+                                        <tr>
+                                            <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;">
+                                                <table align="left" border="0" cellpadding="0" cellspacing="0"
+                                                       style="max-width:100%; min-width:100%;" width="100%"
+                                                       class="mcnTextContentContainer">
+                                                    <tbody>
+                                                    <tr>
+
+                                                        <td valign="top" class="mcnTextContent"
+                                                            style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
+
+                                                            {{ concert.place }}<br>{{ concert.date_time }}<br>Начало в
+                                                            19:00, вход с
+                                                            18:30
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                           class="mcnButtonBlock"
+                                           style="min-width:100%;">
+                                        <tbody class="mcnButtonBlockOuter">
+                                        <tr>
+                                            <td style="padding-top:0; padding-right:18px; padding-bottom:18px; padding-left:18px;"
+                                                valign="top" align="center" class="mcnButtonBlockInner">
+                                                <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                                       class="mcnButtonContentContainer"
+                                                       style="border-collapse: separate !important; border-radius: 3px; background-color: rgb(33, 34, 35);">
+                                                    <tbody>
+                                                    <tr>
+                                                        <td align="center" valign="middle" class="mcnButtonContent"
+                                                            style="font-family: Arial; font-size: 16px; padding: 10px;">
+                                                            <a class="mcnButton " title="RSVP"
+                                                               href="{{ concert.place_url }}"
+                                                               target="parent"
+                                                               style="font-weight: bold; letter-spacing: normal; line-height: 100%; text-align: center; text-decoration: none; color: rgb(255, 255, 255);">Где?</a>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td align="center"
+            style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+            valign="top">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" id=""
+                   style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #FFFFFF;border-top: 0;border-bottom: 1px solid #EFEFEF;">
+                <tbody>
+                <tr>
+                    <td valign="top" class="bodyContainer"
+                        style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                        container="body_container"
+                        mccontainer="body_container">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock"
+                               style="min-width:100%;">
+                            <tbody class="mcnTextBlockOuter">
+                            <tr>
+                                <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;">
+                                    <table align="left" border="0" cellpadding="0" cellspacing="0"
+                                           style="max-width:100%; min-width:100%;" width="100%"
+                                           class="mcnTextContentContainer">
+                                        <tbody>
+                                        <tr>
+
+                                            <td valign="top" class="mcnTextContent"
+                                                style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
+
+                                                <h1>Слушай! Пой!</h1>
+                                                <h3>Что может пойти не так?</h3>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock"
+                               style="min-width:100%;">
+                            <tbody class="mcnTextBlockOuter">
+                            <tr>
+                                <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;">
+                                    <table align="left" border="0" cellpadding="0" cellspacing="0"
+                                           style="max-width:100%; min-width:100%;" width="100%"
+                                           class="mcnTextContentContainer">
+                                        <tbody>
+                                        <tr>
+
+                                            <td valign="top" class="mcnTextContent"
+                                                style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
+
+                                                <b>Все будет отлично! Главное соблюдать несколько простых
+                                                    правил.</b><br>
+                                                <br>
+                                                <em>1. Нужно принести оригиналы документов.</em><br>
+                                                У всех посетителей должны быть с собой оригиналы документов (паспорт или
+                                                права).<br>
+                                                Это обязательно! Без оригинала документа вас не пустят в клуб!<br>
+                                                <br>
+                                                <em>2. Фэйс контроль.</em><br>
+                                                Люди в пьяном или неадекватном состоянии не будут пропущены внутрь. А
+                                                если будут
+                                                замечены внутри, мероприятие придется прекратить!<br>
+                                                <br>
+                                                <em>3. Нельзя приносить алкоголь.</em><br>
+                                                Если кто-то будет замечен в клубе со своим алкоголем, администрация
+                                                клуба прекратит
+                                                мероприятие, и концерт будет испорчен.<br>
+                                                Такая же ситуация возникнет если совершеннолетние зрители будут покупать
+                                                или угощать
+                                                алкоголем несовершеннолетних.<br>
+                                                <br>
+                                                Пожалуйста отнеситесь к этим требованиям ответственно, не подводите нас
+                                                и не
+                                                забывайте про маски.<br>
+                                                Мы вас очень ждём и верим что у нас у всех получится вместе сделать
+                                                хороший концерт!<br>
+                                                <br>
+                                                Спасибо за понимание! ❤<br>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    {% for ticket in tickets %}
+        <tr>
+            <td align="center"
+                style="mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                valign="top">
+                <center>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" id=""
+                           style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #FFFFFF;border-top: 0;border-bottom: 1px solid #EFEFEF;">
+                        <tbody>
+                        <tr>
+                            <td valign="top" class="bodyContainer"
+                                style="padding-top: 10px;padding-bottom: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"
+                                container="body_container" mccontainer="body_container">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock"
+                                       style="min-width:100%;">
+                                    <tbody class="mcnTextBlockOuter">
+                                    <tr>
+                                        <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;">
+                                            <table align="center" border="0" cellpadding="0" cellspacing="0"
+                                                   style="max-width:100%; min-width:100%;" width="100%"
+                                                   class="mcnTextContentContainer">
+                                                <tbody>
+                                                <tr>
+
+                                                    <td valign="top" class="mcnTextContent"
+                                                        style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
+                                                        <center>
+                                                            <h1>Билет {{ ticket.number }}</h1>
+                                                            <h3>{{ ticket.price.description }}</h3>
+                                                        </center>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock"
+                                       style="min-width:100%;">
+                                    <tbody class="mcnTextBlockOuter">
+                                    <tr>
+                                        <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;">
+                                            <table align="center" border="0" cellpadding="0" cellspacing="0"
+                                                   style="max-width:100%; min-width:100%;" width="100%"
+                                                   class="mcnTextContentContainer">
+                                                <tbody>
+                                                <tr>
+
+                                                    <td valign="top" class="mcnTextContent"
+                                                        style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
+                                                        <center>
+                                                            <img align="center" alt="ticket qr code"
+                                                                 src="
+
+                                                                         {{ host }}{% url 'qr-code' ticket=ticket.number %}"
+                                                                 width="400"
+                                                                 style="max-width:500px; padding-bottom: 0; display: inline !important; vertical-align: bottom;"
+                                                                 class="mcnImage">
+                                                        </center>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </center>
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock %}

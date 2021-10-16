@@ -10,7 +10,7 @@ class AddTicketForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        choices = [(concert.pk, concert.title) for concert in Concert.objects.filter(is_active=True)]
+        choices = [(concert.pk, concert.title) for concert in Concert.objects.all() if concert.is_active]
 
         self.fields['concert'] = forms.ChoiceField(
             label='Концерт',
