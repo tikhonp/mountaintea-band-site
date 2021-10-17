@@ -50,7 +50,7 @@ class Command(BaseCommand):
         ).render(Context(context))
 
         send_mail(
-            'Билет на концерт {}'.format(transaction.concert.title),
+            transaction.concert.email_title,
             re.sub('[ \t]+', ' ', strip_tags(html_email)).replace('\n ', '\n').strip(),
             'Горный Чай <noreply@mountainteaband.ru>',
             [transaction.user.email],

@@ -67,7 +67,9 @@ class Concert(models.Model):
 
     page_template = models.TextField("template to show concert page", default='<p>Добавьте страницу концерта</p>')
     email_template = models.TextField("template for email with tickets", default='<p>Добавьте страницу email</p>')
+    email_title = models.CharField("theme of email", max_length=255, default='Билет на концерт')
     promo_email_template = models.TextField("promo email template", null=True, blank=True, default=None)
+    promo_email_title = models.CharField("theme of promo email", max_length=255, null=True, blank=True, default=None)
 
     max_tickets_count = models.IntegerField("максимальное количество билетов", blank=True, default=None, null=True)
 
