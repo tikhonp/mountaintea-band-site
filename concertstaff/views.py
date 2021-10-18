@@ -94,7 +94,7 @@ def add_ticket(request):
                 'transaction': transaction.pk,
                 'transaction_hash': transaction.get_hash(),
                 'host': settings.HOST,
-                'subject': 'Билет на концерт {}'.format(transaction.concert.title),
+                'subject': transaction.concert.email_title,
                 'concert': transaction.concert,
                 'tickets': Ticket.objects.filter(transaction=transaction),
                 'user': transaction.user,
