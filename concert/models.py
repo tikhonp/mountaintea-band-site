@@ -72,6 +72,8 @@ class Concert(models.Model):
     promo_email_title = models.CharField("theme of promo email", max_length=255, null=True, blank=True, default=None)
 
     max_tickets_count = models.IntegerField("максимальное количество билетов", blank=True, default=None, null=True)
+    buy_ticket_message = models.CharField("Сообщение на странице оформления билетов", blank=True, null=True,
+                                          default=None, max_length=512)
 
     yandex_notification_secret = models.CharField("yandex notification secret", max_length=255, null=True, default=None,
                                                   blank=True)

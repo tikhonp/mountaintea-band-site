@@ -16,10 +16,8 @@ DATABASES = {
 }
 
 MANAGERS = [
-    # ('Tikhon', 'ticha56@mail.ru'),
-    # ('Миша', 'mmescherin@1553.ru'),
-    # ('Степан', 'Stepaqw@mail.ru'),
-    # ('Леша', 'leshich99@yandex.ru'),
+    ('Tikhon', 'tikhon.petrishchev@gmail.com'),
+    ('Platon', 'spektortosha@gmail.com'),
 ]
 
 ADMINS = [('Tikhon', 'ticha56@mail.ru')]

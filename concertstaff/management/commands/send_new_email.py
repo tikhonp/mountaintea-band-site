@@ -17,7 +17,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '-tid',
             help='REQUIRED: transaction is where to send mail',
-            type=int,
+            type=int, required=True
         )
 
     def handle(self, *args, **options):
