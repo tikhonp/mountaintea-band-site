@@ -47,7 +47,8 @@ def concert_page(request, concert_id):
     return HttpResponse(
         template.render(RequestContext(request, {
             'concert': concert,
-            **{'image_' + str(obj.id): obj for obj in images}
+            'prices': Price.objects.filter(concert=concert, is_active=True),
+            **{'image_' + str(obj.id): obj for obj in images},
         }))
     )
 

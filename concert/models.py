@@ -134,6 +134,13 @@ class Price(models.Model):
     is_active = models.BooleanField("price active", default=True)
     max_count = models.IntegerField("price max tickets", default=None, blank=True, null=True)
 
+    @property
+    def availability(self) -> str:
+        if self.is_active:
+            return 'InStock'
+        else:
+            return 'OutOfStock'
+
     def __str__(self) -> str:
         return "{} цена - {}".format(self.concert.title, self.price)
 
