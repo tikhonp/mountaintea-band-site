@@ -1,6 +1,25 @@
 User-Agent: *
+
 Allow: /
 Allow: /concerts/*
-Disallow: /admin/*
-Disallow: /staff/*
-Disallow: /concerts/tickets/donepayment/*
+
+Disallow: /admin/
+Disallow: /staff/
+Disallow: /concerts/tickets/donepayment/
+Disallow: /concerts/*/tickets/
+
+Sitemap: https://mountainteaband.ru/sitemap.xml
+Sitemap: https://mountainteaband.ru/concerts/sitemap.xml
+
+
+User-Agent: Googlebot-Image
+Disallow: /
+
+User-Agent: YandexImages
+Disallow: /
+
+User-Agent: MSNBot-Media
+Disallow: /
+
+User-Agent: Googlebot-Video
+Disallow: /
