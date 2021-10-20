@@ -1,6 +1,3 @@
-import re
-
-from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core import exceptions
 from django.core.mail import send_mail, mail_managers
@@ -8,12 +5,11 @@ from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
-from django.template import Template, RequestContext
 from django.utils import timezone
-from django.utils.html import strip_tags
 from django.views.decorators.http import require_http_methods
 
-from concert.models import Transaction, Ticket, Concert, Price, ConcertImage
+from concert.emails import generate_ticket_email, generate_managers_ticket_email
+from concert.models import Transaction, Ticket, Concert, Price
 from concert.views import create_user_payment
 from concertstaff import forms
 
@@ -89,44 +85,11 @@ def add_ticket(request):
                                                      amount_sum=0., is_done=True)
             Ticket.objects.create(transaction=transaction, price=price)
 
-            images = ConcertImage.objects.filter(concert=transaction.concert)
-            context = {
-                'transaction': transaction.pk,
-                'transaction_hash': transaction.get_hash(),
-                'host': settings.HOST,
-                'subject': transaction.concert.email_title,
-                'concert': transaction.concert,
-                'tickets': Ticket.objects.filter(transaction=transaction),
-                'user': transaction.user,
-                **{'image_' + str(obj.id): obj for obj in images}
-            }
-
-            html_email = Template(
-                transaction.concert.email_template
-            ).render(RequestContext(request, context))
-
-            send_mail(
-                transaction.concert.email_title,
-                re.sub('[ \t]+', ' ', strip_tags(html_email)).replace('\n ', '\n').strip(),
-                'Горный Чай <noreply@mountainteaband.ru>',
-                [transaction.user.email],
-                html_message=html_email,
-                fail_silently=False,
-            )
+            tickets = Ticket.objects.filter(transaction=transaction)
+            send_mail(**generate_ticket_email(transaction, tickets=tickets, request=request))
 
             if not request.user.is_superuser:
-                mail_managers(
-                    'Добавлен новый бесплатный билет',
-                    '{}\n{}\n{}'.format(
-                        transaction.user.first_name,
-                        "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
-                            i.price.description,
-                            i.price.price,
-                            i.number
-                        ) for i in Ticket.objects.filter(transaction=transaction)]),
-                        transaction.date_created),
-                    fail_silently=False
-                )
+                mail_managers(**generate_managers_ticket_email(transaction, tickets=tickets))
 
             created = True
             form = forms.AddTicketForm()

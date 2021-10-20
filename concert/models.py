@@ -161,6 +161,9 @@ class Transaction(models.Model):
         hash_str = '{}&{}&{}'.format(self.pk, self.amount_sum, self.user.pk)
         return hashlib.sha1(hash_str.encode()).hexdigest()
 
+    def get_absolute_url(self) -> str:
+        return f'/concerts/email/{self.id}/{self.get_hash()}/'
+
 
 class Ticket(models.Model):
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE, verbose_name="the related transaction")

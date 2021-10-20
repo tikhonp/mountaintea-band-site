@@ -1,21 +1,19 @@
 import datetime
 import hashlib
-import re
 
-import pytz
 import django
-from django.conf import settings
+import pytz
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.mail import mail_managers, send_mail
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
 from django.template import Template, RequestContext
-from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from concert import forms
+from concert.emails import generate_ticket_email, generate_managers_ticket_email
 from concert.models import Concert, Price, Transaction, Ticket, ConcertImage
 
 
@@ -177,7 +175,7 @@ def incoming_payment(request):
     )
     hash_object = hashlib.sha1(hash_str.encode())
 
-    print(str(hash_object.hexdigest()))
+    # print(str(hash_object.hexdigest()))
 
     if str(hash_object.hexdigest()) != request.POST.get('sha1_hash'):
         return HttpResponseBadRequest("Failed to check SHA1 hash")
@@ -190,43 +188,8 @@ def incoming_payment(request):
     transaction.save()
 
     tickets = Ticket.objects.filter(transaction=transaction)
-
-    images = ConcertImage.objects.filter(concert=transaction.concert)
-    context = {
-        'transaction': transaction.pk,
-        'transaction_hash': transaction.get_hash(),
-        'host': settings.HOST,
-        'subject': transaction.concert.email_title,
-        'concert': transaction.concert,
-        'tickets': tickets,
-        'user': transaction.user,
-        **{'image_' + str(obj.id): obj for obj in images}
-    }
-    html_email = Template(
-        transaction.concert.email_template
-    ).render(RequestContext(request, context))
-
-    send_mail(
-        transaction.concert.email_title,
-        re.sub('[ \t]+', ' ', strip_tags(html_email)).replace('\n ', '\n').strip(),
-        'Горный Чай <noreply@mountainteaband.ru>',
-        [transaction.user.email],
-        html_message=html_email,
-        fail_silently=False,
-    )
-
-    mail_managers(
-        'Куплен новый билет',
-        '{}\n{}\n{}'.format(
-            transaction.user.first_name,
-            "\n".join(["{}\n{} р. (оплачено)\nНомер - {}\n---".format(
-                i.price.description,
-                i.price.price,
-                i.number
-            ) for i in tickets]),
-            transaction.date_created),
-        fail_silently=False
-    )
+    send_mail(**generate_ticket_email(transaction, tickets=tickets, request=request))
+    mail_managers(**generate_managers_ticket_email(transaction, tickets=tickets))
 
     return HttpResponse("ok")
 
@@ -254,19 +217,6 @@ def email_page(request, transaction, sha_hash):
     if transaction.get_hash() != sha_hash:
         return HttpResponseBadRequest("Invalid transaction hash")
 
-    images = ConcertImage.objects.filter(concert=transaction.concert)
-    template = Template(transaction.concert.email_template)
-
     return HttpResponse(
-        template.render(RequestContext(request, {
-            'html': True,
-            'transaction': transaction.pk,
-            'transaction_hash': transaction.get_hash(),
-            'host': settings.HOST,
-            'transaction_pk': transaction.pk,
-            'concert': transaction.concert,
-            'tickets': Ticket.objects.filter(transaction=transaction),
-            'user': transaction.user,
-            **{'image_' + str(obj.id): obj for obj in images}
-        }))
+        generate_ticket_email(transaction, request=request).get('html_message')
     )
