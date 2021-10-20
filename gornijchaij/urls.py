@@ -25,6 +25,10 @@ from concert import views
 from concert.sitemaps import concert_sitemaps
 
 
+admin.site.site_header = 'MountainTea administration'
+admin.site.site_title = 'MountainTea site admin'
+
+
 class StaticViewSitemap(sitemaps.Sitemap):
     priority = 0.9
     changefreq = 'daily'

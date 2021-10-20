@@ -213,3 +213,6 @@ class Ticket(models.Model):
         buffer = BytesIO()
         canvas.save(buffer, 'PNG')
         return buffer.getvalue()
+
+    def get_absolute_url(self):
+        return f'/staff/submit/{self.number}/{self.get_hash()}/'
