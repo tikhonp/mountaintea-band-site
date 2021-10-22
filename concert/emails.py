@@ -51,12 +51,12 @@ def generate_managers_ticket_email(transaction: Transaction, tickets: Ticket = N
         tickets_text += f"""
 Билет номер "{ticket.number}":
 {ticket.price.description} [{ticket.price.price} {ticket.price.currency}]
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- - - - - - - - - - - - - - - - - - - - - - - - - - 
 """
 
     text = f"""
 Пользователь {transaction.user.first_name} купил билетов: {tickets.count()}.
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- - - - - - - - - - - - - - - - - - - - - - - - - - 
 {tickets_text}
 
 Дата и время: {transaction.date_created.strftime("%d/%m/%Y, %H:%M")}

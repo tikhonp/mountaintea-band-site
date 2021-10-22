@@ -18,6 +18,7 @@ DATABASES = {
 MANAGERS = [
     ('Tikhon', 'tikhon.petrishchev@gmail.com'),
     ('Platon', 'spektortosha@gmail.com'),
+    ('Step', 'Stepaqwn@gmail.com'),
 ]
 
 ADMINS = [('Tikhon', 'ticha56@mail.ru')]
