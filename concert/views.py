@@ -218,5 +218,5 @@ def email_page(request, transaction, sha_hash):
         return HttpResponseBadRequest("Invalid transaction hash")
 
     return HttpResponse(
-        generate_ticket_email(transaction, request=request).get('html_message')
+        generate_ticket_email(transaction, request=request, is_web=True).get('html_message')
     )

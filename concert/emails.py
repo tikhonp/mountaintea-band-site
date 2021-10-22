@@ -8,7 +8,9 @@ from django.utils.html import strip_tags
 from concert.models import Transaction, Ticket, ConcertImage
 
 
-def generate_ticket_email(transaction: Transaction, tickets: Ticket = None, request: HttpRequest = None) -> dict:
+def generate_ticket_email(
+        transaction: Transaction, tickets: Ticket = None, request: HttpRequest = None, is_web=False
+) -> dict:
     """Render dict with email settings template with tickets based on the concert model settings"""
 
     tickets = tickets if tickets else Ticket.objects.filter(transaction=transaction)
@@ -22,6 +24,7 @@ def generate_ticket_email(transaction: Transaction, tickets: Ticket = None, requ
         'concert': transaction.concert,
         'tickets': tickets,
         'user': transaction.user,
+        'html': is_web,
         **{'image_' + str(obj.id): obj for obj in images}
     }
     context = RequestContext(request, context_dict) if request else Context(context_dict)
