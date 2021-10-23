@@ -74,7 +74,7 @@ class Command(BaseCommand):
                 exclude_users_list.append(transaction.user.pk)
 
             for profile in Profile.objects.filter(accept_mailing=True):
-                if profile.user.pk not in exclude_users_list:
+                if profile.user.pk not in exclude_users_list and profile.user.email and profile.user.email != '':
                     recipient_list.append(profile.user)
 
         print("Total users: ", len(recipient_list))
