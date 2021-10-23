@@ -1,15 +1,16 @@
 import re
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.http import HttpRequest
 from django.template import Template, Context, RequestContext
 from django.utils.html import strip_tags
 
-from concert.models import Transaction, Ticket, ConcertImage
+from concert.models import Transaction, Ticket, ConcertImage, Concert
 
 
 def generate_ticket_email(
-        transaction: Transaction, tickets: Ticket = None, request: HttpRequest = None, is_web=False
+        transaction: Transaction, tickets=None, request: HttpRequest = None, is_web=False
 ) -> dict:
     """Render dict with email settings template with tickets based on the concert model settings"""
 
@@ -65,4 +66,31 @@ def generate_managers_ticket_email(transaction: Transaction, tickets: Ticket = N
     return {
         'subject': theme,
         'message': text,
+    }
+
+
+def generate_concert_promo_email(
+        concert: Concert, user: User, images=None, request: HttpRequest = None, is_web=False
+) -> dict:
+    """Render dict with settings for promo concert email"""
+
+    images = images if images else ConcertImage.objects.filter(concert=concert)
+    context_dict = {
+        'user': user,
+        'host': settings.HOST,
+        'subject': concert.email_title,
+        'concert': concert,
+        'html': is_web,
+        **{'image_' + str(obj.id): obj for obj in images}
+    }
+    context = RequestContext(request, context_dict) if request else Context(context_dict)
+    html_email = Template(concert.promo_email_template).render(context)
+    plain_text = re.sub('[ \t]+', ' ', strip_tags(html_email)).replace('\n ', '\n').strip()
+
+    return {
+        'subject': concert.promo_email_title,
+        'message': plain_text,
+        'from_email': settings.DEFAULT_FROM_EMAIL,
+        'recipient_list': [user.email],
+        'html_message': html_email,
     }

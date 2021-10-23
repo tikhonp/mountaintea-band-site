@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from concert import forms
-from concert.emails import generate_ticket_email, generate_managers_ticket_email
+from concert.emails import generate_ticket_email, generate_managers_ticket_email, generate_concert_promo_email
 from concert.models import Concert, Price, Transaction, Ticket, ConcertImage
 
 
@@ -220,3 +220,29 @@ def email_page(request, transaction, sha_hash):
     return HttpResponse(
         generate_ticket_email(transaction, request=request, is_web=True).get('html_message')
     )
+
+
+@require_http_methods(["GET"])
+def concert_promo_email(request, concert_id, user, sha_hash):
+    user = get_object_or_404(User, pk=user)
+    concert = get_object_or_404(Concert, pk=concert_id)
+
+    if user.profile.get_hash() != sha_hash:
+        return HttpResponseBadRequest("Invalid user hash")
+
+    return HttpResponse(
+        generate_concert_promo_email(concert, user, request=request, is_web=True).get('html_message')
+    )
+
+@require_http_methods(["GET", "POST"])
+def email_unsubscribe(request, user, sha_hash):
+    user = get_object_or_404(User, pk=user)
+
+    if user.profile.get_hash() != sha_hash:
+        return HttpResponseBadRequest("Invalid user hash")
+
+    if request.method == 'POST':
+        user.profile.accept_mailing = False
+        user.profile.save()
+
+    return render(request, 'unsubscribe.html', {'user': user, 'get': request.method == 'GET'})

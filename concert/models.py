@@ -24,6 +24,9 @@ class Profile(models.Model):
     def __str__(self):
         return "{} {}".format(self.user.username, self.phone)
 
+    def get_hash(self) -> str:
+        hash_str = '{}&{}&{}&{}&{}'.format(self.pk, self.phone, self.user.username, self.user.email, self.user.pk)
+        return hashlib.sha1(hash_str.encode()).hexdigest()
 
 # noinspection PyUnusedLocal
 @receiver(post_save, sender=User)
