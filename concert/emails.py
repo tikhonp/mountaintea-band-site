@@ -1,10 +1,8 @@
-import re
-
+import html2text
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import HttpRequest
 from django.template import Template, Context, RequestContext
-from django.utils.html import strip_tags
 
 from concert.models import Transaction, Ticket, ConcertImage, Concert
 
@@ -30,7 +28,7 @@ def generate_ticket_email(
     }
     context = RequestContext(request, context_dict) if request else Context(context_dict)
     html_email = Template(transaction.concert.email_template).render(context)
-    plain_text = re.sub('[ \t]+', ' ', strip_tags(html_email)).replace('\n ', '\n').strip()
+    plain_text = html2text.html2text(html_email)
 
     return {
         'subject': transaction.concert.email_title,
@@ -78,14 +76,14 @@ def generate_concert_promo_email(
     context_dict = {
         'user': user,
         'host': settings.HOST,
-        'subject': concert.email_title,
+        'subject': concert.promo_email_title,
         'concert': concert,
         'html': is_web,
         **{'image_' + str(obj.id): obj for obj in images}
     }
     context = RequestContext(request, context_dict) if request else Context(context_dict)
     html_email = Template(concert.promo_email_template).render(context)
-    plain_text = re.sub('[ \t]+', ' ', strip_tags(html_email)).replace('\n ', '\n').strip()
+    plain_text = html2text.html2text(html_email)
 
     return {
         'subject': concert.promo_email_title,
