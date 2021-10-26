@@ -5,36 +5,48 @@
 {% block description %}Страница персонала{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <h2>Билеты</h2>
-
-        <p><a href="{% url 'staff' %}">На главную</a></p>
+    <div class="container text-center">
+        <nav class="navbar navbar-light justify-content-center">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'staff' %}">MountainTea</a>
+                <span class="navbar-text">{{ concert.title }}</span>
+                {#                <form class="d-flex" method="post">#}
+                {#                    {% csrf_token %}#}
+                {#                    <input class="form-control me-2" type="search" placeholder="Поиск билета" aria-label="Search"#}
+                {#                           name="query">#}
+                {#                    <button class="btn btn-outline-secondary" type="submit">Найти</button>#}
+                {#                </form>#}
+            </div>
+        </nav>
 
         {% if not tickets_sum is 0 %}
-            <p class="pt-2">Всего собрано
-                <mark>{{ amount_sum|default:"0" }}</mark>
+            <div class="alert alert-secondary" role="alert">
+                Всего собрано
+                <mark>{{ amount_sum|default:"0"|floatformat:2 }}</mark>
                 рублей. Куплено билетов -
                 <mark>{{ tickets_sum }}</mark>
-            </p>
-            <p><small class="pb-2">С учетом коммисии 2%</small></p>
-
-            <h5>Человек прошло:</h5>
-
-            <div class="progress mt-3 mb-3" style="height: 20px;">
-                <div class="progress-bar" role="progressbar" style="width: {{ entered_percent }}%;"
-                     aria-valuenow="{{ entered_percent }}" aria-valuemin="0"
-                     aria-valuemax="100">{{ entered_percent }}%
-                </div>
+                <small class="pb-2">(С учетом коммисии 2%)</small>
             </div>
 
+            {% if entered_percent is not 0 %}
+                <h5>Прогресс посещения мероприятия</h5>
 
-            <table class="table">
+                <div class="progress mt-3 mb-3" style="height: 20px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{ entered_percent }}%;"
+                         aria-valuenow="{{ entered_percent }}" aria-valuemin="0"
+                         aria-valuemax="100">{{ entered_percent }}%
+                    </div>
+                </div>
+            {% endif %}
+
+            <table class="table table-hover table-sm caption-top">
+                <caption>Билеты</caption>
                 <thead>
                 <tr>
                     <th scope="col">Номер билета</th>
                     <th scope="col">Дата создания</th>
                     <th scope="col">Имя и Фамилия</th>
-                    <th scope="col">Испаользование</th>
+                    <th scope="col">Активен</th>
                     <th scope="col">Цена билета</th>
                 </tr>
                 </thead>
@@ -42,13 +54,22 @@
                 {% for i in t %}
                     <tr>
                         <th scope="row">{{ i.number }}</th>
-                        <td>{{ i.transaction.date_created }}</td>
+                        <td>{{ i.transaction.date_created|date:"H:i d.m.y" }}</td>
                         <td>{{ i.transaction.user.first_name }}</td>
-                        <td>{% if i.is_active %}Не прошел{% else %}
-                            <div class="text-success">Прошел</div>
-                        {% endif %}
+                        <td>
+                            {% if i.is_active %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"></path>
+                                </svg>
+                            {% else %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"></path>
+                                </svg>
+                            {% endif %}
                         </td>
-                        <td>{{ i.price.price }}</td>
+                        <td>{{ i.price.price|floatformat:2 }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

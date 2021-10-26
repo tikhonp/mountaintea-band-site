@@ -1,4 +1,5 @@
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.postgres.search import SearchVector
 from django.core import exceptions
 from django.core.mail import send_mail, mail_managers
 from django.db.models import Sum
@@ -27,7 +28,7 @@ def main(request):
 def stat(request, concert):
     concert = get_object_or_404(Concert, id=concert)
 
-    ticket = Ticket.objects.filter(
+    tickets = Ticket.objects.filter(
         transaction__is_done=True,
         transaction__concert=concert,
     ).order_by('-transaction__date_created')
@@ -37,13 +38,21 @@ def stat(request, concert):
         concert=concert,
     ).aggregate(Sum('amount_sum'))['amount_sum__sum']
 
-    entered_percent = int(len(ticket.filter(is_active=False)) * 100 / len(ticket)) if len(ticket) != 0 else 0
+    tickets_sum = tickets.count()
+    entered_percent = int(tickets.filter(is_active=False).count() * 100 / tickets_sum if tickets_sum != 0 else 0)
+
+    # if request.method == 'POST':
+    #     query = request.POST.get('query')
+    #     tickets = tickets.annotate(
+    #         search=SearchVector('transaction__user__first_name', 'number', 'price__description'),
+    #     ).filter(search=query)
 
     return render(request, "stat.html", {
-        "t": ticket,
+        "t": tickets,
         "amount_sum": amount_sum,
-        "tickets_sum": len(ticket),
-        "entered_percent": entered_percent
+        "tickets_sum": tickets_sum,
+        "entered_percent": entered_percent,
+        "concert": concert
     })
 
 
