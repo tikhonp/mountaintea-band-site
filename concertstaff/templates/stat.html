@@ -13,7 +13,7 @@
                 <form class="d-flex" method="post">
                     {% csrf_token %}
                     <input class="form-control me-2" type="search" placeholder="Поиск билета" aria-label="Search"
-                           name="query">
+                           name="query" value="{{ query }}">
                     <button class="btn btn-outline-secondary" type="submit">Найти</button>
                 </form>
             </div>
@@ -53,9 +53,19 @@
                 <tbody>
                 {% for i in t %}
                     <tr>
-                        <th scope="row">{{ i.number }}</th>
+                        <th scope="row">
+                            <a href="{% url 'staff-ticket-check' ticket=i.number sha=i.get_hash %}" class="link-dark">
+                                {{ i.number }}</a>
+                        </th>
                         <td>{{ i.transaction.date_created|date:"H:i d.m.y" }}</td>
-                        <td>{{ i.transaction.user.first_name }}</td>
+                        <td>
+                            {% if user.is_superuser %}
+                                <a href="{% url 'admin:auth_user_change' user.id %}" class="link-dark">
+                                    {{ i.transaction.user.first_name }}</a>
+                            {% else %}
+                                {{ i.transaction.user.first_name }}
+                            {% endif %}
+                        </td>
                         <td>
                             {% if i.is_active %}
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -69,7 +79,14 @@
                                 </svg>
                             {% endif %}
                         </td>
-                        <td>{{ i.price.price|floatformat:2 }}</td>
+                        <td>
+                            {% if user.is_superuser %}
+                                <a href="{% url 'admin:concert_price_change' i.price.id %}" class="link-dark">
+                                    {{ i.price.price|floatformat:2 }}</a>
+                            {% else %}
+                                {{ i.price.price|floatformat:2 }}
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

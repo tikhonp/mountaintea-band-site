@@ -19,7 +19,7 @@
             </li>
             {% if user.is_superuser %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/admin">Админка</a>
+                    <a class="nav-link" href="{% url 'admin:index' %}">Админка</a>
                 </li>
             {% endif %}
         </ul>

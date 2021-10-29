@@ -43,10 +43,14 @@ def stat(request, concert):
     tickets_sum = tickets.count()
     entered_percent = int(tickets.filter(is_active=False).count() * 100 / tickets_sum if tickets_sum != 0 else 0)
 
+    query = ''
     if request.method == 'POST':
         query = request.POST.get('query')
         tickets = tickets.annotate(
-            search=SearchVector('transaction__user__first_name', 'number', 'price__description'),
+            search=SearchVector(
+                'transaction__user__first_name', 'transaction__user__email',
+                'transaction__user__username', 'number', 'price__description', 'price__price'
+            ),
         ).filter(search=query)
 
     return render(request, "stat.html", {
@@ -54,7 +58,9 @@ def stat(request, concert):
         "amount_sum": amount_sum,
         "tickets_sum": tickets_sum,
         "entered_percent": entered_percent,
-        "concert": concert
+        "concert": concert,
+        "query": query,
+        "user": request.user,
     })
 
 
