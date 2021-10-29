@@ -17,15 +17,29 @@
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'submit-number' %}">Проверить билет по номеру</a>
             </li>
+            {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin">Админка</a>
+                </li>
+            {% endif %}
         </ul>
 
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Статистика концертов</h5>
-                {% for concert in concerts %}
-                    <a class="btn btn-light btn-sm"
-                       href="{% url 'staff-concert-statistic' concert=concert.id %}">{{ concert.title|title }}</a>
-                {% endfor %}
+                {% if concerts %}
+                    <h5 class="card-title">Статистика концертов</h5>
+                    {% for concert in concerts %}
+                        <a class="btn btn-light btn-sm"
+                           href="{% url 'staff-concert-statistic' concert=concert.id %}">{{ concert.title|title }}</a>
+                    {% endfor %}
+                {% endif %}
+                {% if concerts_done %}
+                    <h5 class="card-title">Статистика прошедших концертов</h5>
+                    {% for concert in concerts_done %}
+                        <a class="btn btn-light btn-sm"
+                           href="{% url 'staff-concert-statistic' concert=concert.id %}">{{ concert.title|title }}</a>
+                    {% endfor %}
+                {% endif %}
             </div>
         </div>
 

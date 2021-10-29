@@ -10,12 +10,12 @@
             <div class="container-fluid">
                 <a class="navbar-brand" href="{% url 'staff' %}">MountainTea</a>
                 <span class="navbar-text">{{ concert.title }}</span>
-                {#                <form class="d-flex" method="post">#}
-                {#                    {% csrf_token %}#}
-                {#                    <input class="form-control me-2" type="search" placeholder="Поиск билета" aria-label="Search"#}
-                {#                           name="query">#}
-                {#                    <button class="btn btn-outline-secondary" type="submit">Найти</button>#}
-                {#                </form>#}
+                <form class="d-flex" method="post">
+                    {% csrf_token %}
+                    <input class="form-control me-2" type="search" placeholder="Поиск билета" aria-label="Search"
+                           name="query">
+                    <button class="btn btn-outline-secondary" type="submit">Найти</button>
+                </form>
             </div>
         </nav>
 

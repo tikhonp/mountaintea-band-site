@@ -17,14 +17,16 @@ from concertstaff import forms
 
 @staff_member_required
 def main(request):
+    concerts = Concert.objects.all()
     return render(request, 'main_staff.html', {
         'user': request.user,
-        'concerts': [obj for obj in Concert.objects.all() if obj.is_active],
+        'concerts': [obj for obj in concerts if obj.is_active],
+        'concerts_done': [obj for obj in concerts if not obj.is_active]
     })
 
 
 @staff_member_required
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def stat(request, concert):
     concert = get_object_or_404(Concert, id=concert)
 
@@ -41,11 +43,11 @@ def stat(request, concert):
     tickets_sum = tickets.count()
     entered_percent = int(tickets.filter(is_active=False).count() * 100 / tickets_sum if tickets_sum != 0 else 0)
 
-    # if request.method == 'POST':
-    #     query = request.POST.get('query')
-    #     tickets = tickets.annotate(
-    #         search=SearchVector('transaction__user__first_name', 'number', 'price__description'),
-    #     ).filter(search=query)
+    if request.method == 'POST':
+        query = request.POST.get('query')
+        tickets = tickets.annotate(
+            search=SearchVector('transaction__user__first_name', 'number', 'price__description'),
+        ).filter(search=query)
 
     return render(request, "stat.html", {
         "t": tickets,
