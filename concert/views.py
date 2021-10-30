@@ -17,8 +17,25 @@ from concert.emails import generate_ticket_email, generate_managers_ticket_email
 from concert.models import Concert, Price, Transaction, Ticket, ConcertImage
 
 
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def main(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+
+        try:
+            user = User.objects.get(email=email)
+            user.first_name = name
+            user.save()
+        except User.DoesNotExist:
+            User.objects.create(
+                username=name.replace(' ', ''),
+                first_name=name,
+                email=email
+            )
+        except django.contrib.auth.models.User.MultipleObjectsReturned:
+            pass
+
     return render(request, 'main.html', {'concerts': [obj for obj in Concert.objects.all() if obj.is_active][:3]})
 
 
@@ -233,6 +250,7 @@ def concert_promo_email(request, concert_id, user, sha_hash):
     return HttpResponse(
         generate_concert_promo_email(concert, user, request=request, is_web=True).get('html_message')
     )
+
 
 @require_http_methods(["GET", "POST"])
 def email_unsubscribe(request, user, sha_hash):
