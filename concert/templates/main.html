@@ -31,177 +31,220 @@
             font-family: 'Playfair Display SC', serif;
         }
     </style>
+
+    <style>
+        .snowflake {
+            -webkit-animation: spin 4s linear infinite;
+            -moz-animation: spin 4s linear infinite;
+            animation: spin 4s linear infinite;
+        }
+
+        @-moz-keyframes spin {
+            100% {
+                -moz-transform: rotate(360deg);
+            }
+        }
+
+        @-webkit-keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid p-0">
-        <section class="row no-gutters align-items-center">
-            <div class="col-12 text-center d-flex">
-                <img alt="background" class="img-fluid" src="{% static 'background2.jpeg' %}" style="width:100%;">
-                <h1 class="position-absolute top-0 start-50 translate-middle font-title gornijchaij-title">
-                    <br><br><br>Горный Чай
-                </h1>
-            </div>
-        </section>
-    </div>
-    <img alt="песочница 2021" src="{% static 'main_image.png' %}" class="img-fluid">
-    <div class="container pt-3">
-        <div class="text-center">
-            <div itemscope itemtype="https://schema.org/MusicGroup">
-                <h3 class="gornijchaij-title">Кто мы?</h3>
-                <br>
-                <p>
-                    <span itemprop="name">Горный Чай</span> -
-                    <span itemprop="description">молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка.</span>
-                    <span itemprop="album" itemscope itemtype="https://schema.org/MusicAlbum">
+    <div id="main">
+        <div class="container-fluid p-0">
+            <section class="row no-gutters align-items-center">
+                <div class="col-12 text-center d-flex">
+                    <img alt="background" class="img-fluid" src="{% static 'background2.jpeg' %}" style="width:100%;">
+                    <h1 class="position-absolute top-0 start-50 translate-middle font-title gornijchaij-title">
+                        <br><br><br>Горный Чай
+                    </h1>
+                </div>
+            </section>
+        </div>
+        <img alt="песочница 2021" src="{% static 'main_image.png' %}" class="img-fluid">
+        <div class="container pt-3">
+            <div class="text-center">
+                <div itemscope itemtype="https://schema.org/MusicGroup">
+                    <h3 class="gornijchaij-title">Кто мы?</h3>
+                    <br>
+                    <p>
+                        <span itemprop="name">Горный Чай</span> -
+                        <span itemprop="description">молодая московская группа, играющая на стыке жанров инди, альтернативы и фанка.</span>
+                        <span itemprop="album" itemscope itemtype="https://schema.org/MusicAlbum">
                         <span itemprop="dateCreated">11 февраля 2021 года</span> вышел дебютный EP
                         "<span itemprop="name">Сборник прошлогодних песен</span>".
                         <meta content="4" itemprop="numTracks"/>
                         <meta content="Alt/Rock" itemprop="genre"/>
                     </span>
-                </p>
-                <br>
-                <h3 class="gornijchaij-title pb-2">Концерты</h3>
-                {% if concerts %}
-                    {% for concert in concerts %}
-                        <div class="pb-2" itemprop="event" itemscope itemtype="https://schema.org/MusicEvent">
-                            <div class="card bg-dark text-white rounded">
-                                <div class="card-body">
-                                    <h4 class="card-title" itemprop="name">{{ concert.full_title|title }}</h4>
+                    </p>
+                    <br>
+                    <h3 class="gornijchaij-title pb-2">Концерты</h3>
+                    {% if concerts %}
+                        {% for concert in concerts %}
+                            <div class="pb-2" itemprop="event" itemscope itemtype="https://schema.org/MusicEvent">
+                                <div class="card bg-dark text-white rounded">
+                                    <div class="card-body">
+                                        <h4 class="card-title" itemprop="name">{{ concert.full_title|title }}</h4>
 
-                                    <div itemprop="location" itemscope itemtype="https://schema.org/Place">
-                                        {% if concert.place_url %}
-                                            <a class="link-secondary" href="{{ concert.place_url }}" itemprop="url"></a>
+                                        <div itemprop="location" itemscope itemtype="https://schema.org/Place">
+                                            {% if concert.place_url %}
+                                                <a class="link-secondary" href="{{ concert.place_url }}"
+                                                   itemprop="url"></a>
+                                            {% endif %}
+                                            <h6 class="card-subtitle mb-2 text-muted" itemprop="name">
+                                                <span itemprop="name">{{ concert.place_name }}</span>:
+                                                <span itemprop="address">{{ concert.place_address }}</span>
+                                            </h6>
+                                        </div>
+
+                                        {% if concert.description %}
+                                            <p class="card-text" itemprop="description">{{ concert.description }}</p>
                                         {% endif %}
-                                        <h6 class="card-subtitle mb-2 text-muted" itemprop="name">
-                                            <span itemprop="name">{{ concert.place_name }}</span>:
-                                            <span itemprop="address">{{ concert.place_address }}</span>
-                                        </h6>
+                                        <meta itemprop="startDate" content="{{ concert.start_date_time|date:"c" }}">
+                                        {% if concert.end_date_time %}
+                                            <meta itemprop="endDate" content="{{ concert.end_date_time|date:"c" }}">
+                                        {% endif %}
+                                        <meta itemprop="eventStatus" content="{{ concert.status }}">
+                                        <meta itemprop="eventAttendanceMode" content="OnlineEventAttendanceMode">
+                                        {% if concert.image %}
+                                            <meta itemprop="image" content="{{ concert.image.url }}">
+                                        {% endif %}
+                                        <h6 class="card-subtitle mb-2 text-muted">{{ concert.start_date_time }}</h6>
+
+                                        <a class="stretched-link" href="{% url 'concert' concert.id %}"
+                                           itemprop="url"></a>
                                     </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>Мы обязательно выступим, но пока не знаем когда. Следите внимательно!</p>
+                    {% endif %}
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-light" data-bs-toggle="modal"
+                                data-bs-target="#subscribeModal">
+                            Чтобы не пропустить ничего важного, подпишитесь на рассылку
+                        </button>
 
-                                    {% if concert.description %}
-                                        <p class="card-text" itemprop="description">{{ concert.description }}</p>
-                                    {% endif %}
-                                    <meta itemprop="startDate" content="{{ concert.start_date_time|date:"c" }}">
-                                    {% if concert.end_date_time %}
-                                        <meta itemprop="endDate" content="{{ concert.end_date_time|date:"c" }}">
-                                    {% endif %}
-                                    <meta itemprop="eventStatus" content="{{ concert.status }}">
-                                    <meta itemprop="eventAttendanceMode" content="OnlineEventAttendanceMode">
-                                    {% if concert.image %}
-                                        <meta itemprop="image" content="{{ concert.image.url }}">
-                                    {% endif %}
-                                    <h6 class="card-subtitle mb-2 text-muted">{{ concert.start_date_time }}</h6>
-
-                                    <a class="stretched-link" href="{% url 'concert' concert.id %}" itemprop="url"></a>
+                        <div class="modal fade" id="subscribeModal" tabindex="-1" aria-labelledby="subscribeModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-dark">Подписаться на обновления Горного Чая</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <form method="post">
+                                        <div class="modal-body">
+                                            {% csrf_token %}
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" id="nameInput" placeholder="Имя"
+                                                       name="name" required>
+                                                <label for="nameInput">Имя и фамилия</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="email" class="form-control" id="floatingInput"
+                                                       placeholder="name@example.com" name="email" required>
+                                                <label for="floatingInput">Email</label>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                Закрыть
+                                            </button>
+                                            <button type="submit" class="btn btn-dark">Подписаться</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-                    {% endfor %}
-                {% else %}
-                    <p>Мы обязательно выступим, но пока не знаем когда. Следите внимательно!</p>
-                {% endif %}
-                <div class="d-grid">
-                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#subscribeModal">
-                        Чтобы не пропустить ничего важного, подпишитесь на рассылку
-                    </button>
+                    </div>
+                    <br>
+                    <div class="d-grid">
+                        <a class="btn btn-outline-light" href="{% url 'concerts' %}" role="button">Все концерты -></a>
+                    </div>
+                    <br>
+                    <h3 class="gornijchaij-title pb-3">Релизы</h3>
+                    <div style="max-width:100%;">
+                        <div style="position:relative;padding-bottom:calc(56.25% + 52px);height: 0;">
+                            <iframe allowfullscreen height="100%"
+                                    sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
+                                    src="https://embed.song.link/?url=https%3A%2F%2Falbum.link%2FpM8ps7SZRr6pV&theme=dark"
+                                    style="position:absolute;top:0;left:0;border:none;"
+                                    width="100%">
+                            </iframe>
+                        </div>
+                    </div>
 
-                    <div class="modal fade" id="subscribeModal" tabindex="-1" aria-labelledby="subscribeModalLabel"
-                         aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title text-dark">Подписаться на обновления Горного Чая</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <form method="post">
-                                    <div class="modal-body">
-                                        {% csrf_token %}
-                                        <div class="form-floating mb-3">
-                                            <input type="text" class="form-control" id="nameInput" placeholder="Имя"
-                                                   name="name" required>
-                                            <label for="nameInput">Имя и фамилия</label>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input type="email" class="form-control" id="floatingInput"
-                                                   placeholder="name@example.com" name="email" required>
-                                            <label for="floatingInput">Email</label>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                            Закрыть
-                                        </button>
-                                        <button type="submit" class="btn btn-dark">Подписаться</button>
-                                    </div>
-                                </form>
+                    <footer class="pt-4 my-md-5 pt-md-5 border-top">
+                        <div class="row">
+                            <div class="col-12 col-md">
+                                <small class="d-block mb-3 text-muted">Горный Чай © 2021 — {% now 'Y' %}</small>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <div class="d-grid">
-                    <a class="btn btn-outline-light" href="{% url 'concerts' %}" role="button">Все концерты -></a>
-                </div>
-                <br>
-                <h3 class="gornijchaij-title pb-3">Релизы</h3>
-                <div style="max-width:100%;">
-                    <div style="position:relative;padding-bottom:calc(56.25% + 52px);height: 0;">
-                        <iframe allowfullscreen height="100%"
-                                sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
-                                src="https://embed.song.link/?url=https%3A%2F%2Falbum.link%2FpM8ps7SZRr6pV&theme=dark"
-                                style="position:absolute;top:0;left:0;border:none;"
-                                width="100%">
-                        </iframe>
-                    </div>
-                </div>
-
-                <footer class="pt-4 my-md-5 pt-md-5 border-top">
-                    <div class="row">
-                        <div class="col-12 col-md">
-                            <small class="d-block mb-3 text-muted">Горный Чай © {% now 'Y' %}</small>
-                        </div>
-                        <div class="col-6 col-md">
-                            <h5 class="gornijchaij-title">Контакты</h5>
-                            <ul class="list-unstyled text-small">
-                                <li><a target="_blank" class="link-secondary" itemprop="url"
-                                       href="https://www.instagram.com/mountainteaaa/">Instagram</a>
-                                </li>
-                                <li><a target="_blank" class="link-secondary" itemprop="url"
-                                       href="https://vk.com/mountainteaaa">ВКонтакте</a></li>
-                                <li><a target="_blank" class="link-secondary" itemprop="url"
-                                       href="https://www.youtube.com/channel/UCaY2lcv8Lhri_Zg4s8pFUfA">Youtube</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-6 col-md">
-                            <h5 class="gornijchaij-title">Мы</h5>
-                            <ul class="list-unstyled text-small">
+                            <div class="col-6 col-md">
+                                <h5 class="gornijchaij-title">Контакты</h5>
+                                <ul class="list-unstyled text-small">
+                                    <li><a target="_blank" class="link-secondary" itemprop="url"
+                                           href="https://www.instagram.com/mountainteaaa/">Instagram</a>
+                                    </li>
+                                    <li><a target="_blank" class="link-secondary" itemprop="url"
+                                           href="https://vk.com/mountainteaaa">ВКонтакте</a></li>
+                                    <li><a target="_blank" class="link-secondary" itemprop="url"
+                                           href="https://www.youtube.com/channel/UCaY2lcv8Lhri_Zg4s8pFUfA">Youtube</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-6 col-md">
+                                <h5 class="gornijchaij-title">Мы</h5>
+                                <ul class="list-unstyled text-small">
                                 <span itemprop="employee" itemscope itemtype="https://schema.org/Person">
                                     <li><a target="_blank" class="link-secondary" itemprop="url"
                                            href="https://www.instagram.com/leshich999/">
                                         <span itemprop="name">Леша</span></a>
                                     </li>
                                 </span>
-                                <span itemprop="employee" itemscope itemtype="https://schema.org/Person">
+                                    <span itemprop="employee" itemscope itemtype="https://schema.org/Person">
                                     <li><a target="_blank" class="link-secondary" itemprop="url"
                                            href="https://www.instagram.com/stepa.aa/">
                                         <span itemprop="name">Степа</span></a>
                                     </li>
                                 </span>
-                                <span itemprop="employee" itemscope itemtype="https://schema.org/Person">
+                                    <span itemprop="employee" itemscope itemtype="https://schema.org/Person">
                                     <li><a target="_blank" class="link-secondary" itemprop="url"
                                            href="https://www.instagram.com/tikhonnnnn/">
                                         <span itemprop="name">Тихон</span></a>
                                     </li>
                                 </span>
-                            </ul>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                </footer>
+                    </footer>
 
+                </div>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="{% static 'js/jquery.snow.js' %}"></script>
+    <script>
+        jQuery("#main").snow(
+            intensity=100,
+            sizeRange=[20, 50]
+        );
+    </script>
 {% endblock %}
