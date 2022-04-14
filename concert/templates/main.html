@@ -31,33 +31,6 @@
             font-family: 'Playfair Display SC', serif;
         }
     </style>
-
-    <style>
-        .snowflake {
-            -webkit-animation: spin 4s linear infinite;
-            -moz-animation: spin 4s linear infinite;
-            animation: spin 4s linear infinite;
-        }
-
-        @-moz-keyframes spin {
-            100% {
-                -moz-transform: rotate(360deg);
-            }
-        }
-
-        @-webkit-keyframes spin {
-            100% {
-                -webkit-transform: rotate(360deg);
-            }
-        }
-
-        @keyframes spin {
-            100% {
-                -webkit-transform: rotate(360deg);
-                transform: rotate(360deg);
-            }
-        }
-    </style>
 {% endblock %}
 
 {% block body %}
@@ -236,15 +209,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block script %}
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="{% static 'js/jquery.snow.js' %}"></script>
-    <script>
-        jQuery("#main").snow(
-            intensity=100,
-            sizeRange=[20, 50]
-        );
-    </script>
 {% endblock %}
