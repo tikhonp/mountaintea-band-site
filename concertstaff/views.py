@@ -4,8 +4,7 @@ from django.core import exceptions
 from django.core.mail import send_mail, mail_managers
 from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import redirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
@@ -13,6 +12,7 @@ from concert.emails import generate_ticket_email, generate_managers_ticket_email
 from concert.models import Transaction, Ticket, Concert, Price
 from concert.views import create_user_payment
 from concertstaff import forms
+from concertstaff.models import Issue
 
 
 @staff_member_required
@@ -21,7 +21,9 @@ def main(request):
     return render(request, 'main_staff.html', {
         'user': request.user,
         'concerts': [obj for obj in concerts if obj.is_active],
-        'concerts_done': [obj for obj in concerts if not obj.is_active]
+        'concerts_done': [obj for obj in concerts if not obj.is_active],
+        'working_issues': Issue.objects.filter(manager=request.user, is_closed=False),
+        'available_issues': Issue.objects.filter(manager=None, is_closed=False),
     })
 
 
@@ -128,3 +130,32 @@ def submit_number(request):
             return render(request, 'submit_ticket_number.html', {'number': number})
 
         return redirect('staff-ticket-check', ticket=number, sha=ticket.get_hash())
+
+
+@staff_member_required
+@require_http_methods(["GET", "POST"])
+def issue_page(request, issue):
+    issue = get_object_or_404(Issue, id=issue)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'get_task':
+            if issue.manager is None:
+                issue.manager = request.user
+                issue.save()
+            else:
+                return  # raise exception
+        if action == 'done_task':
+            if issue.manager == request.user:
+                issue.is_closed = True
+                issue.save()
+            else:
+                return  # raise exception
+
+    is_manager = request.user == issue.manager
+
+    return render(request, 'issue.html', {
+        'issue': issue,
+        'manager': 'вы' if is_manager else issue.manager,
+        'is_manager': is_manager,
+    })

@@ -14,5 +14,6 @@ urlpatterns = [
     path('ticket/<int:ticket>/', views.qr_code_image, name='qr-code'),
     path('email/<int:transaction>/<str:sha_hash>/', views.email_page, name='email-page'),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
-    path('email/unsubscribe/<int:user>/<str:sha_hash>/', views.email_unsubscribe, name='email-unsubscribe')
+    path('email/unsubscribe/<int:user>/<str:sha_hash>/', views.email_unsubscribe, name='email-unsubscribe'),
+    path('issue/', views.add_issue, name='add-issue'),
 ]

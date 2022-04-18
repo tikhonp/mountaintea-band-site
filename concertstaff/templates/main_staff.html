@@ -43,6 +43,34 @@
             </div>
         </div>
 
+        {% if working_issues %}
+            <h1 class="mt-5">Обращения у вас в работе</h1>
+            {% for issue in working_issues %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ issue.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ issue.date_created }}</h6>
+                        <p class="card-text">{{ issue.description }}</p>
+                        <a href="{% url 'issue' issue=issue.id %}" class="card-link">Посмотреть ➔</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if available_issues %}
+            <h1 class="mt-5">Нерассмотренные обращения</h1>
+            {% for issue in available_issues %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ issue.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ issue.date_created }}</h6>
+                        <p class="card-text">{{ issue.description }}</p>
+                        <a href="{% url 'issue' issue=issue.id %}" class="card-link">Посмотреть ➔</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
         {% include "footer.html" %}
     </div>
 {% endblock %}

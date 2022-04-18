@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% load my_filters %}
+
+{% block title %}Issue manager{% endblock %}
+
+{% block description %}Страница персонала{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h2 class="mt-2">Обращение</h2>
+        <p><a href="{% url 'staff' %}">На главную</a></p>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ issue.title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ issue.date_created }}, номер {{ issue.id }}</h6>
+                <p class="card-text">{{ issue.description }}</p>
+
+                <ul class="list-group list-group-flush mb-3">
+                    {% if issue.contact_telegram %}
+                        <li class="list-group-item">Теlegram - {{ issue.contact_telegram }}</li>
+                    {% endif %}
+                    {% if issue.contact_email %}
+                        <li class="list-group-item">Email - {{ email }}</li>
+                    {% endif %}
+                    <li class="list-group-item">Менеджер: {{ manager }}</li>
+                </ul>
+
+                {% if issue.is_closed %}
+                    <h6 class="card-subtitle mb-2 text-muted">Обращение закрыто.</h6>
+                {% else %}
+                    {% if issue.manager is None %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="get_task">
+                            <button type="submit" class="btn btn-primary">Взять задачу</button>
+                        </form>
+                    {% endif %}
+                    {% if is_manager %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="done_task">
+                            <button type="submit" class="btn btn-primary">Закрыть задачу</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        {% include "footer.html" %}
+    </div>
+{% endblock %}

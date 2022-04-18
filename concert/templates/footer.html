@@ -1,11 +1,74 @@
+{% load static %}
+
 <footer class="pt-4 my-md-5  border-top">
     <div class="row">
         <div class="col-12 col-md">
             <small class="d-block mb-3 text-muted">
                 Горный Чай © {% now 'Y' %}
-                <a class="link-secondary" href="https://t.me/tikhonnnnn/" target="_blank">Напишите сюда, если что-то не
-                    работает</a>
+                <button type="button" class="btn btn-link link-secondary" data-bs-toggle="modal"
+                        data-bs-target="#staticBackdrop">
+                    Напишите сюда, если что-то не работает
+                </button>
             </small>
         </div>
     </div>
 </footer>
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content" id="issue">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Обращение в службу поддержки</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div v-if="!is_done">
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input @keyup="unvalidateTitle()" type="text" :class="titleClass" id="title" v-model="title" name="title">
+                        <label for="floatingInput">Заголовок</label>
+                        <div v-if="title_invalid" class="invalid-feedback">{{ title_invalid }}</div>
+                    </div>
+
+                    <div class="form-floating">
+                        <textarea @keyup="unvalidateDescription()" :class="descriptionClass" id="description" v-model="description" name="description"
+                                  style="height: 100px"></textarea>
+                        <label for="floatingTextarea2">Комментарий</label>
+                        <div v-if="description_invalid" class="invalid-feedback">{{ description_invalid }}</div>
+                    </div>
+
+                    <div :class="alertClass" role="alert">
+                        Заполните хотя бы один контакт, чтобы мы могли с вами связаться:
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input @keyup="unvalidateTelegram()" type="text" :class="telegramClass" id="telegram" v-model="telegram" name="telegram">
+                        <label for="floatingInput">Telegram</label>
+                        <div v-if="telegram_invalid" class="invalid-feedback">{{ telegram_invalid }}</div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input @keyup="unvalidateEmail()" type="email" :class="emailClass" id="email" v-model="email" name="email">
+                        <label for="floatingInput">Email</label>
+                        <div v-if="email_invalid" class="invalid-feedback">{{ email_invalid }}</div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="is_done" class="text-center mt-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                     class="bi bi-check-circle-fill text-success" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                </svg>
+                Готово!
+            </div>
+            <div class="modal-footer" v-if="!is_done">
+                <button type="button" class="btn btn-primary" @click="submitForm()">
+                    <span v-if="loading" class="spinner-border spinner-border-sm" role="status"
+                          aria-hidden="true"></span>
+                    Отправить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="module" src="{% static 'js/submit_issue.js' %}"></script>

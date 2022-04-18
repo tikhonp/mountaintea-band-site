@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+import json
 
 import django
 import pytz
@@ -15,6 +16,8 @@ from django.views.decorators.http import require_http_methods
 from concert import forms
 from concert.emails import generate_ticket_email, generate_managers_ticket_email, generate_concert_promo_email
 from concert.models import Concert, Price, Transaction, Ticket, ConcertImage
+
+from concertstaff.models import Issue
 
 
 @require_http_methods(["GET", "POST"])
@@ -264,3 +267,11 @@ def email_unsubscribe(request, user, sha_hash):
         user.profile.save()
 
     return render(request, 'unsubscribe.html', {'user': user, 'get': request.method == 'GET'})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def add_issue(request):
+    data = json.loads(request.body)
+    Issue.objects.create(**data)
+    return HttpResponse()
