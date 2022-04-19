@@ -4,20 +4,21 @@ import json
 
 import django
 import pytz
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.mail import mail_managers, send_mail
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseGone
 from django.shortcuts import render, get_object_or_404
 from django.template import Template, RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from concert import forms
 from concert.emails import generate_ticket_email, generate_managers_ticket_email, generate_concert_promo_email
 from concert.models import Concert, Price, Transaction, Ticket, ConcertImage
-
 from concertstaff.models import Issue
+
+HOST = settings.HOST
 
 
 @require_http_methods(["GET", "POST"])
@@ -89,86 +90,50 @@ def create_user_payment(cleaned_data: dict) -> User:
     return user
 
 
+@require_http_methods(["GET"])
+def buy_ticket_data(request, concert_id):
+    concert = get_object_or_404(Concert, id=concert_id)
+    prices = Price.objects.filter(concert=concert, is_active=True)
+
+    return HttpResponse(json.dumps({
+        'concert': {
+            'title': concert.title,
+            'date_time': concert.start_date_time.strftime("%d.%m %H:%M"),
+            'buy_ticket_message': concert.buy_ticket_message,
+            'yandex_wallet_receiver': concert.yandex_wallet_receiver
+        },
+        'prices': [{
+            'price': price.price,
+            'description': price.description,
+            'currency': price.currency,
+            'id': price.id,
+            'count': 0,
+        } for price in prices]
+    }))
+
+
+@csrf_exempt
 @require_http_methods(["GET", "POST"])
 def buy_ticket(request, concert_id):
     concert = Concert.objects.get(id=concert_id)
     prices = Price.objects.filter(concert=concert, is_active=True)
 
-    sold_out = False if prices else True
+    if request.method == 'POST':
+        if not prices:
+            return HttpResponseGone(json.dumps({'error': 'Ошибка: билеты закончились.'}))
 
-    paying = False
-    transaction = None
-    amount_sum = 0
+        data = json.loads(request.body)
+        print(data)
+        user = create_user_payment(data.get('user'))
+        transaction = Transaction.objects.create(user=user, concert=concert)
 
-    f_tickets = {}
+        for ticket_id, count in data.get('tickets').items():
+            for i in range(count):
+                Ticket.objects.create(transaction=transaction, price=Price.objects.get(id=int(ticket_id)))
 
-    if request.method == 'GET':
-        form = forms.BuyTicketForm()
+        return HttpResponse(json.dumps({'transaction_id': transaction.id}))
 
-        if not sold_out:
-            user_id = request.session.get('user', False)
-            if user_id:
-                try:
-                    user = User.objects.get(id=user_id)
-                    form = forms.BuyTicketForm({
-                        'name': user.first_name,
-                        'email': user.email,
-                        'phone_number': user.profile.phone,
-                    })
-                except User.DoesNotExist:
-                    request.session.pop('user', None)
-
-            ft = request.session.get('f_tickets', False)
-            if ft:
-                ft = dict((int(name), val) for name, val in ft.items())
-                f_tickets = ft
-
-    else:
-        if sold_out:
-            return HttpResponse("Ошибка: билеты закончились.")
-
-        form = forms.BuyTicketForm(request.POST)
-
-        f_tickets = {}
-        for price in prices:
-            t = request.POST.get('price_count_{}'.format(price.id))
-            if t and t.isdigit():
-                if int(t) == 0:
-                    continue
-                else:
-                    f_tickets[price.id] = int(t)
-
-        if f_tickets == {}:
-            messages.error(request, "Вы должны добавить хотя бы один билет, чтобы совершить покупку")
-
-        elif form.is_valid():
-            user = create_user_payment(form.cleaned_data)
-
-            request.session['user'] = user.id
-            request.session['price'] = prices.first().id
-            request.session['f_tickets'] = f_tickets
-
-            transaction = Transaction.objects.create(user=user, concert=concert)
-
-            for tick in f_tickets:
-                for i in range(f_tickets[tick]):
-                    ticket = Ticket.objects.create(transaction=transaction, price=Price.objects.get(id=tick))
-                    amount_sum += ticket.price.price
-
-            paying = True
-
-    params = {
-        'sold_out': sold_out,
-        'concert': concert,
-        'price': prices.first(),
-        'form': form,
-        'paying': paying,
-        'transaction': transaction,
-        'prices': prices,
-        'amount_sum': amount_sum,
-        'f_tickets': f_tickets,
-    }
-    return render(request, 'buy_ticket.html', params)
+    return render(request, 'buy_ticket.html')
 
 
 @csrf_exempt
@@ -189,13 +154,11 @@ def incoming_payment(request):
         request.POST.get('currency', ''),
         request.POST.get('datetime', ''),
         request.POST.get('sender', ''),
-        request.POST.get('codepro', ''),
+        request.POST.get('codes', ''),
         transaction.concert.yandex_notification_secret,
         request.POST.get('label', ''),
     )
     hash_object = hashlib.sha1(hash_str.encode())
-
-    # print(str(hash_object.hexdigest()))
 
     if str(hash_object.hexdigest()) != request.POST.get('sha1_hash'):
         return HttpResponseBadRequest("Failed to check SHA1 hash")

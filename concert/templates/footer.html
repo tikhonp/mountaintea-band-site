@@ -13,6 +13,7 @@
         </div>
     </div>
 </footer>
+<div class="mb-3"></div>
 
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
      aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -27,14 +28,14 @@
                     <div class="form-floating mb-3">
                         <input @keyup="unvalidateTitle()" type="text" :class="titleClass" id="title" v-model="title" name="title">
                         <label for="floatingInput">Заголовок</label>
-                        <div v-if="title_invalid" class="invalid-feedback">{{ title_invalid }}</div>
+                        <div v-if="title_invalid" class="invalid-feedback">[[ title_invalid ]]</div>
                     </div>
 
                     <div class="form-floating">
                         <textarea @keyup="unvalidateDescription()" :class="descriptionClass" id="description" v-model="description" name="description"
                                   style="height: 100px"></textarea>
                         <label for="floatingTextarea2">Комментарий</label>
-                        <div v-if="description_invalid" class="invalid-feedback">{{ description_invalid }}</div>
+                        <div v-if="description_invalid" class="invalid-feedback">[[ description_invalid ]]</div>
                     </div>
 
                     <div :class="alertClass" role="alert">
@@ -44,13 +45,13 @@
                     <div class="form-floating mb-3">
                         <input @keyup="unvalidateTelegram()" type="text" :class="telegramClass" id="telegram" v-model="telegram" name="telegram">
                         <label for="floatingInput">Telegram</label>
-                        <div v-if="telegram_invalid" class="invalid-feedback">{{ telegram_invalid }}</div>
+                        <div v-if="telegram_invalid" class="invalid-feedback">[[ telegram_invalid ]]</div>
                     </div>
 
                     <div class="form-floating mb-3">
                         <input @keyup="unvalidateEmail()" type="email" :class="emailClass" id="email" v-model="email" name="email">
                         <label for="floatingInput">Email</label>
-                        <div v-if="email_invalid" class="invalid-feedback">{{ email_invalid }}</div>
+                        <div v-if="email_invalid" class="invalid-feedback">[[ email_invalid ]]</div>
                     </div>
                 </div>
             </div>

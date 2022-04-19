@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.concerts, name='concerts'),
     path('<int:concert_id>/', views.concert_page, name='concert'),
     path('<int:concert_id>/tickets/', views.buy_ticket, name='buy-ticket'),
+    path('<int:concert_id>/tickets/data/', views.buy_ticket_data, name='buy-ticket-data'),
     path('<int:concert_id>/email/<int:user>/<str:sha_hash>/', views.concert_promo_email, name='concert-promo-email'),
     path('incomingpayment/', views.incoming_payment, name='incoming-payment'),
     path('tickets/donepayment/', views.done_payment, name='done-payment'),
