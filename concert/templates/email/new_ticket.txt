@@ -49,7 +49,4 @@ QR code : {{ host }}{% url 'qr-code' ticket=ticket.number %}
 
 _Copyright © {% now 'Y' %} Горный Чай, All rights reserved._
 
-ЕСЛИ ЧТО-ТО НЕ РАБОТАЕТ И ПО ДРУГИМ ВОПРОСАМ
-** Напиши сюда (https://t.me/tikhonnnnn/)
-
 Вы получили это письмо потому, что приобрели билет на сайте ** mountainteaband.ru ({{ host }}/)
