@@ -99,7 +99,7 @@ def buy_ticket_data(request, concert_id):
     return HttpResponse(json.dumps({
         'concert': {
             'title': concert.title,
-            'date_time': timezone.localtime(concert.start_date_time).strftime("%d.%m %H:%M"),
+            'date_time': timezone.localtime(concert.start_date_time).strftime("%d.%m в %H:%M"),
             'buy_ticket_message': concert.buy_ticket_message,
             'yandex_wallet_receiver': concert.yandex_wallet_receiver
         },

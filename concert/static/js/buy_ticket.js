@@ -99,9 +99,7 @@ const app = Vue.createApp({
             }
 
             if (input.value.length != selectionStart) {
-                // Editing in the middle of input, not last symbol
                 if (e.data && /\D/g.test(e.data)) {
-                    // Attempt to input non-numeric symbol
                     input.value = inputNumbersValue;
                 }
                 return;
@@ -129,7 +127,6 @@ const app = Vue.createApp({
             input.value = formattedInputValue;
         },
         onPhoneKeyDown(e) {
-            // Clear input after remove last symbol
             var inputValue = e.target.value.replace(/\D/g, '');
             if (e.keyCode == 8 && inputValue.length == 1) {
                 e.target.value = "";
@@ -179,11 +176,11 @@ const app = Vue.createApp({
         </div>
     </div>
 
-    <div v-if="!data_loading && prices">
-        <div class="p-3 mb-3">
+    <div v-if="!data_loading && prices" class="mt-2 mb-4">
+        <div class="">
 
             <h2>Билет на концерт - [[ concert.title ]]</h2>
-            <p>[[ concert.date_time ]]</p>
+            <p>Когда: [[ concert.date_time ]].</p>
 
             <div v-if="prices.length == 0">
                 <div class="alert alert-info" role="alert">
@@ -227,7 +224,11 @@ const app = Vue.createApp({
                         <div class="col">
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <h6 class="card-subtitle mb-2 text-muted">[[ price.description ]]</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ticket-perforated-fill" viewBox="0 0 16 16">
+                                          <path d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5V6a.5.5 0 0 1-.5.5 1.5 1.5 0 0 0 0 3 .5.5 0 0 1 .5.5v1.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5V10a.5.5 0 0 1 .5-.5 1.5 1.5 0 1 0 0-3A.5.5 0 0 1 0 6V4.5Zm4-1v1h1v-1H4Zm1 3v-1H4v1h1Zm7 0v-1h-1v1h1Zm-1-2h1v-1h-1v1Zm-6 3H4v1h1v-1Zm7 1v-1h-1v1h1Zm-7 1H4v1h1v-1Zm7 1v-1h-1v1h1Zm-8 1v1h1v-1H4Zm7 1h1v-1h-1v1Z"/>
+                                        </svg> [[ price.description ]]
+                                    </h6>
                                     <p class="card-text">[[ formatPrice(price.price) ]] [[
                                         price.currency ]]</p>
                                     <div class="row mb-3">
@@ -272,7 +273,10 @@ const app = Vue.createApp({
                     <button class="btn btn-secondary btn-lg" type="button" @click="submitForm">
                     <span v-if="pay_loading" class="spinner-border spinner-border-sm" role="status"
                       aria-hidden="true"></span>
-                        Оплатить
+                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
+                          <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
+                          <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
+                        </svg> оплатить
                     </button>
                 </div>
 
