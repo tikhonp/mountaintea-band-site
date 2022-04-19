@@ -238,7 +238,7 @@ const app = Vue.createApp({
                                                 </button>
                                             </div>
                                             <div class="col">
-                                                <input class="form-control rounded" type="text"
+                                                <input class="form-control rounded" type="text" type="number" min="0"
                                                        v-model="price.count" :key="index"/>
                                             </div>
                                             <div class="col">
@@ -254,7 +254,7 @@ const app = Vue.createApp({
                     </div>
                 </div>
 
-                <div v-if="amount" class="card">
+                <div v-if="amount" class="card mb-2">
                     <div class="card-body">
                         Сумма: [[ amount ]] руб.
                     </div>
@@ -264,7 +264,7 @@ const app = Vue.createApp({
                     Добавьте хотя бы один билет.
                 </div>
 
-                <div v-if="error" class="alert alert-info" role="alert">
+                <div v-if="error" class="alert alert-danger" role="alert">
                     [[ error ]]
                 </div>
 
