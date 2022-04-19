@@ -154,7 +154,7 @@ def incoming_payment(request):
         request.POST.get('currency', ''),
         request.POST.get('datetime', ''),
         request.POST.get('sender', ''),
-        request.POST.get('codes', ''),
+        request.POST.get('codepro', ''),
         transaction.concert.yandex_notification_secret,
         request.POST.get('label', ''),
     )
