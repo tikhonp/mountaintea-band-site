@@ -11,6 +11,7 @@ from django.core.mail import mail_managers, send_mail
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseGone
 from django.shortcuts import render, get_object_or_404
 from django.template import Template, RequestContext
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
@@ -98,7 +99,7 @@ def buy_ticket_data(request, concert_id):
     return HttpResponse(json.dumps({
         'concert': {
             'title': concert.title,
-            'date_time': concert.start_date_time.strftime("%d.%m %H:%M"),
+            'date_time': timezone.localtime(concert.start_date_time).strftime("%d.%m %H:%M"),
             'buy_ticket_message': concert.buy_ticket_message,
             'yandex_wallet_receiver': concert.yandex_wallet_receiver
         },
