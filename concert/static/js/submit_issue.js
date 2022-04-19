@@ -182,8 +182,5 @@ const issues_app = Vue.createApp({
             Отправить
         </button>
     </div>
-    `,
-    mounted() {
-        console.log("hello");
-    }
+    `
 }).mount("#issue");

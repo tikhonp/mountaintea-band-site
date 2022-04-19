@@ -52,13 +52,17 @@ const app = Vue.createApp({
                 .then((response) => {
                     this.transaction_id = response.data.transaction_id
                     this.pay_loading = false;
-                    this.$refs.submit.click();
                 })
                 .catch((error) => {
                     this.pay_loading = false;
                     this.fetchInitData();
                     this.error = error.response.data.error;
                     console.log(error);
+                })
+                .then(() => {
+                    if (this.transaction_id != null) {
+                        this.$refs.submit.click();
+                    }
                 });
         },
         formatPrice(value) {
@@ -265,8 +269,8 @@ const app = Vue.createApp({
                 </div>
 
                 <div class="d-grid gap-2 mt-3">
-                    <button class="btn btn-outline-secondary btn-lg" type="button" @click="submitForm">
-                <span v-if="pay_loading" class="spinner-border spinner-border-sm text-secondary" role="status"
+                    <button class="btn btn-secondary btn-lg" type="button" @click="submitForm">
+                    <span v-if="pay_loading" class="spinner-border spinner-border-sm" role="status"
                       aria-hidden="true"></span>
                         Оплатить
                     </button>
