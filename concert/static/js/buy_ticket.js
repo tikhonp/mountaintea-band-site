@@ -28,6 +28,7 @@ const app = Vue.createApp({
     },
     methods: {
         submitForm() {
+            this.transaction_id = null;
             this.pay_loading = true;
 
             this.nameInvalid = !this.isNameValid;
@@ -46,7 +47,7 @@ const app = Vue.createApp({
                     email: this.email,
                     phone_number: this.phone
                 },
-                tickets: Object.fromEntries(this.prices.map( x => [x.id, x.count]))
+                tickets: Object.fromEntries(this.prices.map( x => [x.id, Number(x.count)]))
             }
             axios.post(base_url + window.location.pathname, data)
                 .then((response) => {
@@ -140,14 +141,15 @@ const app = Vue.createApp({
         },
         fetchInitData() {
             axios.get(base_url + window.location.pathname + 'data/')
-            .then((response) => {
-                this.concert = response.data.concert;
-                this.prices = response.data.prices;
-                this.data_loading = false;
-            })
-            .catch(function (error) {
-                console.log(error);
-            })
+                .then((response) => {
+                    this.concert = response.data.concert;
+                    this.prices = response.data.prices;
+                    this.data_loading = false;
+                })
+                .catch((error) => {
+                    this.error = 'Упс! Что-то не работает, пожалуйста, сообщите нам.';
+                    console.log(error);
+                })
         }
     },
     computed: {
@@ -277,7 +279,7 @@ const app = Vue.createApp({
                         <span v-if="pay_loading" class="spinner-border spinner-border-sm" role="status"
                             aria-hidden="true"></span>  
                       
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
+                        <svg v-if="!pay_loading" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
                             <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
                             <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
                         </svg> оплатить

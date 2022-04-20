@@ -124,16 +124,16 @@ def buy_ticket(request, concert_id):
             return HttpResponseGone(json.dumps({'error': 'Ошибка: билеты закончились.'}))
 
         data = json.loads(request.body)
-        print(data)
+
+        if len([1 for ticket_id, count in data.get('tickets').items() if isinstance(count, int)]) == 0:
+            return HttpResponseBadRequest(json.dumps({
+                'error': 'Введите корректное количество билетов.'
+            }))
+
         user = create_user_payment(data.get('user'))
         transaction = Transaction.objects.create(user=user, concert=concert)
 
         for ticket_id, count in data.get('tickets').items():
-            if count is not int or not count.isdigit() or not ticket_id.isdigit():
-                return HttpResponseBadRequest(json.dumps({
-                    'error': 'Введите корректное количество билетов.'
-                }))
-
             for i in range(int(count)):
                 Ticket.objects.create(transaction=transaction, price=Price.objects.get(id=int(ticket_id)))
 
