@@ -57,6 +57,9 @@ const app = Vue.createApp({
                     this.pay_loading = false;
                     this.fetchInitData();
                     this.error = error.response.data.error;
+                    if (!this.error) {
+                        this.error = 'Упс! Что-то не работает, пожалуйста, сообщите нам.';
+                    }
                     console.log(error);
                 })
                 .then(() => {
@@ -271,11 +274,12 @@ const app = Vue.createApp({
 
                 <div class="d-grid gap-2 mt-3">
                     <button class="btn btn-secondary btn-lg" type="button" @click="submitForm">
-                    <span v-if="pay_loading" class="spinner-border spinner-border-sm" role="status"
-                      aria-hidden="true"></span>
-                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
-                          <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
-                          <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
+                        <span v-if="pay_loading" class="spinner-border spinner-border-sm" role="status"
+                            aria-hidden="true"></span>  
+                      
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
+                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
+                            <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
                         </svg> оплатить
                     </button>
                 </div>
