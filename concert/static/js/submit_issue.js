@@ -25,9 +25,17 @@ const issues_app = Vue.createApp({
 
             is_done: false,
             loading: false,
+
+            submitButtonDisabled: false,
         }
     },
     methods: {
+        warnDisabled() {
+            this.submitButtonDisabled = true
+            setTimeout(() => {
+                this.submitButtonDisabled = false
+            }, 1500)
+        },
         unvalidateTitle() {
             if (this.title_invalid) {
                 if (this.title !== '' && this.title.length < 128) {
@@ -110,6 +118,7 @@ const issues_app = Vue.createApp({
             }
 
             if (!valid) {
+                this.warnDisabled();
                 return
             }
 
@@ -127,6 +136,7 @@ const issues_app = Vue.createApp({
                 })
                 .catch(error => {
                     this.loading = false;
+                    this.warnDisabled();
                     console.error("There was an error!", error);
                 });
         }
@@ -176,11 +186,13 @@ const issues_app = Vue.createApp({
         Готово!
     </div>
     <div class="modal-footer" v-if="!is_done">
-        <button type="button" class="btn btn-primary" @click="submitForm()">
-            <span v-if="loading" class="spinner-border spinner-border-sm" role="status"
-                  aria-hidden="true"></span>
-            Отправить
-        </button>
+        <div :class="{ shake: submitButtonDisabled }">
+            <button type="button" class="btn btn-secondary" @click="submitForm()">
+                <span v-if="loading" class="spinner-border spinner-border-sm" role="status"
+                      aria-hidden="true"></span>
+                Отправить
+            </button>
+        </div>
     </div>
     `
 }).mount("#issue");

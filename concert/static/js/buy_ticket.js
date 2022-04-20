@@ -24,9 +24,23 @@ const app = Vue.createApp({
             amountInvalid: false,
 
             error: '',
+
+            submitButtonDisabled: false,
+            tweened: 0,
+        }
+    },
+    watch: {
+        amount(n) {
+            gsap.to(this, { duration: 0.5, tweened: Number(n) || 0 })
         }
     },
     methods: {
+        warnDisabled() {
+            this.submitButtonDisabled = true
+            setTimeout(() => {
+                this.submitButtonDisabled = false
+            }, 1500)
+        },
         submitForm() {
             this.transaction_id = null;
             this.pay_loading = true;
@@ -38,6 +52,7 @@ const app = Vue.createApp({
 
             if (this.nameInvalid || this.emailInvalid || this.phoneInvalid || this.amountInvalid) {
                 this.pay_loading = false;
+                this.warnDisabled();
                 return
             }
 
@@ -66,6 +81,8 @@ const app = Vue.createApp({
                 .then(() => {
                     if (this.transaction_id != null) {
                         this.$refs.submit.click();
+                    } else {
+                        this.warnDisabled();
                     }
                 });
         },
@@ -182,76 +199,74 @@ const app = Vue.createApp({
     </div>
 
     <div v-if="!data_loading && prices" class="mt-2 mb-4">
-        <div class="">
+        <h2>Билет на концерт - [[ concert.title ]]</h2>
+        <p>Когда: [[ concert.date_time ]].</p>
 
-            <h2>Билет на концерт - [[ concert.title ]]</h2>
-            <p>Когда: [[ concert.date_time ]].</p>
-
-            <div v-if="prices.length == 0">
-                <div class="alert alert-info" role="alert">
-                    К сожалению, билеты закончились.
-                </div>
-
-                <div v-if="error" class="alert alert-danger" role="alert">
-                    [[ error ]]
-                </div>
+        <div v-if="prices.length == 0">
+            <div class="alert alert-info" role="alert">
+                К сожалению, билеты закончились.
             </div>
 
-            <div v-if="prices.length != 0">
-                <div v-if="concert.buy_ticket_message" class="alert alert-info" role="alert">
-                    [[ concert.buy_ticket_message ]]
-                </div>
+            <div v-if="error" class="alert alert-danger" role="alert">
+                [[ error ]]
+            </div>
+        </div>
 
-                <div class="form-floating mb-3" :class="{'shadow': nameFocused}">
-                    <input id="floatingInputn" type="text" class="form-control" v-model="name"
-                           @focus="nameFocused = true" @blur="nameFocused = false" required
-                           :class="{'is-invalid': nameInvalid}">
-                    <label for="floatingInputn">Имя и Фамилия</label>
-                </div>
+        <div v-if="prices.length != 0">
+            <div v-if="concert.buy_ticket_message" class="alert alert-info" role="alert">
+                [[ concert.buy_ticket_message ]]
+            </div>
 
-                <div class="form-floating mb-3" :class="{'shadow': emailFocused}">
-                    <input type="email" class="form-control" id="floatingInpute" v-model="email" required
-                           @focus="emailFocused = true" @blur="emailFocused = false"
-                           :class="{'is-invalid': emailInvalid}">
-                    <label for="floatingInpute">Электронная почта</label>
-                </div>
+            <div class="form-floating mb-3" :class="{'shadow': nameFocused}">
+                <input id="floatingInputn" type="text" class="form-control" v-model="name"
+                       @focus="nameFocused = true" @blur="nameFocused = false" required :class="{'is-invalid': nameInvalid}" 
+                       @keyup="nameInvalid && isNameValid ? nameInvalid = false : nameInvalid">
+                <label for="floatingInputn">Имя и Фамилия</label>
+            </div>
 
-                <div class="form-floating mb-3" :class="{'shadow': phoneFocused}">
-                    <input maxlength="18" type="tel" @keydown="onPhoneKeyDown" @input="onPhoneInput"
-                           @paste="onPhonePaste" @focus="phoneFocused = true" @blur="phoneFocused = false"
-                           class="form-control" id="id_phone_number" v-model="phone" required
-                           :class="{'is-invalid': phoneInvalid}"/>
-                    <label for="id_phone_number">Номер телефона</label>
-                </div>
+            <div class="form-floating mb-3" :class="{'shadow': emailFocused}">
+                <input type="email" class="form-control" id="floatingInpute" v-model="email" required
+                       @focus="emailFocused = true" @blur="emailFocused = false" :class="{'is-invalid': emailInvalid}"
+                       @keyup="emailInvalid && isEmailValid ? emailInvalid = false : emailInvalid">
+                <label for="floatingInpute">Электронная почта</label>
+            </div>
 
-                <div class="row">
-                    <div v-for="(price, index) in prices" :key="price.id">
-                        <div class="col">
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h6 class="card-subtitle mb-2 text-muted">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ticket-perforated-fill" viewBox="0 0 16 16">
-                                          <path d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5V6a.5.5 0 0 1-.5.5 1.5 1.5 0 0 0 0 3 .5.5 0 0 1 .5.5v1.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5V10a.5.5 0 0 1 .5-.5 1.5 1.5 0 1 0 0-3A.5.5 0 0 1 0 6V4.5Zm4-1v1h1v-1H4Zm1 3v-1H4v1h1Zm7 0v-1h-1v1h1Zm-1-2h1v-1h-1v1Zm-6 3H4v1h1v-1Zm7 1v-1h-1v1h1Zm-7 1H4v1h1v-1Zm7 1v-1h-1v1h1Zm-8 1v1h1v-1H4Zm7 1h1v-1h-1v1Z"/>
-                                        </svg> [[ price.description ]]
-                                    </h6>
-                                    <p class="card-text">[[ formatPrice(price.price) ]] [[
-                                        price.currency ]]</p>
-                                    <div class="row mb-3">
-                                        <div class="row">
-                                            <div class="col text-end">
-                                                <button type="button" class="btn btn-secondary"
-                                                        @click="decrementPrice(index);">-
-                                                </button>
-                                            </div>
-                                            <div class="col">
-                                                <input class="form-control rounded" type="text" type="number" min="0"
-                                                       v-model="price.count" :key="index"/>
-                                            </div>
-                                            <div class="col">
-                                                <button type="button" class="btn btn-secondary"
-                                                        @click="incrementPrice(index);">+
-                                                </button>
-                                            </div>
+            <div class="form-floating mb-3" :class="{'shadow': phoneFocused}">
+                <input maxlength="18" type="tel" @keydown="onPhoneKeyDown" @input="onPhoneInput"
+                       @paste="onPhonePaste" @focus="phoneFocused = true" @blur="phoneFocused = false"
+                       class="form-control" id="id_phone_number" v-model="phone" required
+                       :class="{'is-invalid': phoneInvalid}" 
+                       @keyup="phoneInvalid && isPhoneValid ? phoneInvalid = false : phoneInvalid"/>
+                <label for="id_phone_number">Номер телефона</label>
+            </div>
+
+            <div class="row">
+                <div v-for="(price, index) in prices" :key="price.id">
+                    <div class="col">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ticket-perforated-fill" viewBox="0 0 16 16">
+                                      <path d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5V6a.5.5 0 0 1-.5.5 1.5 1.5 0 0 0 0 3 .5.5 0 0 1 .5.5v1.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5V10a.5.5 0 0 1 .5-.5 1.5 1.5 0 1 0 0-3A.5.5 0 0 1 0 6V4.5Zm4-1v1h1v-1H4Zm1 3v-1H4v1h1Zm7 0v-1h-1v1h1Zm-1-2h1v-1h-1v1Zm-6 3H4v1h1v-1Zm7 1v-1h-1v1h1Zm-7 1H4v1h1v-1Zm7 1v-1h-1v1h1Zm-8 1v1h1v-1H4Zm7 1h1v-1h-1v1Z"/>
+                                    </svg> [[ price.description ]]
+                                </h6>
+                                <p class="card-text">[[ formatPrice(price.price) ]] [[
+                                    price.currency ]]</p>
+                                <div class="row mb-3">
+                                    <div class="row">
+                                        <div class="col text-end">
+                                            <button type="button" class="btn btn-secondary"
+                                                    @click="decrementPrice(index);">-
+                                            </button>
+                                        </div>
+                                        <div class="col">
+                                            <input class="form-control rounded" type="text" type="number" min="0"
+                                                   v-model="price.count" :key="index"/>
+                                        </div>
+                                        <div class="col">
+                                            <button type="button" class="btn btn-secondary"
+                                                    @click="incrementPrice(index);">+
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -259,48 +274,48 @@ const app = Vue.createApp({
                         </div>
                     </div>
                 </div>
-
-                <div v-if="amount" class="card mb-2">
-                    <div class="card-body">
-                        Сумма: [[ amount ]] руб.
-                    </div>
-                </div>
-
-                <div v-if="amountInvalid && !amount" class="alert alert-danger" role="alert">
-                    Добавьте хотя бы один билет.
-                </div>
-
-                <div v-if="error" class="alert alert-danger" role="alert">
-                    [[ error ]]
-                </div>
-
-                <div class="d-grid gap-2 mt-3">
-                    <button class="btn btn-secondary btn-lg" type="button" @click="submitForm">
-                        <span v-if="pay_loading" class="spinner-border spinner-border-sm" role="status"
-                            aria-hidden="true"></span>  
-                      
-                        <svg v-if="!pay_loading" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
-                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
-                            <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
-                        </svg> оплатить
-                    </button>
-                </div>
-
-                <form method="POST" action="https://yoomoney.ru/quickpay/confirm.xml">
-                    <input type="hidden" name="successURL"
-                           :value="'https://mountainteaband.ru/concerts/tickets/donepayment/?t=' + transaction_id"/>
-                    <input type="hidden" name="receiver" :value="concert.yandex_wallet_receiver"/>
-                    <input type="hidden" name="formcomment" :value="'Горный Чай: ' + concert.title"/>
-                    <input type="hidden" name="short-dest" :value="'Горный Чай: ' + concert.title"/>
-                    <input type="hidden" name="label" :value="transaction_id"/>
-                    <input type="hidden" name="quickpay-form" value="shop"/>
-                    <input type="hidden" name="targets" :value="'Горный Чай: ' + concert.title"/>
-                    <input type="hidden" name="sum" :value="amount" data-type="number"/>
-                    <input type="hidden" name="paymentType" value="AC"/>
-                    <button ref="submit" style="display:none;" type="submit"></button>
-                </form>
-
             </div>
+
+            <div v-if="amount" class="card mb-2">
+                <div class="card-body">
+                    Сумма: [[ tweened.toFixed(0) ]] руб.
+                </div>
+            </div>
+
+            <div v-if="amountInvalid && !amount" class="alert alert-danger" role="alert">
+                Добавьте хотя бы один билет.
+            </div>
+
+            <div v-if="error" class="alert alert-danger" role="alert">
+                [[ error ]]
+            </div>
+
+            <div class="d-grid gap-2 mt-3" :class="{ shake: submitButtonDisabled }">
+                <button class="btn btn-secondary btn-lg" type="button" @click="submitForm">
+                    <span v-if="pay_loading" class="spinner-border spinner-border-sm" role="status"
+                        aria-hidden="true"></span>  
+                  
+                    <svg v-if="!pay_loading" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
+                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
+                        <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
+                    </svg> оплатить
+                </button>
+            </div>
+
+            <form method="POST" action="https://yoomoney.ru/quickpay/confirm.xml">
+                <input type="hidden" name="successURL"
+                       :value="'https://mountainteaband.ru/concerts/tickets/donepayment/?t=' + transaction_id"/>
+                <input type="hidden" name="receiver" :value="concert.yandex_wallet_receiver"/>
+                <input type="hidden" name="formcomment" :value="'Горный Чай: ' + concert.title"/>
+                <input type="hidden" name="short-dest" :value="'Горный Чай: ' + concert.title"/>
+                <input type="hidden" name="label" :value="transaction_id"/>
+                <input type="hidden" name="quickpay-form" value="shop"/>
+                <input type="hidden" name="targets" :value="'Горный Чай: ' + concert.title"/>
+                <input type="hidden" name="sum" :value="amount" data-type="number"/>
+                <input type="hidden" name="paymentType" value="AC"/>
+                <button ref="submit" style="display:none;" type="submit"></button>
+            </form>
+
         </div>
     </div>
     `
