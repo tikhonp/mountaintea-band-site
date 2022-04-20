@@ -41,11 +41,33 @@
 
     <div class="container">
         <div class="text-center">
-            <p>Ожидайте электронного письма на вашу почту. Пожалуйста, проверьте спам!</p>
-            <small class="d-block mb-3 text-muted">
-                <a target='_blank' class="link-secondary" href="https://t.me/tikhonnnnn">Напишите сюда, если что-то не
-                    работает</a>
-            </small>
+            <div class="row">
+                <div class="col-12 col-md">
+                    <small class="d-block mb-3 text-muted">
+                        Горный Чай © {% now 'Y' %}
+                        <button type="button" class="btn btn-link link-secondary" data-bs-toggle="modal"
+                                data-bs-target="#staticBackdrop">
+                            Напишите сюда, если что-то не работает
+                        </button>
+                    </small>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" id="issue">
+
+                <div class="d-flex justify-content-center align-middle my-5">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script type="module" src="{% static 'js/submit_issue.js' %}"></script>
 {% endblock %}

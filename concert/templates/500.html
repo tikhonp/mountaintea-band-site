@@ -42,9 +42,28 @@
         <div class="text-center">
             <p>
                 Ошибка серевера! Ой... Мы обязательно это исправим! Напиши о проблеме
-                <a target="_blank" href="https://t.me/tikhonnnnn">сюда</a>, завари чая и жди ремонта!
+                <button type="button" class="btn btn-link link-secondary" data-bs-toggle="modal"
+                        data-bs-target="#staticBackdrop">
+                    Напишите сюда, если что-то не работает
+                </button>, завари чая и жди ремонта!
             </p>
             <p><a href="/">На главную.</a></p>
         </div>
     </div>
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" id="issue">
+
+                <div class="d-flex justify-content-center align-middle my-5">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script type="module" src="{% static 'js/submit_issue.js' %}"></script>
 {% endblock %}
