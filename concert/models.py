@@ -28,6 +28,7 @@ class Profile(models.Model):
         hash_str = '{}&{}&{}&{}&{}'.format(self.pk, self.phone, self.user.username, self.user.email, self.user.pk)
         return hashlib.sha1(hash_str.encode()).hexdigest()
 
+
 # noinspection PyUnusedLocal
 @receiver(post_save, sender=User)
 def create_user_profile(instance, created, **kwargs):
@@ -42,7 +43,7 @@ def save_user_profile(instance, **kwargs):
 
 
 class Concert(models.Model):
-    """Concert instance most of fields is music event schema fields https://schema.org/MusicEvent"""
+    """Concert instance most fields is music event schema fields https://schema.org/MusicEvent"""
 
     title = models.CharField("concert title", max_length=512)
     description = models.TextField("concert description", null=True, default=None, blank=True)
