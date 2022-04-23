@@ -77,7 +77,7 @@ const app = Vue.createApp({
             <div class="container-fluid">
                 <a class="navbar-brand" href="/staff/">MountainTea</a>
                 <span class="navbar-text">[[ concert.title ]]</span>
-                <div class="d-flex" v-if="tickets_sum != 0 && !is_search">
+                <div class="d-flex" v-if="tickets_sum != 0 || is_search">
                     <input class="form-control me-2" type="text" placeholder="Поиск билета" aria-label="Search"
                            v-model="query">
                     <div :class="{ shake: submitButtonDisabled }">
