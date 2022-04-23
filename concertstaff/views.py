@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.postgres.search import SearchVector
 from django.core import exceptions
@@ -28,14 +30,33 @@ def main(request):
 
 
 @staff_member_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET"])
 def stat(request, concert):
-    concert = get_object_or_404(Concert, id=concert)
+    get_object_or_404(Concert, id=concert)
+    return render(request, "stat.html")
 
-    tickets = Ticket.objects.filter(
-        transaction__is_done=True,
-        transaction__concert=concert,
-    ).order_by('-transaction__date_created')
+
+@staff_member_required
+@require_http_methods(["GET"])
+def stat_data(request, concert):
+    concert = get_object_or_404(Concert, id=concert)
+    query = request.GET.get('query', '')
+
+    if query == '':
+        tickets = Ticket.objects.filter(
+            transaction__is_done=True,
+            transaction__concert=concert,
+        ).order_by('-transaction__date_created')
+    else:
+        tickets = Ticket.objects.filter(
+            transaction__is_done=True,
+            transaction__concert=concert,
+        ).order_by('-transaction__date_created').annotate(
+            search=SearchVector(
+                'transaction__user__first_name', 'transaction__user__email',
+                'transaction__user__username', 'number', 'price__description', 'price__price'
+            ),
+        ).filter(search=query)
 
     amount_sum = Transaction.objects.filter(
         is_done=True,
@@ -45,25 +66,38 @@ def stat(request, concert):
     tickets_sum = tickets.count()
     entered_percent = int(tickets.filter(is_active=False).count() * 100 / tickets_sum if tickets_sum != 0 else 0)
 
-    query = ''
-    if request.method == 'POST':
-        query = request.POST.get('query')
-        tickets = tickets.annotate(
-            search=SearchVector(
-                'transaction__user__first_name', 'transaction__user__email',
-                'transaction__user__username', 'number', 'price__description', 'price__price'
-            ),
-        ).filter(search=query)
-
-    return render(request, "stat.html", {
-        "t": tickets,
+    return HttpResponse(json.dumps({
+        "tickets": [{
+            "number": ticket.number,
+            "is_active": ticket.is_active,
+            "get_hash": ticket.get_hash(),
+            "price": {
+                "id": ticket.price.id,
+                "description": ticket.price.description,
+                "price": ticket.price.price,
+            },
+            "transaction": {
+                "date_created": timezone.localtime(
+                    ticket.transaction.date_created).strftime("%H:%M %d.%m.%y"),
+                "user": {
+                    "first_name": ticket.transaction.user.first_name,
+                    "pk": ticket.transaction.user.pk,
+                }
+            }
+        } for ticket in tickets],
         "amount_sum": amount_sum,
         "tickets_sum": tickets_sum,
         "entered_percent": entered_percent,
-        "concert": concert,
-        "query": query,
-        "user": request.user,
-    })
+        "concert": {
+            "title": concert.title,
+        },
+        "user": {
+            "username": request.user.username,
+            "first_name": request.user.first_name,
+            "is_superuser": request.user.is_superuser,
+            "pk": request.user.pk,
+        },
+    }))
 
 
 @staff_member_required

@@ -5,6 +5,7 @@ from concertstaff import views
 urlpatterns = [
     path('', views.main, name='staff'),
     path('statistic/<int:concert>/', views.stat, name='staff-concert-statistic'),
+    path('statistic/<int:concert>/data/', views.stat_data, name='staff-concert-statistic-data'),
     path('submit/<int:ticket>/<str:sha>/', views.ticket_check, name='staff-ticket-check'),
     path('newfreeticket/', views.add_ticket, name='staff-free-ticket'),
     path('submitnumber/', views.submit_number, name='submit-number'),
