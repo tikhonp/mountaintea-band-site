@@ -12,6 +12,7 @@ const app = Vue.createApp({
             data_loading: true,
             search_loading: false,
             submitButtonDisabled: false,
+            is_search: false,
 
             error: '',
             query: '',
@@ -30,6 +31,7 @@ const app = Vue.createApp({
                 this.warnDisabled();
             } else {
                 this.search_loading = true;
+                this.is_search = true
                 this.fetchInitData(this.query);
             }
         },
@@ -168,7 +170,12 @@ const app = Vue.createApp({
         </div>
         
         <div v-if="tickets_sum == 0" class="alert alert-info" role="alert">
-            Еще не куплено ни одного билета на этот концерт.
+            <div v-if="is_search">
+                К сожалению, ничего не нашлось...
+            </div>
+            <div v-else>
+                Еще не куплено ни одного билета на этот концерт.
+            </div>
         </div>
     </div>
     `
