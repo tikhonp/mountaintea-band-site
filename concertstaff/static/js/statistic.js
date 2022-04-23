@@ -107,8 +107,8 @@ const app = Vue.createApp({
                 <h5>Прогресс посещения мероприятия</h5>
 
                 <div class="progress mt-3 mb-3" style="height: 20px;">
-                    <div class="progress-bar" role="progressbar" style="width: [[ entered_percent ]]%;"
-                         aria-valuenow="[[ entered_percent ]]" aria-valuemin="0"
+                    <div class="progress-bar" role="progressbar" :style="'width: ' + entered_percent + '%;'"
+                         :aria-valuenow="entered_percent" aria-valuemin="0"
                          aria-valuemax="100">[[ entered_percent ]]%
                     </div>
                 </div>
