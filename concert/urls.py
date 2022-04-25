@@ -12,6 +12,7 @@ urlpatterns = [
     path('<int:concert_id>/email/<int:user>/<str:sha_hash>/', views.concert_promo_email, name='concert-promo-email'),
     path('incomingpayment/', views.incoming_payment, name='incoming-payment'),
     path('tickets/donepayment/', views.done_payment, name='done-payment'),
+    path('tickets/mailgun/webhook/', views.mailgun_webhook, name='mailgun-webhook'),
     path('ticket/<int:ticket>/', views.qr_code_image, name='qr-code'),
     path('email/<int:transaction>/<str:sha_hash>/', views.email_page, name='email-page'),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),

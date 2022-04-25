@@ -244,3 +244,12 @@ def add_issue(request):
     data = json.loads(request.body)
     Issue.objects.create(**data)
     return HttpResponse()
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def mailgun_webhook(request):
+    print(request.body)
+    data = json.loads(request.body)
+    print(data)
+    return HttpResponse()
