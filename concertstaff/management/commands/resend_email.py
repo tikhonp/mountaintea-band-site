@@ -1,7 +1,6 @@
-from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
 
-from concert.emails import generate_ticket_email
+from concert.emails import generate_ticket_email, send_mail
 from concert.models import Transaction
 
 
@@ -28,6 +27,6 @@ class Command(BaseCommand):
 
         print(f"Sending to {transaction.user.first_name}, with email: \"{transaction.user.email}\"...")
 
-        send_mail(**generate_ticket_email(transaction))
+        send_mail(**generate_ticket_email(transaction, headers=True))
 
         print("Sent successfully!")

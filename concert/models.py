@@ -158,6 +158,24 @@ class Transaction(models.Model):
     date_closed = models.DateTimeField("date close", default=None, null=True)
     amount_sum = models.FloatField("amount sum", default=None, null=True)
 
+    # Email Message delivery data
+    STATUS_CHOICES = [
+        ('unnecessary', 'Transaction is not completed email is unnecessary.'),
+        ('accepted', 'Mailgun accepted the request to send/forward the email and the message has been placed in queue.'),
+        ('rejected', 'Mailgun rejected the request to send/forward the email.'),
+        ('delivered', 'Mailgun sent the email and it was accepted by the recipient email server.'),
+        ('failed', 'Mailgun could not deliver the email to the recipient email server.'),
+        ('opened', 'The email recipient opened the email and enabled image viewing.'),
+        ('clicked', 'The email recipient clicked on a link in the email.'),
+        ('unsubscribed', 'The email recipient clicked on the unsubscribe link.'),
+        ('complained', 'The email recipient clicked on the spam complaint button within their email client. Feedback '
+                       'loops enable the notification to be received by Mailgun.'),
+        ('stored', 'Mailgun has stored an incoming message'),
+    ]
+    email_status = models.CharField("email send status", max_length=12, choices=STATUS_CHOICES, default='unnecessary')
+    email_delivery_code = models.IntegerField("status code of email delivery", null=True, default=None)
+    email_delivery_message = models.TextField("delivery status message", null=True, default=None)
+
     def __str__(self) -> str:
         return "{} {} {}".format(self.concert.title, self.user.username, "Оплачено" if self.is_done else "Не оплачено")
 

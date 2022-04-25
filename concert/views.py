@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+import hmac
 import json
 
 import django
@@ -7,7 +8,7 @@ import pytz
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.core.mail import mail_managers, send_mail
+from django.core.mail import mail_managers
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseGone
 from django.shortcuts import render, get_object_or_404
 from django.template import Template, RequestContext
@@ -15,11 +16,13 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from concert.emails import generate_ticket_email, generate_managers_ticket_email, generate_concert_promo_email
+from concert.emails import generate_ticket_email, generate_managers_ticket_email, generate_concert_promo_email, \
+    send_mail
 from concert.models import Concert, Price, Transaction, Ticket, ConcertImage
 from concertstaff.models import Issue
 
 HOST = settings.HOST
+MAILGUN_SIGNING_KEY = settings.MAILGUN_SIGNING_KEY
 
 
 @require_http_methods(["GET", "POST"])
@@ -177,7 +180,7 @@ def incoming_payment(request):
     transaction.save()
 
     tickets = Ticket.objects.filter(transaction=transaction)
-    send_mail(**generate_ticket_email(transaction, tickets=tickets, request=request))
+    send_mail(**generate_ticket_email(transaction, tickets=tickets, request=request, headers=True))
     mail_managers(**generate_managers_ticket_email(transaction, tickets=tickets))
 
     return HttpResponse("ok")
@@ -249,7 +252,25 @@ def add_issue(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def mailgun_webhook(request):
-    print(request.body)
     data = json.loads(request.body)
     print(data)
+
+    signature = data.get('signature')
+    hmac_digest = hmac.new(key=MAILGUN_SIGNING_KEY.encode(),
+                           msg=('{}{}'.format(signature.get('timestamp'), signature.get('token'))).encode(),
+                           digestmod=hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(str(signature.get('signature')), str(hmac_digest)):
+        return HttpResponseBadRequest()
+
+    event = data.get('event-data')
+    tid = event.get('user-variables', {}).get('tid')
+    if tid is None:
+        return HttpResponse()
+
+    transaction = get_object_or_404(Transaction, id=int(tid))
+    transaction.email_status = event.get('event')
+    transaction.email_delivery_code = event.get('delivery-status').get('code')
+    transaction.email_delivery_message = event.get('delivery-status').get('message')
+    transaction.save()
+
     return HttpResponse()

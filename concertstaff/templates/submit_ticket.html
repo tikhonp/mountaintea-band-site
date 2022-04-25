@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Подверждение билета {{ ticket.number }}{% endblock %}
+{% block title %}Подтверждение билета {{ ticket.number }}{% endblock %}
 
 {% block description %}Страница персонала{% endblock %}
 
@@ -38,6 +38,32 @@
                     {% endif %}
                 {% endif %}
 
+                <button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    Показать детали транзакции
+                </button>
+
+                <div class="collapse" id="collapseExample">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">{{ ticket.transaction.get_email_status_display }}</li>
+                        <li class="list-group-item">
+                            <span>Status and code: </span>
+                            {{ ticket.transaction.email_delivery_message }}, {{ ticket.transaction.email_delivery_code }}
+                        </li>
+                        <li class="list-group-item">{{ ticket.transaction.date_created|date:"H:i d.m.y" }}</li>
+                        <li class="list-group-item">Сумма: {{ ticket.transaction.amount_sum }}</li>
+                        {#                        <li class="list-group-item">Билеты в транзакции:#}
+                        {#                            {% for t in ticket.transaction %}#}
+                        {#                                {% if t.id == ticket.if %}#}
+                        {#                                    <div class="text-secondary">Этот билет </div>#}
+                        {#                                {% else %}#}
+                        {#                                    <a href="/staff/submit/{{ t.number }}/{{ t.get_hash }}/">{{ t.number }}</a>#}
+                        {#                                {% endif %}#}
+                        {#                            {% endfor %}#}
+                        {#                        </li>#}
+                    </ul>
+                </div>
+                <p></p>
                 <a href="{% url 'submit-number' %}">Проверить билет по номеру</a>
             </div>
         </div>

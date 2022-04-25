@@ -1,6 +1,9 @@
+import json
+
 import html2text
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.mail import EmailMultiAlternatives
 from django.http import HttpRequest
 from django.template import Template, Context, RequestContext
 
@@ -8,7 +11,7 @@ from concert.models import Transaction, Ticket, ConcertImage, Concert
 
 
 def generate_ticket_email(
-        transaction: Transaction, tickets=None, request: HttpRequest = None, is_web=False
+        transaction: Transaction, tickets=None, request: HttpRequest = None, is_web=False, headers=False
 ) -> dict:
     """Render dict with email settings template with tickets based on the concert model settings"""
 
@@ -30,13 +33,18 @@ def generate_ticket_email(
     html_email = Template(transaction.concert.email_template).render(context)
     plain_text = html2text.html2text(html_email)
 
-    return {
+    output = {
         'subject': transaction.concert.email_title,
         'message': plain_text,
         'from_email': settings.DEFAULT_FROM_EMAIL,
         'recipient_list': [transaction.user.email],
         'html_message': html_email,
     }
+    if headers:
+        output.update({'headers': {
+            'X-Mailgun-Variables': json.dumps({"tid": transaction.id})
+        }})
+    return output
 
 
 def generate_managers_ticket_email(transaction: Transaction, tickets: Ticket = None) -> dict:
@@ -92,3 +100,18 @@ def generate_concert_promo_email(
         'recipient_list': [user.email],
         'html_message': html_email,
     }
+
+
+def send_mail(subject, message, from_email, recipient_list: list,
+              fail_silently=False, connection=None, html_message=None,
+              headers=None):
+    msg = EmailMultiAlternatives(
+        subject,
+        message,
+        from_email,
+        recipient_list,
+        connection=connection,
+        headers=headers,
+    )
+    msg.attach_alternative(html_message, "text/html")
+    msg.send(fail_silently=fail_silently)

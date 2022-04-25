@@ -146,5 +146,6 @@ EMAIL_HOST_PASSWORD = '15ca6ef6fca7b38674038383758e0b42-77751bfc-b5d61f92'
 DEFAULT_FROM_EMAIL = 'Горный Чай <noreply@mountainteaband.ru>'
 EMAIL_USE_TLS = True
 SERVER_EMAIL = 'django@mountaintea.ru'
+MAILGUN_SIGNING_KEY = 'bcf127e2f51a7ea424cfcd440712fc68-77751bfc-1c99b10a'
 
 HOST = 'https://mountainteaband.ru'
