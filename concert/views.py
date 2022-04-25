@@ -251,9 +251,8 @@ def add_issue(request):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-def mailgun_webhook(request):
+def mailgun_webhook(request, event):
     data = json.loads(request.body)
-    print(data)
 
     signature = data.get('signature')
     hmac_digest = hmac.new(key=MAILGUN_SIGNING_KEY.encode(),
@@ -262,15 +261,20 @@ def mailgun_webhook(request):
     if not hmac.compare_digest(str(signature.get('signature')), str(hmac_digest)):
         return HttpResponseBadRequest()
 
-    event = data.get('event-data')
-    tid = event.get('user-variables', {}).get('tid')
+    event_data = data.get('event-data')
+    tid = event_data.get('user-variables', {}).get('tid')
     if tid is None:
         return HttpResponse()
 
     transaction = get_object_or_404(Transaction, id=int(tid))
-    transaction.email_status = event.get('event')
-    transaction.email_delivery_code = event.get('delivery-status').get('code')
-    transaction.email_delivery_message = event.get('delivery-status').get('message')
+
+    event_status = event_data.get('event')
+    if event_status is None:
+        transaction.email_status = event
+    else:
+        transaction.email_status = event_status
+        transaction.email_delivery_code = event_data.get('delivery-status').get('code')
+        transaction.email_delivery_message = event_data.get('delivery-status').get('message')
     transaction.save()
 
     return HttpResponse()
