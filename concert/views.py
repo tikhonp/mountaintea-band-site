@@ -273,8 +273,12 @@ def mailgun_webhook(request, event):
         transaction.email_status = event
     else:
         transaction.email_status = event_status
-        transaction.email_delivery_code = event_data.get('delivery-status').get('code')
-        transaction.email_delivery_message = event_data.get('delivery-status').get('message')
+        email_delivery_code = event_data.get('delivery-status', {}).get('code')
+        if email_delivery_code:
+            transaction.email_delivery_code = email_delivery_code
+        email_delivery_message = event_data.get('delivery-status', {}).get('message')
+        if email_delivery_message:
+            transaction.email_delivery_message = email_delivery_message
     transaction.save()
 
     return HttpResponse()
