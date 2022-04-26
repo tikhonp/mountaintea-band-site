@@ -12,3 +12,4 @@ sqlparse==0.4.2
 django_cleanup==6.0.0
 html2text==2020.1.16
 sentry-sdk==1.5.10
+django-cors-headers==3.11.0

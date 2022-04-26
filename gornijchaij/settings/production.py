@@ -32,12 +32,17 @@ DATABASES = {
 }
 
 MANAGERS = [
-    ('Tikhon', 'tikhon.petrishchev@gmail.com'),
-    ('Platon', 'spektortosha@gmail.com'),
-    ('Step', 'Stepaqwn@gmail.com'),
+    # ('Tikhon', 'tikhon.petrishchev@gmail.com'),
+    # ('Platon', 'spektortosha@gmail.com'),
+    # ('Step', 'Stepaqwn@gmail.com'),
 ]
 
 ADMINS = [('Tikhon', 'ticha56@mail.ru')]
 HOST = 'https://mountainteaband.ru'
 SECURE_SSL_HOST = 'https://mountainteaband.ru'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CORS_ALLOWED_ORIGINS = [
+    'https://mountainteaband.ru',
+    'https://www.mountainteaband.ru',
+]

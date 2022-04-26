@@ -202,7 +202,7 @@ def done_payment(request):
     if not transaction_id or not transaction_id.isdigit():
         return HttpResponseBadRequest("Invalid query params")
 
-    user = get_object_or_404(Transaction, pk=int(transaction_id))
+    user = get_object_or_404(Transaction, pk=int(transaction_id)).user
     return render(request, 'success_payment.html', {'user': user})
 
 

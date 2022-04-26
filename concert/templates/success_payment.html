@@ -23,7 +23,7 @@
 
         .font-title {
             font-family: 'Playfair Display SC', serif;
-            font-size: 8vw;
+            font-size: 5vw;
         }
     </style>
 {% endblock %}
@@ -32,11 +32,20 @@
     <div class="container-fluid p-0">
         <section class="row no-gutters align-items-center">
             <div class="col-12 text-center d-flex">
-                <img alt="background" class="img-fluid of" src="{% static 'background2.jpeg' %}" style="width:100%;">
-                <h1 class="position-absolute top-0 start-50 translate-middle text-light fonttitle"><br><br><br>
-                    Спасибо за вашу покупку, {{ user.first_name }}</h1>
+                <h1 class="position-absolute translate-middle font-title gornijchaij-title"
+                    style="position:absolute;left: 50%;transform: translate(-50%, -50%);">
+                    <br><br><br><br>Спасибо за Вашу покупку, {{ user.first_name }}!
+                </h1>
             </div>
         </section>
+    </div>
+    <img alt="background" src="{% static 'background2.jpeg' %}" class="img-fluid" style="width:100%;">
+
+    <div class="container">
+        <div class="text-center">
+            <p>Скоро вам на почту придет письмо с билетом. Обратите внимание, что в "gmail" оно может попасть в раздел
+                промо-акции.</p>
+        </div>
     </div>
 
     <div class="container">
