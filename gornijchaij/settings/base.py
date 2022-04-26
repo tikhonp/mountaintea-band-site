@@ -151,3 +151,10 @@ SERVER_EMAIL = 'django@mountaintea.ru'
 MAILGUN_SIGNING_KEY = 'bcf127e2f51a7ea424cfcd440712fc68-77751bfc-1c99b10a'
 
 HOST = 'https://mountainteaband.ru'
+
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    'https://mountainteaband.ru',
+    'https://www.mountainteaband.ru',
+]
