@@ -10,30 +10,15 @@
     <link href="https://fonts.gstatic.com" rel="preconnect">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@900&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #000000;
-        }
-
-        p,
-        h3,
-        h1,
-        h5 {
-            color: #ffffff;
-        }
-
-        .font-title {
-            font-family: 'Playfair Display SC', serif;
-            font-size: 8vw;
-        }
-
+        body { background-color: #000000; }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="container-fluid p-0">
         <section class="row no-gutters align-items-center">
-            <div class="col-12 text-center d-flex">
-                <h1 class="position-absolute translate-middle font-title gornijchaij-title"
+            <div class="col-12 text-center d-flex text-white">
+                <h1 class="position-absolute translate-middle font-title"
                     style="position:absolute;left: 50%;transform: translate(-50%, -50%);">
                     <br><br><br>404
                 </h1>
@@ -42,7 +27,7 @@
     </div>
     <img alt="background" src="{% static 'background2.jpeg' %}" class="img-fluid" style="width:100%;">
     <div class="container">
-        <div class="text-center">
+        <div class="text-center text-white">
             <p>Такой страницы нет. Не расстраивайтся, завари горного чая и ищи дальше!</p>
             <p><a href="/">На главную.</a></p>
 

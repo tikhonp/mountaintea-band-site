@@ -9,13 +9,13 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <h1 class="title">Концерты и шоу</h1>
+    <div class="container mt-2">
+        <h2 class="title">Концерты и шоу</h2>
 
         {% for concert in concerts_active %}
-            <div class="card shadow p-3 mb-5 bg-white rounded" itemscope itemtype="https://schema.org/MusicEvent">
+            <div class="card mb-2" itemscope itemtype="https://schema.org/MusicEvent">
                 <div class="card-body">
-                    <h4 class="card-title" itemprop="name">{{ concert.full_title|title }}</h4>
+                    <h4 class="card-title" itemprop="name">{{ concert.full_title }}</h4>
 
                     <div itemprop="location" itemscope itemtype="https://schema.org/Place">
                         {% if concert.place_url %}
@@ -47,12 +47,11 @@
         {% endfor %}
 
         {% if concerts_disabled %}
-            <divider></divider>
-            <h3>Завершенные концерты</h3>
+            <h2 class="mt-3">Завершенные концерты</h2>
             {% for concert in concerts_disabled %}
-                <div class="card shadow p-3 mb-5 bg-white rounded" itemscope itemtype="https://schema.org/MusicEvent">
+                <div class="card mb-2" itemscope itemtype="https://schema.org/MusicEvent">
                     <div class="card-body">
-                        <h4 class="card-title" itemprop="name">{{ concert.full_title|title }}</h4>
+                        <h4 class="card-title" itemprop="name">{{ concert.full_title }}</h4>
 
                         <div itemprop="location" itemscope itemtype="https://schema.org/Place">
                             {% if concert.place_url %}
