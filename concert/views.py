@@ -7,6 +7,7 @@ import django
 import pytz
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.core.mail import mail_managers
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseGone
@@ -99,7 +100,7 @@ def buy_ticket_data(request, concert_id):
     concert = get_object_or_404(Concert, id=concert_id)
     prices = Price.objects.filter(concert=concert, is_active=True)
 
-    return HttpResponse(json.dumps({
+    output = {
         'concert': {
             'title': concert.title,
             'date_time': timezone.localtime(concert.start_date_time).strftime("%d.%m в %H:%M"),
@@ -112,8 +113,16 @@ def buy_ticket_data(request, concert_id):
             'currency': price.currency,
             'id': price.id,
             'count': 0,
-        } for price in prices]
-    }))
+        } for price in prices],
+        'user': None,
+    }
+    if request.user.is_authenticated:
+        output['user'] = {
+            'first_name': request.user.first_name,
+            'email': request.user.email,
+            'phone': str(request.user.profile.phone),
+        }
+    return HttpResponse(json.dumps(output))
 
 
 @csrf_exempt
@@ -134,6 +143,8 @@ def buy_ticket(request, concert_id):
             }))
 
         user = create_user_payment(data.get('user'))
+        login(request, user)
+
         transaction = Transaction.objects.create(user=user, concert=concert)
 
         for ticket_id, count in data.get('tickets').items():

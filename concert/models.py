@@ -160,12 +160,13 @@ class Transaction(models.Model):
 
     # Email Message delivery data
     STATUS_CHOICES = [
-        ('unnecessary', 'Transaction is not completed email is unnecessary.'),
-        ('accepted', 'Mailgun accepted the request to send/forward the email and the message has been placed in queue.'),
-        ('rejected', 'Mailgun rejected the request to send/forward the email.'),
-        ('delivered', 'Mailgun sent the email and it was accepted by the recipient email server.'),
-        ('failed', 'Mailgun could not deliver the email to the recipient email server.'),
-        ('opened', 'The email recipient opened the email and enabled image viewing.'),
+        ('unnecessary', 'Транзакция еще не завершена или билет был куплен слишком давно, '
+                        'проверка отправки письма не нужна.'),
+        ('accepted', 'Письмо получено email сервером и поставлено в очередь на отправку.'),
+        ('rejected', 'Письмо не прошло валидацию email сервера, проверьте логи ошибок.'),
+        ('delivered', 'Письмо доставлено и принято сервером получателя.'),
+        ('failed', 'Письмо не доставлено из-за ошибки на сервере получателя.'),
+        ('opened', 'Письмо прочитано получателем.'),
         ('clicked', 'The email recipient clicked on a link in the email.'),
         ('unsubscribed', 'The email recipient clicked on the unsubscribe link.'),
         ('complained', 'The email recipient clicked on the spam complaint button within their email client. Feedback '

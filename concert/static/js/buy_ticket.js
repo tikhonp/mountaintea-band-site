@@ -157,10 +157,15 @@ const app = Vue.createApp({
             return input.value.replace(/\D/g, '');
         },
         fetchInitData() {
-            axios.get(base_url + window.location.pathname + 'data/')
+            axios.get(base_url + window.location.pathname + 'data/', {withCredentials: true})
                 .then((response) => {
                     this.concert = response.data.concert;
                     this.prices = response.data.prices;
+                    if (response.data.user) {
+                        this.name = response.data.user.first_name;
+                        this.email = response.data.user.email;
+                        this.phone = response.data.user.phone;
+                    }
                     this.data_loading = false;
                 })
                 .catch((error) => {
