@@ -1,23 +1,34 @@
 {% extends "base.html" %}
 
-{% block title %}Подтверждение билета {{ ticket.number }}{% endblock %}
+{% block title %}Проверка билета номер "{{ ticket.number }}"{% endblock %}
 
 {% block description %}Страница персонала{% endblock %}
 
 {% block body %}
-    <div class="container text-center pt-3">
-        <h1>Билет</h1>
+    <div class="container">
+        <h1>Проверка билета номер "{{ ticket.number }}".</h1>
 
-        <p><a href="{% url 'staff' %}">На главную</a></p>
+        <p>
+            <a href="{% url 'staff' %}">На главную.</a>
+            <a href="{% url 'submit-number' %}">Проверить билет по номеру.</a>
+        </p>
 
         <div class="card">
             <div class="card-body">
-                <h3 class="card-title"><b>{{ ticket.number }}</b></h3>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-ticket"></i>
+                    {{ ticket.number }}
+                </h3>
                 <h6 class="card-subtitle mb-2">
                     {% if ticket.transaction.is_done %}
-                        <div class="text-success">Оплачено ({{ ticket.price.price|floatformat:2 }} рублей)</div>
+                        <div class="text-success">
+                            <i class="fa-solid fa-comment-dollar"></i>
+                            ({{ ticket.price.price|floatformat:2 }} рублей за билет)
+                        </div>
                     {% else %}
-                        <div class="text-danger">Не оплачено ({{ ticket.price.price|floatformat:2 }} рублей)</div>
+                        <div class="text-danger">
+                            <i class="fa-solid fa-file-invoice-dollar fa-beat-fade"></i> Не оплачено.
+                        </div>
                     {% endif %}
                     {% if ticket.is_active %}
                         <div class="text-success">Активен</div>
@@ -45,26 +56,22 @@
 
                 <div class="collapse" id="collapseExample">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">{{ ticket.transaction.get_email_status_display }}</li>
                         <li class="list-group-item">
-                            <span>Status and code: </span>
-                            {{ ticket.transaction.email_delivery_message }}, {{ ticket.transaction.email_delivery_code }}
+                            <i class="fa-solid fa-envelope"></i> {{ ticket.transaction.get_email_status_display }}
                         </li>
-                        <li class="list-group-item">{{ ticket.transaction.date_created|date:"H:i d.m.y" }}</li>
-                        <li class="list-group-item">Сумма: {{ ticket.transaction.amount_sum }}</li>
-                        {#                        <li class="list-group-item">Билеты в транзакции:#}
-                        {#                            {% for t in ticket.transaction %}#}
-                        {#                                {% if t.id == ticket.if %}#}
-                        {#                                    <div class="text-secondary">Этот билет </div>#}
-                        {#                                {% else %}#}
-                        {#                                    <a href="/staff/submit/{{ t.number }}/{{ t.get_hash }}/">{{ t.number }}</a>#}
-                        {#                                {% endif %}#}
-                        {#                            {% endfor %}#}
-                        {#                        </li>#}
+                        {% if ticket.transaction.email_status != "unnecessary" and ticket.transaction.email_status != "delivered" and ticket.transaction.email_status != "opened" %}
+                            <li class="list-group-item">
+                                <i class="fa-solid fa-circle-exclamation fa-beat-fade text-danger"></i>
+                                <span>Status and code: </span>
+                                {{ ticket.transaction.email_delivery_message }}, {{ ticket.transaction.email_delivery_code }}
+                            </li>
+                        {% endif %}
+                        <li class="list-group-item"> Транзакция {{ ticket.transaction.date_created|date:"H:i d M Y года." }}</li>
+                        {% if ticket.transaction.amount_sum %}
+                            <li class="list-group-item">Сумма транзакции: {{ ticket.transaction.amount_sum }} рублей.</li>
+                        {% endif %}
                     </ul>
                 </div>
-                <p></p>
-                <a href="{% url 'submit-number' %}">Проверить билет по номеру</a>
             </div>
         </div>
 

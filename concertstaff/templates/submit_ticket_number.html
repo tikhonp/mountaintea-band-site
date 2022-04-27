@@ -19,22 +19,13 @@
 
         <form method="post" class="form-floating">
             {% csrf_token %}
-            <input type="number" placeholder="123456" class="form-control" id="ticket_number" name="ticket" required
-                   {% if number %}value="{{ number }}" {% endif %}/>
-            <label for="ticket_number">Номер билета</label>
+            <input type="number" placeholder="123456" pattern="[0-9]*" inputmode="numeric" class="form-control"
+                   id="ticket_number" name="ticket" required
+                   {% if number %}value="{{ number }}"{% endif %}/>
+            <label for="ticket_number">Номер билета <i class="fa-solid fa-ticket"></i></label>
             <button type="submit" class="btn mt-3 btn-secondary">Найти билет</button>
         </form>
 
         {% include "footer.html" %}
     </div>
-{% endblock %}
-
-{% block script %}
-    <script src="https://unpkg.com/imask"></script>
-    <script>
-        var phoneMask = IMask(
-            document.getElementById('ticket_number'), {
-                mask: '000000'
-            });
-    </script>
 {% endblock %}
