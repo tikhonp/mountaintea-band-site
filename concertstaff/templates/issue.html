@@ -15,17 +15,44 @@
             <div class="card-body">
                 <h5 class="card-title">{{ issue.title }}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">{{ issue.date_created }}, номер {{ issue.id }}</h6>
-                <p class="card-text">{{ issue.description }}</p>
+                <div class="card bg-light mb-2">
+                    <div class="card-body">
+                        {{ issue.description }}
+                    </div>
+                </div>
 
-                <ul class="list-group list-group-flush mb-3">
-                    {% if issue.contact_telegram %}
-                        <li class="list-group-item">Теlegram - {{ issue.contact_telegram }}</li>
-                    {% endif %}
-                    {% if issue.contact_email %}
-                        <li class="list-group-item">Email - {{ email }}</li>
-                    {% endif %}
-                    <li class="list-group-item">Менеджер: {{ manager }}</li>
-                </ul>
+                {% if issue.contact_telegram %}
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col align-self-center">
+                                    Теlegram: <kbd id="telegram" class="card-text">{{ issue.contact_telegram }}</kbd>
+                                </div>
+                                <div class="col align-self-center">
+                                    <a href="#" class="btn btn-outline-secondary btn-sm float-end" id="copyb"
+                                       onclick="CopyToClipboard('telegram');">Скопировать</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if issue.contact_email %}
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col align-self-center">
+                                    Email: <kbd id="email" class="card-text">{{ issue.email }}</kbd>
+                                </div>
+                                <div class="col align-self-center">
+                                    <a href="#" class="btn btn-outline-secondary btn-sm float-end" id="copyb"
+                                       onclick="CopyToClipboard('email');">Скопировать</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <p class="mt-2">Менеджер: {{ manager }}.</p>
+
 
                 {% if issue.is_closed %}
                     <h6 class="card-subtitle mb-2 text-muted">Обращение закрыто.</h6>
@@ -34,7 +61,7 @@
                         <form method="post">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="get_task">
-                            <button type="submit" class="btn btn-primary">Взять задачу</button>
+                            <button type="submit" class="btn btn-secondary">Взять задачу</button>
                         </form>
                     {% endif %}
                     {% if is_manager %}
@@ -50,4 +77,20 @@
 
         {% include "footer.html" %}
     </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function CopyToClipboard(id) {
+            var r = document.createRange();
+            r.selectNode(document.getElementById(id));
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(r);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+
+            var abc = document.getElementById("copyb");
+            abc.innerHTML = "Скопировано";
+        }
+    </script>
 {% endblock %}
