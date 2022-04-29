@@ -27,6 +27,8 @@ const app = Vue.createApp({
 
             submitButtonDisabled: false,
             tweened: 0,
+
+            email_error_message: '',
         }
     },
     watch: {
@@ -56,6 +58,45 @@ const app = Vue.createApp({
                 return
             }
 
+            axios.get("https://emailverification.whoisxmlapi.com/api/v2", {
+                params: {
+                    apiKey: "at_27BJltqSvUaQ9ejiQ2kBI1iBbhCno",
+                    emailAddress: this.email,
+                }
+            })
+                .then((response) => {
+                    console.log(response);
+                    let message = '';
+                    if (!response.data.formatCheck) {
+                        this.emailInvalid = true;
+                        this.pay_loading = false;
+                        this.warnDisabled();
+                        return;
+                    } else if (response.data.dnsCheck === "false") {
+                        message = 'Такой почты не существует. Проверьте домен "'
+                            + response.data.domain + '".';
+                    } else if (response.data.smtpCheck === "false") {
+                        message = 'Сервер вашей почты не поддерживает электронные сообщения.'
+                    }
+
+                    if (message !== '') {
+                        this.pay_loading = false;
+                        this.email_error_message = message;
+                        this.warnDisabled();
+                        let myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+                        myModal.show();
+                        return;
+                    } else {
+                        this.createTransaction()
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    this.createTransaction()
+                })
+        },
+        createTransaction() {
+            this.pay_loading = true;
             const data = {
                 user: {
                     name: this.name,
@@ -172,7 +213,7 @@ const app = Vue.createApp({
                     this.error = 'Упс! Что-то не работает, пожалуйста, сообщите нам.';
                     console.log(error);
                 })
-        }
+        },
     },
     computed: {
         isEmailValid() {
@@ -232,7 +273,7 @@ const app = Vue.createApp({
             <div class="form-floating mb-3" :class="{'shadow': emailFocused}">
                 <input type="email" class="form-control" id="floatingInpute" v-model="email" required
                        @focus="emailFocused = true" @blur="emailFocused = false" :class="{'is-invalid': emailInvalid}"
-                       @keyup="emailInvalid && isEmailValid ? emailInvalid = false : emailInvalid">
+                       @keyup="emailInvalid && isEmailValid ? emailInvalid = false : emailInvalid" ref="email">
                 <label for="floatingInpute">Электронная почта</label>
             </div>
 
@@ -323,5 +364,26 @@ const app = Vue.createApp({
 
         </div>
     </div>
+    
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">
+                        Кажется с Вашим Email что-то не так!
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                <div class="modal-body">
+                    <i class="fa-solid fa-circle-exclamation text-danger"></i> [[ email_error_message ]]
+                    <p>Вы ввели: <span style="font-weight: bold;">[[ email ]]</span></p>
+                </div>
+                    <div class="modal-footer">
+                        <button type="button" @click="createTransaction" class="btn btn-light" data-bs-dismiss="modal">Нет, все верно</button>
+                        <button type="button" @click="$refs.email.focus();" class="btn btn-secondary" data-bs-dismiss="modal">Исправить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     `
 }).mount("#app");
