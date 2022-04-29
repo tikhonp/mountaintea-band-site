@@ -10,7 +10,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
-from concert.emails import generate_ticket_email, generate_managers_ticket_email
+from concert.emails import generate_ticket_email, generate_managers_ticket_email, send_mail
 from concert.models import Transaction, Ticket, Concert, Price
 from concert.views import create_user_payment
 from concertstaff import forms
@@ -109,8 +109,20 @@ def ticket_check(request, ticket, sha):
         return HttpResponseBadRequest('Invalid sha hash')
 
     if request.method == 'POST':
-        ticket.is_active = False
-        ticket.save()
+        action = request.POST.get('action')
+        if action == 'use':
+            ticket.is_active = False
+            ticket.save()
+        elif action == 'change_email':
+            email = request.POST.get('email')
+            send_email = request.POST.get('send_email')
+
+            user = ticket.transaction.user
+            user.email = email
+            user.save()
+
+            if send_email == 'on':
+                send_mail(**generate_ticket_email(transaction, headers=True))
 
     return render(request, 'submit_ticket.html', {'ticket': ticket})
 

@@ -38,21 +38,50 @@
                 </h6>
                 <p class="card-text">ФИО оформителя: <b>{{ ticket.transaction.user.first_name }}</b></p>
                 <p class="card-text">Телефон: <b>{{ ticket.transaction.user.profile.phone }}</b></p>
-                <p class="card-text">Email: <b>{{ ticket.transaction.user.email }}</b></p>
+                <p class="card-text">
+                    Email: <b>{{ ticket.transaction.user.email }}</b>
+                    <a class="link-secondary" data-bs-toggle="collapse" href="#collapseChangeEmail" role="button"
+                       aria-expanded="false" aria-controls="collapseChangeEmail">
+                        изменить
+                    </a>
+                </p>
+
+                <div class="collapse mb-2" id="collapseChangeEmail">
+                    <div class="card card-body">
+                        <form method="post" class="form-floating">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="change_email">
+
+                            <input name="email" type="email" class="form-control" id="floatingInputValue"
+                                   placeholder="name@example.com" value="{{ ticket.transaction.user.email }}">
+                            <label for="floatingInputValue">Электронная почта</label>
+
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                       id="flexSwitchCheckDefault" name="send_email">
+                                <label class="form-check-label" for="flexSwitchCheckDefault">
+                                    Заново отправить сообщение
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Подтвердить</button>
+                        </form>
+                    </div>
+                </div>
 
                 {% if ticket.transaction.is_done %}
                     {% if ticket.is_active %}
                         <form method="post">
                             {% csrf_token %}
+                            <input type="hidden" name="action" value="use">
                             <button class="btn btn-secondary mb-2" type="submit">Использовать</button>
                         </form>
                     {% endif %}
                 {% endif %}
 
-                <button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                <a class="link-secondary" data-bs-toggle="collapse" href="#collapseExample" role="button"
+                   aria-expanded="false" aria-controls="collapseExample">
                     Показать детали транзакции
-                </button>
+                </a>
 
                 <div class="collapse" id="collapseExample">
                     <ul class="list-group list-group-flush">
@@ -66,12 +95,16 @@
                                 {{ ticket.transaction.email_delivery_message }}, {{ ticket.transaction.email_delivery_code }}
                             </li>
                         {% endif %}
-                        <li class="list-group-item"> Транзакция {{ ticket.transaction.date_created|date:"H:i d M Y года." }}</li>
+                        <li class="list-group-item">
+                            Транзакция {{ ticket.transaction.date_created|date:"H:i d M Y года." }}</li>
                         {% if ticket.transaction.amount_sum %}
-                            <li class="list-group-item">Сумма транзакции: {{ ticket.transaction.amount_sum }} рублей.</li>
+                            <li class="list-group-item">Сумма транзакции: {{ ticket.transaction.amount_sum }} рублей.
+                            </li>
                         {% endif %}
                     </ul>
                 </div>
+
+
             </div>
         </div>
 
