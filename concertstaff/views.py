@@ -122,7 +122,7 @@ def ticket_check(request, ticket, sha):
             user.save()
 
             if send_email == 'on':
-                send_mail(**generate_ticket_email(transaction, headers=True))
+                send_mail(**generate_ticket_email(ticket.transaction, headers=True))
 
     return render(request, 'submit_ticket.html', {'ticket': ticket})
 
