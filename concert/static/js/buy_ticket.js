@@ -83,7 +83,7 @@ const app = Vue.createApp({
                         this.pay_loading = false;
                         this.email_error_message = message;
                         this.warnDisabled();
-                        let myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+                        let myModal = new bootstrap.Modal(document.getElementById('staticBackdropAlert'));
                         myModal.show();
                         return;
                     } else {
@@ -365,25 +365,28 @@ const app = Vue.createApp({
         </div>
     </div>
     
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="staticBackdropAlert" data-bs-backdrop="static" data-bs-keyboard="false" 
+         tabindex="-1" aria-labelledby="staticBackdropAlertLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">
+                    <h5 class="modal-title" id="staticBackdropAlertLabel">
                         Кажется с Вашим Email что-то не так!
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+                </div>
                 <div class="modal-body">
                     <i class="fa-solid fa-circle-exclamation text-danger"></i> [[ email_error_message ]]
                     <p>Вы ввели: <span style="font-weight: bold;">[[ email ]]</span></p>
                 </div>
-                    <div class="modal-footer">
-                        <button type="button" @click="createTransaction" class="btn btn-light" data-bs-dismiss="modal">Нет, все верно</button>
-                        <button type="button" @click="$refs.email.focus();" class="btn btn-secondary" data-bs-dismiss="modal">Исправить</button>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" @click="createTransaction" class="btn btn-light" 
+                            data-bs-dismiss="modal">Нет, все верно</button>
+                    <button type="button" @click="$refs.email.focus();" class="btn btn-secondary" 
+                            data-bs-dismiss="modal">Исправить</button>
                 </div>
             </div>
         </div>
+    </div>
     `
 }).mount("#app");

@@ -143,7 +143,7 @@ const issues_app = Vue.createApp({
     },
     template: `
     <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Обращение в службу поддержки</h5>
+        <h5 class="modal-title" id="staticBackdropSupport">Обращение в службу поддержки</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <div v-if="!is_done">
