@@ -123,8 +123,10 @@ def ticket_check(request, ticket, sha):
 
             if send_email == 'on':
                 send_mail(**generate_ticket_email(ticket.transaction, headers=True))
-
-    return render(request, 'submit_ticket.html', {'ticket': ticket})
+    return render(request, 'submit_ticket.html', {
+        'ticket': ticket,
+        'show_use_button': timezone.now().date() == ticket.transaction.concert.start_date_time.date()
+    })
 
 
 @staff_member_required

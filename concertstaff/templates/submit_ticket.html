@@ -68,14 +68,12 @@
                     </div>
                 </div>
 
-                {% if ticket.transaction.is_done %}
-                    {% if ticket.is_active %}
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="use">
-                            <button class="btn btn-secondary mb-2" type="submit">Использовать</button>
-                        </form>
-                    {% endif %}
+                {% if ticket.transaction.is_done and show_use_button and ticket.is_active %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="use">
+                        <button class="btn btn-secondary mb-2" type="submit">Использовать</button>
+                    </form>
                 {% endif %}
 
                 <a class="link-secondary" data-bs-toggle="collapse" href="#collapseExample" role="button"
