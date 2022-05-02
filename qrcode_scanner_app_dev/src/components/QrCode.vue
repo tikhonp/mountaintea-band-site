@@ -7,14 +7,18 @@
     </div>
 
     <qrcode-stream :camera="camera" :torch="torch" @decode="onDecode" @init="onInit">
-      <div v-if="!loading" class="container mt-3">
+      <div v-if="!loading" class="container mt-3 text-center">
         <div class="card">
           <div class="card-body">
             <div v-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
             <div v-else>
-              <p v-if="decoded_string">{{ decoded_string }}</p>
-              <button class="btn btn-secondary" @click="changeCamera">Сменить камеру.</button>
-              <button class="btn btn-secondary" v-if="torch_is_supported" @click="torch = !torch">вкл/выкл вспышку.</button>
+              <p v-for="i in decoded_tickets" v-if="decoded_tickets.length !== 0">{{ String(i) }}</p>
+              <p v-else>Ожидание QR-кода...</p>
+              <button class="btn btn-secondary" @click="changeCamera">
+                <i class="fa-solid fa-camera-rotate"></i> Сменить камеру
+              </button>
+              <button v-if="torch_is_supported" class="btn btn-secondary" @click="torch = !torch">вкл/выкл вспышку.
+              </button>
             </div>
           </div>
         </div>
@@ -33,7 +37,8 @@ export default {
       torch: false,
 
       torch_is_supported: false,
-      decoded_string: '',
+
+      decoded_tickets: [],
 
       loading: true,
       error: '',
@@ -43,8 +48,36 @@ export default {
     QrcodeStream
   },
   methods: {
+    getTicketData(url) {
+      axios.get(url + 'data/', {withCredentials: true})
+          .then((response) => {
+            const data_to_push = {
+              'type': 'done',
+              'data': response.data
+            }
+            console.log(response)
+            this.push_to_query(data_to_push)
+          })
+          .catch((error) => {
+            const data_to_push = {
+              'type': 'error',
+              'data': error
+            }
+            this.push_to_query(data_to_push)
+            console.log(error);
+          })
+    },
+    push_to_query(element) {
+      if (this.decoded_tickets.length === 3) {
+        this.decoded_tickets[2] = this.decoded_tickets[1]
+        this.decoded_tickets[1] = this.decoded_tickets[0]
+        this.decoded_tickets[0] = element
+      } else {
+        this.decoded_tickets.push(element)
+      }
+    },
     onDecode(decodedString) {
-      this.decoded_string = decodedString
+      this.getTicketData(decodedString)
     },
     changeCamera() {
       if (this.camera === 'rear' || this.camera === 'auto') {

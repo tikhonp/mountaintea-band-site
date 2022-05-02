@@ -6,7 +6,7 @@ from django.contrib.postgres.search import SearchVector
 from django.core import exceptions
 from django.core.mail import send_mail, mail_managers
 from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
@@ -128,6 +128,48 @@ def ticket_check(request, ticket, sha):
         'ticket': ticket,
         'show_use_button': timezone.now().date() == ticket.transaction.concert.start_date_time.date()
     })
+
+
+@staff_member_required
+@require_http_methods(['GET'])
+def ticket_check_data(request, ticket, sha):
+    try:
+        ticket = Ticket.objects.get(number=ticket)
+    except Ticket.DoesNotExist:
+        raise Http404(json.dumps({
+            "error": "Билета номер \"{}\" не найдено.".format(ticket)
+        }))
+
+    if sha != ticket.get_hash():
+        return HttpResponseBadRequest(json.dumps({
+            'error': 'Неверный sha hash валидации билета номер "{}".'.format(ticket)
+        }))
+
+    valid = False
+    if ticket.is_active:
+        ticket.is_active = False
+        ticket.save()
+        valid = True
+
+    return HttpResponse(request, json.dumps({
+        "number": ticket.number,
+        "is_active": ticket.is_active,
+        "valid": valid,
+        "get_hash": ticket.get_hash(),
+        "price": {
+            "id": ticket.price.id,
+            "description": ticket.price.description,
+            "price": ticket.price.price,
+        },
+        "transaction": {
+            "date_created": timezone.localtime(
+                ticket.transaction.date_created).strftime("%H:%M %d.%m.%y"),
+            "user": {
+                "first_name": ticket.transaction.user.first_name,
+                "pk": ticket.transaction.user.pk,
+            }
+        }
+    }))
 
 
 @staff_member_required
