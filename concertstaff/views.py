@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.postgres.search import SearchVector
 from django.core import exceptions
 from django.core.mail import send_mail, mail_managers
@@ -209,5 +210,6 @@ def issue_page(request, issue):
     })
 
 
+@user_passes_test(lambda u: u.is_active and u.is_superuser, login_url='admin:login')
 def qrcode(request):
     return render(request, 'qrcode.html')
