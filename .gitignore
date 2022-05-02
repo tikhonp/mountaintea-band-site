@@ -134,3 +134,26 @@ dmypy.json
 
 /static/
 .idea/
+
+
+#vue.js
+# Logs
+qrcode_scanner_app_dev/logs
+*.log
+qrcode_scanner_app_dev/npm-debug.log*
+qrcode_scanner_app_dev/yarn-debug.log*
+qrcode_scanner_app_dev/yarn-error.log*
+qrcode_scanner_app_dev/pnpm-debug.log*
+qrcode_scanner_app_dev/lerna-debug.log*
+
+qrcode_scanner_app_dev/node_modules
+qrcode_scanner_app_dev/dist
+qrcode_scanner_app_dev/dist-ssr
+*.local
+
+# Editor directories and files
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

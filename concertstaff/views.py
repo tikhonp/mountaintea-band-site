@@ -207,3 +207,7 @@ def issue_page(request, issue):
         'manager': 'вы' if is_manager else issue.manager,
         'is_manager': is_manager,
     })
+
+
+def qrcode(request):
+    return render(request, 'qrcode.html')

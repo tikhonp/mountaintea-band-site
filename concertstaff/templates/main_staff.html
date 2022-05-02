@@ -17,6 +17,11 @@
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'submit-number' %}">Проверить билет по номеру</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'qrcode' %}">
+                    Сканировать QR код <span class="badge rounded-pill bg-warning text-dark">BETA</span>
+                </a>
+            </li>
             {% if user.is_superuser %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'admin:index' %}">Админка</a>

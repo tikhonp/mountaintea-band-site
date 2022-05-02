@@ -65,7 +65,6 @@ const app = Vue.createApp({
                 }
             })
                 .then((response) => {
-                    console.log(response);
                     let message = '';
                     if (!response.data.formatCheck) {
                         this.emailInvalid = true;
