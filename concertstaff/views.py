@@ -146,22 +146,23 @@ def ticket_check_data(request, ticket, sha):
         }))
 
     valid = False
-    if ticket.is_active:
+    if ticket.is_active and ticket.transaction.is_done:
         ticket.is_active = False
         ticket.save()
         valid = True
 
-    return HttpResponse(request, json.dumps({
+    return HttpResponse(json.dumps({
         "number": ticket.number,
         "is_active": ticket.is_active,
         "valid": valid,
-        "get_hash": ticket.get_hash(),
+        "url": ticket.get_absolute_url(),
         "price": {
             "id": ticket.price.id,
             "description": ticket.price.description,
             "price": ticket.price.price,
         },
         "transaction": {
+            "is_done": ticket.transaction.is_done,
             "date_created": timezone.localtime(
                 ticket.transaction.date_created).strftime("%H:%M %d.%m.%y"),
             "user": {
@@ -253,5 +254,6 @@ def issue_page(request, issue):
 
 
 @user_passes_test(lambda u: u.is_active and u.is_superuser, login_url='admin:login')
+@require_http_methods(['GET'])
 def qrcode(request):
     return render(request, 'qrcode.html')

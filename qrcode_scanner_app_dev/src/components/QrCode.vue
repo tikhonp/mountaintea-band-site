@@ -7,18 +7,45 @@
     </div>
 
     <qrcode-stream :camera="camera" :torch="torch" @decode="onDecode" @init="onInit">
-      <div v-if="!loading" class="container mt-3 text-center">
+      <div v-if="!loading" class="container my-3 text-center">
         <div class="card">
           <div class="card-body">
             <div v-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
             <div v-else>
-              <p v-for="i in decoded_tickets" v-if="decoded_tickets.length !== 0">{{ String(i) }}</p>
-              <p v-else>Ожидание QR-кода...</p>
-              <button class="btn btn-secondary" @click="changeCamera">
-                <i class="fa-solid fa-camera-rotate"></i> Сменить камеру
-              </button>
-              <button v-if="torch_is_supported" class="btn btn-secondary" @click="torch = !torch">вкл/выкл вспышку.
-              </button>
+              <div v-for="ticket in decoded_tickets" v-if="decoded_tickets.length !== 0">
+                <div v-if="ticket.type === 'done' && ticket.data.valid" class="alert alert-success" role="alert">
+                  <i class="fa-solid fa-circle-check text-success"> </i>
+                  Билет номер {{ ticket.data.number }}, {{ ticket.data.transaction.user.first_name }}. Валидирован.
+                  <a :href="ticket.data.url" class="link-secondary" target="_blank">Открыть билет.</a>
+                </div>
+                <div v-else class="alert alert-danger" role="alert">
+                  <div v-if="ticket.type === 'error'">{{ ticket.data.error }}</div>
+                  <div v-else>
+                    <i class="fa-solid fa-circle-exclamation text-danger"> </i>
+                    Билет номер {{ ticket.data.number }}, {{ ticket.data.transaction.user.first_name }}.
+                    <span v-if="!ticket.data.is_active">Билет уже использован. </span>
+                    <span v-if="!ticket.data.transaction.is_done">Билет не оплачен. </span>
+                    <a :href="ticket.data.url" class="link-secondary" target="_blank">Открыть билет.</a>
+                  </div>
+                </div>
+              </div>
+              <span v-else>Ожидание QR-кода...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fixed-bottom container mb-3">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-grid gap-2">
+                <a class="btn btn-secondary" href="/staff/"><i class="fa-solid fa-house"></i></a>
+                <button class="btn btn-secondary" @click="changeCamera">
+                  <i class="fa-solid fa-camera-rotate"></i>
+                </button>
+                <button class="btn btn-secondary" @click="torch = !torch">
+                  <i class="fa-solid fa-bolt-lightning"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -48,23 +75,31 @@ export default {
     QrcodeStream
   },
   methods: {
+    isValidHttpUrl(string) {
+      let url;
+      try {
+        url = new URL(string);
+      } catch (_) {
+        return false;
+      }
+      return url.protocol === "http:" || url.protocol === "https:";
+    },
     getTicketData(url) {
-      axios.get(url + 'data/', {withCredentials: true})
+      this.axios.get(url + 'data/', {withCredentials: true})
           .then((response) => {
             const data_to_push = {
               'type': 'done',
               'data': response.data
             }
-            console.log(response)
             this.push_to_query(data_to_push)
           })
           .catch((error) => {
+            console.log(error);
             const data_to_push = {
               'type': 'error',
               'data': error
             }
             this.push_to_query(data_to_push)
-            console.log(error);
           })
     },
     push_to_query(element) {
@@ -77,7 +112,9 @@ export default {
       }
     },
     onDecode(decodedString) {
-      this.getTicketData(decodedString)
+      if (this.isValidHttpUrl(decodedString)) {
+        this.getTicketData(decodedString)
+      }
     },
     changeCamera() {
       if (this.camera === 'rear' || this.camera === 'auto') {
@@ -108,6 +145,11 @@ export default {
       } finally {
         this.loading = false;
       }
+    }
+  },
+  computed: {
+    base_url: function () {
+      return window.base_url
     }
   }
 }
