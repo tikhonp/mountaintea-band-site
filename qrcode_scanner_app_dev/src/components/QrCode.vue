@@ -10,27 +10,30 @@
       <div v-if="!loading" class="container my-3 text-center">
         <div class="card">
           <div class="card-body">
-            <div v-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
+            <div v-if="error" class="alert alert-danger" role="alert">
+              <i class="fa-solid fa-circle-exclamation text-danger"></i> {{ error }}
+            </div>
             <div v-else>
-              <div v-for="ticket in decoded_tickets" v-if="decoded_tickets.length !== 0">
-                <div v-if="ticket.type === 'done' && ticket.data.valid" class="alert alert-success" role="alert">
+              <div v-for="ticket in decoded_tickets">
+                <div v-if="ticket.state === 'done' && ticket.valid" class="alert alert-success" role="alert">
                   <i class="fa-solid fa-circle-check text-success"> </i>
-                  Билет номер {{ ticket.data.number }}, {{ ticket.data.transaction.user.first_name }}. Валидирован.
-                  <a :href="ticket.data.url" class="link-secondary" target="_blank">Открыть билет.</a>
+                  Билет номер {{ ticket.number }}, {{ ticket.transaction.user.first_name }}. Валидирован.
+                  <a :href="ticket.url" class="link-secondary" target="_blank">Открыть билет.</a>
                 </div>
                 <div v-else class="alert alert-danger" role="alert">
-                  <div v-if="ticket.type === 'error'">{{ ticket.data.error }}</div>
+                  <div v-if="ticket.state === 'error'">{{ ticket.error }}</div>
                   <div v-else>
                     <i class="fa-solid fa-circle-exclamation text-danger"> </i>
-                    Билет номер {{ ticket.data.number }}, {{ ticket.data.transaction.user.first_name }}.
-                    <span v-if="!ticket.data.is_active">Билет уже использован. </span>
-                    <span v-if="!ticket.data.transaction.is_done">Билет не оплачен. </span>
-                    <a :href="ticket.data.url" class="link-secondary" target="_blank">Открыть билет.</a>
+                    Билет номер {{ ticket.number }}, {{ ticket.transaction.user.first_name }}.
+                    <span v-if="!ticket.is_active">Билет уже использован. </span>
+                    <span v-if="!ticket.transaction.is_done">Билет не оплачен. </span>
+                    <a :href="ticket.url" class="link-secondary" target="_blank">Открыть билет.</a>
                   </div>
                 </div>
               </div>
-              <span v-else>Ожидание QR-кода...</span>
+              <span v-if="decoded_tickets.length === 0">Ожидание QR-кода...</span>
             </div>
+            <p class="card-text"><small class="text-muted">Горный Чай © {{ current_year }}</small></p>
           </div>
         </div>
 
@@ -42,7 +45,7 @@
                 <button class="btn btn-secondary" @click="changeCamera">
                   <i class="fa-solid fa-camera-rotate"></i>
                 </button>
-                <button class="btn btn-secondary" @click="torch = !torch">
+                <button v-if="torch_is_supported" class="btn btn-secondary" @click="torch = !torch">
                   <i class="fa-solid fa-bolt-lightning"></i>
                 </button>
               </div>
@@ -87,19 +90,11 @@ export default {
     getTicketData(url) {
       this.axios.get(url + 'data/', {withCredentials: true})
           .then((response) => {
-            const data_to_push = {
-              'type': 'done',
-              'data': response.data
-            }
-            this.push_to_query(data_to_push)
+            this.push_to_query(response.data)
           })
           .catch((error) => {
+            this.error = 'Возникла ошибка, пожалуйста, сообщите нам.'
             console.log(error);
-            const data_to_push = {
-              'type': 'error',
-              'data': error
-            }
-            this.push_to_query(data_to_push)
           })
     },
     push_to_query(element) {
@@ -112,6 +107,7 @@ export default {
       }
     },
     onDecode(decodedString) {
+      this.error = ''
       if (this.isValidHttpUrl(decodedString)) {
         this.getTicketData(decodedString)
       }
@@ -150,6 +146,10 @@ export default {
   computed: {
     base_url: function () {
       return window.base_url
+    },
+    current_year: function () {
+      let date = new Date()
+      return date.getFullYear()
     }
   }
 }

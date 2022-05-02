@@ -130,18 +130,20 @@ def ticket_check(request, ticket, sha):
     })
 
 
-@staff_member_required
+# @staff_member_required
 @require_http_methods(['GET'])
 def ticket_check_data(request, ticket, sha):
     try:
         ticket = Ticket.objects.get(number=ticket)
     except Ticket.DoesNotExist:
-        raise Http404(json.dumps({
+        return HttpResponse(json.dumps({
+            'state': 'error',
             "error": "Билета номер \"{}\" не найдено.".format(ticket)
         }))
 
     if sha != ticket.get_hash():
-        return HttpResponseBadRequest(json.dumps({
+        return HttpResponse(json.dumps({
+            'state': 'error',
             'error': 'Неверный sha hash валидации билета номер "{}".'.format(ticket)
         }))
 
@@ -152,6 +154,7 @@ def ticket_check_data(request, ticket, sha):
         valid = True
 
     return HttpResponse(json.dumps({
+        'state': 'done',
         "number": ticket.number,
         "is_active": ticket.is_active,
         "valid": valid,
