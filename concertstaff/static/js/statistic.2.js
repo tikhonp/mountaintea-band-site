@@ -142,12 +142,13 @@ const app = Vue.createApp({
                             </div>
                         </td>
                         <td>
-                            <i v-if="i.is_active" class="fa-solid fa-file-check text-success me-2"> </i> 
+                            <i v-if="i.is_active" class="fa-solid fa-check text-success me-2"> </i> 
                             <i v-else class="fa-solid fa-xmark text-danger me-2"> </i> 
-                            <i v-if="i.transaction.email_status === 'accepted'" 
+                            <i v-if="i.transaction.email_status === 'delivered'" 
                                class="fa-solid fa-envelope-circle-check text-success"> </i> 
                             <i v-if="i.transaction.email_status === 'opened'" class="fa-solid fa-envelope-open text-success"> </i> 
-                            <i v-if="i.transaction.email_status === 'unnecessary'" class="fa-solid fa-envelope text-warning"> </i> 
+                            <i v-if="i.transaction.email_status === 'accepted' || i.transaction.email_status === 'unnecessary'" 
+                                class="fa-solid fa-envelope text-warning"> </i> 
                             <i v-if="i.transaction.email_status === 'rejected' || i.transaction.email_status === 'failed'" 
                                class="fa-solid fa-envelope text-danger"> </i> 
                         </td>
