@@ -7,33 +7,39 @@
     </div>
 
     <qrcode-stream :camera="camera" :torch="torch" @decode="onDecode" @init="onInit">
+
       <div v-if="!loading" class="container my-3 text-center">
         <div class="card">
           <div class="card-body">
+
             <div v-if="error" class="alert alert-danger" role="alert">
               <i class="fa-solid fa-circle-exclamation text-danger"></i> {{ error }}
             </div>
-            <div v-else>
-              <div v-for="ticket in decoded_tickets">
-                <div v-if="ticket.state === 'done' && ticket.valid" class="alert alert-success" role="alert">
-                  <i class="fa-solid fa-circle-check text-success"> </i>
-                  Билет номер {{ ticket.number }}, {{ ticket.transaction.user.first_name }}. Валидирован.
+
+            <div v-for="ticket in decoded_tickets">
+
+              <div v-if="ticket.state === 'done' && ticket.valid" class="alert alert-success" role="alert">
+                <i class="fa-solid fa-circle-check text-success"> </i>
+                Билет номер {{ ticket.number }}, {{ ticket.transaction.user.first_name }}. Валидирован.
+                <a :href="ticket.url" class="link-secondary" target="_blank">Открыть билет.</a>
+              </div>
+
+              <div v-else class="alert alert-danger" role="alert">
+                <div v-if="ticket.state === 'error'">{{ ticket.error }}</div>
+                <div v-else>
+                  <i class="fa-solid fa-circle-exclamation text-danger"> </i>
+                  Билет номер {{ ticket.number }}, {{ ticket.transaction.user.first_name }}.
+                  <span v-if="!ticket.is_active">Билет уже использован. </span>
+                  <span v-if="!ticket.transaction.is_done">Билет не оплачен. </span>
                   <a :href="ticket.url" class="link-secondary" target="_blank">Открыть билет.</a>
                 </div>
-                <div v-else class="alert alert-danger" role="alert">
-                  <div v-if="ticket.state === 'error'">{{ ticket.error }}</div>
-                  <div v-else>
-                    <i class="fa-solid fa-circle-exclamation text-danger"> </i>
-                    Билет номер {{ ticket.number }}, {{ ticket.transaction.user.first_name }}.
-                    <span v-if="!ticket.is_active">Билет уже использован. </span>
-                    <span v-if="!ticket.transaction.is_done">Билет не оплачен. </span>
-                    <a :href="ticket.url" class="link-secondary" target="_blank">Открыть билет.</a>
-                  </div>
-                </div>
               </div>
-              <span v-if="decoded_tickets.length === 0">Ожидание QR-кода...</span>
+
             </div>
+
+            <span v-if="decoded_tickets.length === 0">Ожидание QR-кода...</span>
             <p class="card-text"><small class="text-muted">Горный Чай © {{ current_year }}</small></p>
+
           </div>
         </div>
 
@@ -53,6 +59,7 @@
           </div>
         </div>
       </div>
+
     </qrcode-stream>
   </div>
 </template>
@@ -93,7 +100,7 @@ export default {
             this.push_to_query(response.data)
           })
           .catch((error) => {
-            this.error = 'Возникла ошибка, пожалуйста, сообщите нам.'
+            this.error = 'Неверный QR-код.'
             console.log(error);
           })
     },
@@ -110,6 +117,8 @@ export default {
       this.error = ''
       if (this.isValidHttpUrl(decodedString)) {
         this.getTicketData(decodedString)
+      } else {
+        this.error = 'Неверный QR-код.'
       }
     },
     changeCamera() {

@@ -83,7 +83,8 @@ def stat_data(request, concert):
                 "user": {
                     "first_name": ticket.transaction.user.first_name,
                     "pk": ticket.transaction.user.pk,
-                }
+                },
+                "email_status": ticket.transaction.email_status,
             }
         } for ticket in tickets],
         "amount_sum": amount_sum,
