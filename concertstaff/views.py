@@ -44,12 +44,12 @@ def stat_data(request, concert):
     query = request.GET.get('query', '')
 
     if query == '':
-        tickets = Ticket.objects.filter(
+        tickets = Ticket.objects.select_related('price', 'transaction', 'transaction__user').filter(
             transaction__is_done=True,
             transaction__concert=concert,
         ).order_by('-transaction__date_created')
     else:
-        tickets = Ticket.objects.filter(
+        tickets = Ticket.objects.select_related('price', 'transaction', 'transaction__user').filter(
             transaction__is_done=True,
             transaction__concert=concert,
         ).order_by('-transaction__date_created').annotate(

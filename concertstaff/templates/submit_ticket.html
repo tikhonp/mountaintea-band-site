@@ -94,7 +94,11 @@
                             </li>
                         {% endif %}
                         <li class="list-group-item">
-                            Транзакция {{ ticket.transaction.date_created|date:"H:i d M Y года." }}</li>
+                            Транзакция создана: {{ ticket.transaction.date_created|date:"H:i d M Y года." }}
+                            {% if ticket.transaction.is_done %}
+                                Закрыта: {{ ticket.transaction.date_closed|date:"H:i d M Y года." }}
+                            {% endif %}
+                        </li>
                         {% if ticket.transaction.amount_sum %}
                             <li class="list-group-item">Сумма транзакции: {{ ticket.transaction.amount_sum }} рублей.
                             </li>

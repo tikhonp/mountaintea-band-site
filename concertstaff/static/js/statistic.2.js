@@ -113,57 +113,59 @@ const app = Vue.createApp({
                     </div>
                 </div>
             </div>
-
-            <table class="table table-hover table-sm caption-top">
-                <caption>Билеты</caption>
-                <thead>
-                <tr>
-                    <th scope="col">Номер билета</th>
-                    <th scope="col">Дата создания</th>
-                    <th scope="col">Имя и Фамилия</th>
-                    <th scope="col">Статус</th>
-                    <th scope="col">Цена билета</th>
-                </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="i in tickets">
-                        <th scope="row">
-                            <a :href="'/staff/submit/' + i.number + '/' + i.get_hash + '/'" class="link-dark">
-                                [[ i.number ]]</a>
-                        </th>
-                        <td>[[ i.transaction.date_created ]]</td>
-                        <td>
-                            <div v-if="user.is_superuser">
-                                <a :href="'/admin/auth/user/' + i.transaction.user.pk + '/change/'" class="link-dark">
-                                    [[ i.transaction.user.first_name ]]</a>
-                            </div>
-                            <div v-else>
-                                [[ i.transaction.user.first_name ]]
-                            </div>
-                        </td>
-                        <td>
-                            <i v-if="i.is_active" class="fa-solid fa-check text-success me-2"> </i> 
-                            <i v-else class="fa-solid fa-xmark text-danger me-2"> </i> 
-                            <i v-if="i.transaction.email_status === 'delivered'" 
-                               class="fa-solid fa-envelope-circle-check text-success"> </i> 
-                            <i v-if="i.transaction.email_status === 'opened'" class="fa-solid fa-envelope-open text-success"> </i> 
-                            <i v-if="i.transaction.email_status === 'accepted' || i.transaction.email_status === 'unnecessary'" 
-                                class="fa-solid fa-envelope text-warning"> </i> 
-                            <i v-if="i.transaction.email_status === 'rejected' || i.transaction.email_status === 'failed'" 
-                               class="fa-solid fa-envelope text-danger"> </i> 
-                        </td>
-                        <td>
-                            <div v-if="user.is_superuser">
-                                <a :href="'/admin/concert/price/' + i.price.id + '/change/'" class="link-dark">
-                                    [[ i.price.price.toFixed(2) ]]</a>
-                            </div>
-                            <div v-else>
-                                [[ i.price.price.toFixed(2) ]]
-                            </div>
-                        </td>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-sm caption-top">
+                    <caption>Билеты</caption>
+                    <thead>
+                    <tr>
+                        <th scope="col">Номер билета</th>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col">Имя и Фамилия</th>
+                        <th scope="col">Статус</th>
+                        <th scope="col">Цена билета</th>
                     </tr>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <tr v-for="i in tickets">
+                            <th scope="row">
+                                <a :href="'/staff/submit/' + i.number + '/' + i.get_hash + '/'" class="link-dark">
+                                    [[ i.number ]]</a>
+                            </th>
+                            <td>[[ i.transaction.date_created ]]</td>
+                            <td>
+                                <div v-if="user.is_superuser">
+                                    <a :href="'/admin/auth/user/' + i.transaction.user.pk + '/change/'" class="link-dark">
+                                        [[ i.transaction.user.first_name ]]</a>
+                                </div>
+                                <div v-else>
+                                    [[ i.transaction.user.first_name ]]
+                                </div>
+                            </td>
+                            <td>
+                                <i v-if="i.is_active" class="fa-solid fa-check text-success me-2"> </i> 
+                                <i v-else class="fa-solid fa-xmark text-danger me-2"> </i> 
+                                <i v-if="i.transaction.email_status === 'delivered'" 
+                                   class="fa-solid fa-envelope-circle-check text-success"> </i> 
+                                <i v-if="i.transaction.email_status === 'opened'" class="fa-solid fa-envelope-open text-success"> </i> 
+                                <i v-if="i.transaction.email_status === 'accepted' || i.transaction.email_status === 'unnecessary'" 
+                                    class="fa-solid fa-envelope text-warning"> </i> 
+                                <i v-if="i.transaction.email_status === 'rejected' || i.transaction.email_status === 'failed'" 
+                                   class="fa-solid fa-envelope text-danger"> </i> 
+                            </td>
+                            <td>
+                                <div v-if="user.is_superuser">
+                                    <a :href="'/admin/concert/price/' + i.price.id + '/change/'" class="link-dark">
+                                        [[ i.price.price.toFixed(2) ]]</a>
+                                </div>
+                                <div v-else>
+                                    [[ i.price.price.toFixed(2) ]]
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <div v-if="tickets_sum == 0" class="alert alert-info" role="alert">
