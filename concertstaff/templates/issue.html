@@ -41,7 +41,10 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col align-self-center">
-                                    Email: <kbd id="email" class="card-text">{{ issue.contact_email }}</kbd>
+                                    Email: <kbd id="email" class="card-text">
+                                    <a href="mailto:{{ issue.contact_email }}">
+                                        {{ issue.contact_email }}</a>
+                                </kbd>
                                 </div>
                                 <div class="col align-self-center">
                                     <a href="#" class="btn btn-outline-secondary btn-sm float-end" id="copyb"
