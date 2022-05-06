@@ -1,10 +1,9 @@
 import json
 
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import user_passes_test
 from django.contrib.postgres.search import SearchVector
 from django.core import exceptions
-from django.core.mail import send_mail, mail_managers
+from django.core.mail import mail_managers
 from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
@@ -219,7 +218,7 @@ def add_ticket(request):
             Ticket.objects.create(transaction=transaction, price=price)
 
             tickets = Ticket.objects.filter(transaction=transaction)
-            send_mail(**generate_ticket_email(transaction, tickets=tickets, request=request))
+            send_mail(**generate_ticket_email(transaction, tickets=tickets, request=request, headers=True))
 
             if not request.user.is_superuser:
                 mail_managers(**generate_managers_ticket_email(transaction, tickets=tickets))
