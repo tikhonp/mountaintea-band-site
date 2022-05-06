@@ -275,7 +275,7 @@ def issue_page(request, issue):
     })
 
 
-@user_passes_test(lambda u: u.is_active and u.is_superuser, login_url='admin:login')
+@staff_member_required
 @require_http_methods(['GET'])
 def qrcode(request):
     return render(request, 'qrcode.html')

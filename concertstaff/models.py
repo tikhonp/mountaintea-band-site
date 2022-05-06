@@ -14,3 +14,6 @@ class Issue(models.Model):
     manager = models.ForeignKey(
         User, on_delete=models.SET_NULL, verbose_name="the related manager", null=True, default=None
     )
+
+    def get_absolute_url(self):
+        return f'/staff/issue/{self.pk}/'

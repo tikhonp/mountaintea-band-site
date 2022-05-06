@@ -19,7 +19,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'qrcode' %}">
-                    Сканировать QR код <span class="badge rounded-pill bg-warning text-dark">BETA</span>
+                    Сканировать QR код
                 </a>
             </li>
             {% if user.is_superuser %}
@@ -56,7 +56,7 @@
                         <h5 class="card-title">{{ issue.title }}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">{{ issue.date_created }}</h6>
                         <p class="card-text">{{ issue.description }}</p>
-                        <a href="{% url 'issue' issue=issue.id %}" class="card-link">Посмотреть ➔</a>
+                        <a href="{% url 'issue' issue=issue.id %}" class="card-link stretched-link">Посмотреть ➔</a>
                     </div>
                 </div>
             {% endfor %}
@@ -70,7 +70,7 @@
                         <h5 class="card-title">{{ issue.title }}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">{{ issue.date_created }}</h6>
                         <p class="card-text">{{ issue.description }}</p>
-                        <a href="{% url 'issue' issue=issue.id %}" class="card-link">Посмотреть ➔</a>
+                        <a href="{% url 'issue' issue=issue.id %}" class="card-link stretched-link">Посмотреть ➔</a>
                     </div>
                 </div>
             {% endfor %}
