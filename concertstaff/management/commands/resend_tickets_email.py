@@ -18,10 +18,7 @@ class Command(BaseCommand):
             is_done=True, concert=concert, date_closed__lte=datetime(2022, 5, 6, 22, 31)
         )
         for transaction in transactions:
-            print(transaction.id, transaction.user.first_name, transaction.user.email, concert.title)
+            # print(transaction.id, transaction.user.first_name, transaction.user.email, concert.title)
 
-        # print(f"Sending to {transaction.user.first_name}, with email: \"{transaction.user.email}\"...")
-        #
-        # send_mail(**generate_ticket_email(transaction, headers=True))
-        #
-        # print("Sent successfully!")
+            send_mail(**generate_ticket_email(transaction, headers=True))
+            print(transaction.user.email)
