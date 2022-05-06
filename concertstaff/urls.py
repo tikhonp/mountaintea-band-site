@@ -12,4 +12,5 @@ urlpatterns = [
     path('submitnumber/', views.submit_number, name='submit-number'),
     path('issue/<int:issue>/', views.issue_page, name='issue'),
     path('qrcode/', views.qrcode, name='qrcode'),
+    path('concerts/data/', views.concerts_data, name='concerts-data'),
 ]

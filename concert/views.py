@@ -65,7 +65,6 @@ def concerts(request):
 def concert_page(request, concert_id):
     concert = get_object_or_404(Concert, pk=concert_id)
     template = Template(concert.page_template)
-
     images = ConcertImage.objects.filter(concert=concert)
 
     return HttpResponse(
@@ -79,13 +78,14 @@ def concert_page(request, concert_id):
 
 def create_user_payment(cleaned_data: dict) -> User:
     try:
-        user, created = User.objects.get_or_create(
+        user, created = User.objects.select_related('profile').get_or_create(
             username=cleaned_data.get('name').replace(' ', ''),
             first_name=cleaned_data.get('name'),
             email=cleaned_data.get('email')
         )
     except django.db.utils.IntegrityError:
-        user, created = User.objects.get(username=cleaned_data.get('name').replace(' ', '')), False
+        user, created = User.objects.select_related('profile').get(
+            username=cleaned_data.get('name').replace(' ', '')), False
 
     if not created:
         user.email = cleaned_data.get('email')
@@ -202,7 +202,7 @@ def done_payment(request):
     if not transaction_id or not transaction_id.isdigit():
         return HttpResponseBadRequest("Invalid query params")
 
-    user = get_object_or_404(Transaction, pk=int(transaction_id)).user
+    user = get_object_or_404(Transaction.objects.select_related('user'), pk=int(transaction_id)).user
     return render(request, 'success_payment.html', {'user': user})
 
 
@@ -215,7 +215,7 @@ def qr_code_image(request, ticket):
 
 @require_http_methods(["GET"])
 def email_page(request, transaction, sha_hash):
-    transaction = get_object_or_404(Transaction, pk=transaction)
+    transaction = get_object_or_404(Transaction.objects.select_related('concert'), pk=transaction)
 
     if transaction.get_hash() != sha_hash:
         return HttpResponseBadRequest("Invalid transaction hash")

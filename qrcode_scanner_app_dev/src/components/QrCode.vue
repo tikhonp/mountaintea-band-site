@@ -6,7 +6,24 @@
       </div>
     </div>
 
-    <qrcode-stream :camera="camera" :torch="torch" @decode="onDecode" @init="onInit">
+    <div class="container">
+      <div v-if="error && !allow_load_qr" class="alert alert-danger" role="alert">
+        <i class="fa-solid fa-circle-exclamation text-danger"></i> {{ error }}
+      </div>
+
+      <div v-if="show_choose_concert" class="card">
+        <h5 class="card-header">Выберите концерт</h5>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <button v-for="concert in concerts" class="btn btn-secondary" @click="chooseConcert(concert)">
+              {{ concert.full_title }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <qrcode-stream v-if="allow_load_qr" :camera="camera" :torch="torch" @decode="onDecode" @init="onInit">
 
       <div v-if="!loading" class="container my-3 text-center">
         <div class="card">
@@ -31,6 +48,7 @@
                   Билет номер {{ ticket.number }}, {{ ticket.transaction.user.first_name }}.
                   <span v-if="!ticket.is_active">Билет уже использован. </span>
                   <span v-if="!ticket.transaction.is_done">Билет не оплачен. </span>
+                  <span v-if="ticket.concert_id !== current_concert_id">Билет оформлен не на этот концерт. </span>
                   <a :href="ticket.url" class="link-secondary" target="_blank">Открыть билет.</a>
                 </div>
               </div>
@@ -46,6 +64,7 @@
         <div class="fixed-bottom container mb-3">
           <div class="card">
             <div class="card-body">
+              <p class="card-text"><small class="text-muted">{{ concert_title }}</small></p>
               <div class="d-grid gap-2">
                 <a class="btn btn-secondary" href="/staff/"><i class="fa-solid fa-house"></i></a>
                 <button class="btn btn-secondary" @click="changeCamera">
@@ -76,8 +95,13 @@ export default {
       torch_is_supported: false,
 
       decoded_tickets: [],
+      concerts: [],
+      current_concert_id: null,
+      concert_title: null,
 
       loading: true,
+      allow_load_qr: false,
+      show_choose_concert: false,
       error: '',
     }
   },
@@ -85,6 +109,13 @@ export default {
     QrcodeStream
   },
   methods: {
+    chooseConcert(concert) {
+      this.current_concert_id = concert.id
+      this.concert_title = concert.title
+      this.loading = true
+      this.show_choose_concert = false
+      this.allow_load_qr = true
+    },
     isValidHttpUrl(string) {
       let url;
       try {
@@ -95,8 +126,11 @@ export default {
       return url.protocol === "http:" || url.protocol === "https:";
     },
     getTicketData(url) {
-      this.axios.get(url + 'data/', {withCredentials: true})
+      this.axios.post(url + 'data/', {
+        concert_id: this.current_concert_id
+      }, {withCredentials: true})
           .then((response) => {
+            console.log(response.data.concert_id, this.current_concert_id)
             this.push_to_query(response.data)
           })
           .catch((error) => {
@@ -127,6 +161,24 @@ export default {
       } else {
         this.camera = 'rear'
       }
+    },
+    fetchConcerts() {
+      this.axios.get(base_url + '/staff/concerts/data/', {withCredentials: true})
+          .then((response) => {
+            if (response.data.length === 0) {
+              this.error = 'Нет доступных концертов.'
+              this.loading = false
+            } else {
+              this.concerts = response.data
+              this.loading = false
+              this.show_choose_concert = true
+            }
+          })
+          .catch((error) => {
+            this.error = "Упс! Произошла ошибка, пожалуйста, сообщите нам."
+            this.loading = false
+            console.log(error);
+          })
     },
     async onInit(promise) {
       this.error = ""
@@ -160,6 +212,9 @@ export default {
       let date = new Date()
       return date.getFullYear()
     }
+  },
+  mounted() {
+    this.fetchConcerts()
   }
 }
 </script>

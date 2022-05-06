@@ -6,9 +6,10 @@ from django.contrib.postgres.search import SearchVector
 from django.core import exceptions
 from django.core.mail import send_mail, mail_managers
 from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseBadRequest, Http404
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from concert.emails import generate_ticket_email, generate_managers_ticket_email, send_mail
@@ -21,12 +22,13 @@ from concertstaff.models import Issue
 @staff_member_required
 def main(request):
     concerts = Concert.objects.all()
+    issues = Issue.objects.all()
     return render(request, 'main_staff.html', {
         'user': request.user,
         'concerts': [obj for obj in concerts if obj.is_active],
         'concerts_done': [obj for obj in concerts if not obj.is_active],
-        'working_issues': Issue.objects.filter(manager=request.user, is_closed=False),
-        'available_issues': Issue.objects.filter(manager=None, is_closed=False),
+        'working_issues': issues.filter(manager=request.user, is_closed=False),
+        'available_issues': issues.filter(manager=None, is_closed=False),
     })
 
 
@@ -105,7 +107,8 @@ def stat_data(request, concert):
 @staff_member_required
 @require_http_methods(['GET', 'POST'])
 def ticket_check(request, ticket, sha):
-    ticket = get_object_or_404(Ticket, number=ticket)
+    ticket = get_object_or_404(
+        Ticket.objects.select_related('transaction', 'transaction__user', 'transaction__concert'), number=ticket)
 
     if sha != ticket.get_hash():
         return HttpResponseBadRequest('Invalid sha hash')
@@ -131,11 +134,24 @@ def ticket_check(request, ticket, sha):
     })
 
 
-# @staff_member_required
+@staff_member_required
 @require_http_methods(['GET'])
+def concerts_data(request):
+    return HttpResponse(json.dumps([{
+        "id": concert.id,
+        "full_title": concert.full_title,
+        "title": concert.title,
+    } for concert in Concert.objects.all() if concert.is_active]))
+
+
+@staff_member_required
+@csrf_exempt
+@require_http_methods(['POST'])
 def ticket_check_data(request, ticket, sha):
+    concert_id = request.POST.get('concert_id')
     try:
-        ticket = Ticket.objects.get(number=ticket)
+        ticket = Ticket.objects.select_related(
+            'transaction', 'transaction__user', 'price', 'transaction__concert').get(number=ticket)
     except Ticket.DoesNotExist:
         return HttpResponse(json.dumps({
             'state': 'error',
@@ -149,13 +165,14 @@ def ticket_check_data(request, ticket, sha):
         }))
 
     valid = False
-    if ticket.is_active and ticket.transaction.is_done:
+    if ticket.is_active and ticket.transaction.is_done and \
+            ticket.transaction.concert.id == int(concert_id):
         ticket.is_active = False
         ticket.save()
         valid = True
 
     return HttpResponse(json.dumps({
-        'state': 'done',
+        "state": "done",
         "number": ticket.number,
         "is_active": ticket.is_active,
         "valid": valid,
@@ -173,7 +190,8 @@ def ticket_check_data(request, ticket, sha):
                 "first_name": ticket.transaction.user.first_name,
                 "pk": ticket.transaction.user.pk,
             }
-        }
+        },
+        "concert_id": ticket.transaction.concert.id,
     }))
 
 
@@ -188,7 +206,6 @@ def add_ticket(request):
 
         if form.is_valid():
             user = create_user_payment(form.cleaned_data)
-
             concert = Concert.objects.get(pk=form.cleaned_data.get('concert'))
 
             try:
@@ -196,8 +213,9 @@ def add_ticket(request):
             except Price.DoesNotExist:
                 return HttpResponse("Необходимо создать Price с нулевой ценой, обратитесь к администратору.")
 
-            transaction = Transaction.objects.create(user=user, concert=concert, date_closed=timezone.now(),
-                                                     amount_sum=0., is_done=True)
+            transaction = Transaction.objects.create(
+                user=user, concert=concert,
+                date_closed=timezone.now(), amount_sum=0., is_done=True)
             Ticket.objects.create(transaction=transaction, price=price)
 
             tickets = Ticket.objects.filter(transaction=transaction)
