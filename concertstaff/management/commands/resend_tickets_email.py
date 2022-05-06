@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
         for transaction in transactions:
             print(
-                transaction.user.profile.phone, transaction.user.first_name, transaction.date_closed
+                transaction.user.profile.phone, transaction.user.first_name, transaction.date_closed, sep="                  ",
             )
         # email = input()
         # while email != '':
