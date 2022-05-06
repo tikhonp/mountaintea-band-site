@@ -147,7 +147,7 @@ def concerts_data(request):
 @csrf_exempt
 @require_http_methods(['POST'])
 def ticket_check_data(request, ticket, sha):
-    concert_id = request.POST.get('concert_id')
+    concert_id = json.loads(request.body).get('concert_id')
     try:
         ticket = Ticket.objects.select_related(
             'transaction', 'transaction__user', 'price', 'transaction__concert').get(number=ticket)
