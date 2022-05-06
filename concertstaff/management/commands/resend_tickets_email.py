@@ -20,5 +20,5 @@ class Command(BaseCommand):
         for transaction in transactions:
             # print(transaction.id, transaction.user.first_name, transaction.user.email, concert.title)
 
-            send_mail(**generate_ticket_email(transaction, headers=True))
+            # send_mail(**generate_ticket_email(transaction, headers=True))
             print(transaction.user.email)
