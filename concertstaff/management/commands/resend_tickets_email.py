@@ -17,11 +17,16 @@ class Command(BaseCommand):
         transactions = Transaction.objects.select_related('concert', 'user').filter(
             is_done=True, concert=concert, date_closed__lte=datetime(2022, 5, 6, 22, 31)
         )
-        email = input()
-        while email != '':
-            for transaction in transactions:
-                if transaction.user.email == email:
-                    send_mail(**generate_ticket_email(transaction, headers=True))
-                    print("ok")
 
-            email = input()
+        for transaction in transactions:
+            print(
+                transaction.user.profile.phone, transactions.user.first_name, transaction.date_closed
+            )
+        # email = input()
+        # while email != '':
+        #
+        #         if transaction.user.email == email:
+        #             send_mail(**generate_ticket_email(transaction, headers=True))
+        #             print("ok")
+        #
+        #     email = input()

@@ -130,7 +130,6 @@ export default {
         concert_id: this.current_concert_id
       }, {withCredentials: true})
           .then((response) => {
-            console.log(response.data.concert_id, this.current_concert_id)
             this.push_to_query(response.data)
           })
           .catch((error) => {
