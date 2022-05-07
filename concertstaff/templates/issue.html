@@ -29,8 +29,8 @@
                                     Теlegram: <kbd id="telegram" class="card-text">{{ issue.contact_telegram }}</kbd>
                                 </div>
                                 <div class="col align-self-center">
-                                    <a href="#" class="btn btn-outline-secondary btn-sm float-end" id="copyb"
-                                       onclick="CopyToClipboard('telegram');">Скопировать</a>
+                                    <a href="#" class="btn btn-outline-secondary btn-sm float-end" id="copybtelegram"
+                                       onclick="copyTextToClipboard('{{ issue.contact_telegram }}', '#copybtelegram');">Скопировать</a>
                                 </div>
                             </div>
                         </div>
@@ -47,8 +47,8 @@
                                 </kbd>
                                 </div>
                                 <div class="col align-self-center">
-                                    <a href="#" class="btn btn-outline-secondary btn-sm float-end" id="copyb"
-                                       onclick="CopyToClipboard('email');">Скопировать</a>
+                                    <a href="#" class="btn btn-outline-secondary btn-sm float-end" id="copybemail"
+                                       onclick="copyTextToClipboard('{{ issue.contact_email }}', '#copybemail');">Скопировать</a>
                                 </div>
                             </div>
                         </div>
@@ -94,6 +94,56 @@
 
             var abc = document.getElementById("copyb");
             abc.innerHTML = "Скопировано";
+        }
+    </script>
+    <script>
+        function fallbackCopyTextToClipboard(text, id) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+
+            // Avoid scrolling to bottom
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log('Fallback: Copying text command was ' + msg);
+                if (successful) {
+                    var copyBtn = document.querySelector(id)
+                    copyBtn.innerHTML = 'Скопировано'
+                } else {
+                    var copyBtn = document.querySelector(id)
+                    copyBtn.innerHTML = 'Ошибка'
+                }
+            } catch (err) {
+                var copyBtn = document.querySelector(id)
+                copyBtn.innerHTML = 'Ошибка'
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        function copyTextToClipboard(text, id) {
+            if (!navigator.clipboard) {
+                fallbackCopyTextToClipboard(text, id);
+                return;
+            }
+            navigator.clipboard.writeText(text).then(function () {
+                var copyBtn = document.querySelector(id)
+                copyBtn.innerHTML = 'Скопировано'
+                console.log('Async: Copying to clipboard was successful!');
+            }, function (err) {
+                var copyBtn = document.querySelector(id)
+                copyBtn.innerHTML = 'Ошибка'
+                console.error('Async: Could not copy text: ', err);
+            });
         }
     </script>
 {% endblock %}

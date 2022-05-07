@@ -104,6 +104,20 @@
                             <li class="list-group-item">Сумма транзакции: {{ ticket.transaction.amount_sum }} рублей.
                             </li>
                         {% endif %}
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col align-self-center">
+                                    Ссылка на письмо: <a
+                                        href="{% url 'email-page' transaction=ticket.transaction.id sha_hash=ticket.transaction.get_hash %}"
+                                        target="_blank">
+                                    {{ host }}{% url 'email-page' transaction=ticket.transaction.id sha_hash=ticket.transaction.get_hash %}</a>
+                                </div>
+                                <div class="col align-self-center">
+                                    <a href="#" class="btn btn-outline-secondary btn-sm float-end" id="copyb"
+                                       onclick="copyTextToClipboard('{{ host }}{% url 'email-page' transaction=ticket.transaction.id sha_hash=ticket.transaction.get_hash %}');">Скопировать</a>
+                                </div>
+                            </div>
+                        </li>
                     </ul>
                 </div>
 
@@ -113,4 +127,57 @@
 
         {% include "footer.html" %}
     </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function fallbackCopyTextToClipboard(text) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+
+            // Avoid scrolling to bottom
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log('Fallback: Copying text command was ' + msg);
+                if (successful) {
+                    var copyBtn = document.querySelector('#copyb')
+                    copyBtn.innerHTML = 'Скопировано'
+                } else {
+                    var copyBtn = document.querySelector('#copyb')
+                    copyBtn.innerHTML = 'Ошибка'
+                }
+            } catch (err) {
+                var copyBtn = document.querySelector('#copyb')
+                copyBtn.innerHTML = 'Ошибка'
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        function copyTextToClipboard(text) {
+            if (!navigator.clipboard) {
+                fallbackCopyTextToClipboard(text);
+                return;
+            }
+            navigator.clipboard.writeText(text).then(function () {
+                var copyBtn = document.querySelector('#copyb')
+                copyBtn.innerHTML = 'Скопировано'
+                console.log('Async: Copying to clipboard was successful!');
+            }, function (err) {
+                var copyBtn = document.querySelector('#copyb')
+                copyBtn.innerHTML = 'Ошибка'
+                console.error('Async: Could not copy text: ', err);
+            });
+        }
+    </script>
 {% endblock %}
