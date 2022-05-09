@@ -73,7 +73,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'concert.context_processors.host',
+                'concert.context_processors.template_settings',
             ],
         },
     },

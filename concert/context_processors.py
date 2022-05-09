@@ -1,5 +1,8 @@
 from django.conf import settings
 
 
-def host(request):
-    return {'host': settings.HOST}
+def template_settings(request):
+    return {
+        'host': settings.HOST,
+        'debug': settings.DEBUG,
+    }
