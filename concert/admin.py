@@ -1,4 +1,8 @@
+import csv
+from io import StringIO
+
 from django.contrib import admin
+from django.http import HttpResponse
 
 from concert import models
 
@@ -37,7 +41,30 @@ class PriceAdmin(admin.ModelAdmin):
 
 @admin.register(models.Transaction)
 class TransactionAdmin(admin.ModelAdmin):
+    actions = ['download_csv']
     list_display = ('user', 'concert', 'is_done', 'amount_sum', 'date_created')
+
+    def download_csv(self, request, queryset):
+        buffer = StringIO()
+        writer = csv.writer(buffer)
+        writer.writerow([
+            "user", "user_first_name", "concert", "concert_title", "is_done", "date_created", "date_closed",
+            "amount_sum", "email_status", "email_delivery_code", "email_delivery_message", "tickets_count"
+        ])
+
+        for s in queryset:
+            writer.writerow([
+                s.user.id, s.user.first_name, s.concert.id, s.concert.title, s.is_done, s.date_created, s.date_closed,
+                s.amount_sum, s.email_status, s.email_delivery_code, s.email_delivery_message,
+                models.Ticket.objects.filter(transaction=s).count()
+            ])
+
+        buffer.seek(0)
+        response = HttpResponse(buffer, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=transactions.csv'
+        return response
+
+    download_csv.short_description = "Download CSV file for selected transactions."
 
 
 @admin.register(models.Ticket)
