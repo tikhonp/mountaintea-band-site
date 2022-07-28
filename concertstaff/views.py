@@ -1,106 +1,49 @@
 import json
 
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.postgres.search import SearchVector
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.core import exceptions
 from django.core.mail import mail_managers
-from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from concert.emails import generate_ticket_email, generate_managers_ticket_email, send_mail
 from concert.models import Transaction, Ticket, Concert, Price
-from concert.views import create_user_payment
+from concert.utils import create_user_payment
 from concertstaff import forms
 from concertstaff.models import Issue
+from django.views.generic import ListView
 
 
-@staff_member_required
-def main(request):
-    concerts = Concert.objects.all()
-    issues = Issue.objects.all()
-    return render(request, 'main_staff.html', {
-        'user': request.user,
-        'concerts': [obj for obj in concerts if obj.is_active],
-        'concerts_done': [obj for obj in concerts if not obj.is_active],
-        'working_issues': issues.filter(manager=request.user, is_closed=False),
-        'available_issues': issues.filter(manager=None, is_closed=False),
-    })
+class StaffMemberRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        print(self.request.user.is_staff or self.request.user.is_superuser)
+        return self.request.user.is_staff or self.request.user.is_superuser
 
 
-@staff_member_required
-@require_http_methods(["GET"])
-def stat(request, concert):
-    get_object_or_404(Concert, id=concert)
-    return render(request, "stat.html")
+class MainView(StaffMemberRequiredMixin, View):
+    template_name = 'main_staff.html'
+
+    def get(self, request):
+        concerts = Concert.objects.all()
+        issues = Issue.objects.all()
+        return render(request, self.template_name, {
+            'user': request.user,
+            'concerts': [obj for obj in concerts if obj.is_active],
+            'concerts_done': [obj for obj in concerts if not obj.is_active],
+            'working_issues': issues.filter(manager=request.user, is_closed=False),
+            'available_issues': issues.filter(manager=None, is_closed=False),
+        })
 
 
-@staff_member_required
-@require_http_methods(["GET"])
-def stat_data(request, concert):
-    concert = get_object_or_404(Concert, id=concert)
-    query = request.GET.get('query', '')
-
-    if query == '':
-        tickets = Ticket.objects.select_related('price', 'transaction', 'transaction__user').filter(
-            transaction__is_done=True,
-            transaction__concert=concert,
-        ).order_by('-transaction__date_created')
-    else:
-        tickets = Ticket.objects.select_related('price', 'transaction', 'transaction__user').filter(
-            transaction__is_done=True,
-            transaction__concert=concert,
-        ).order_by('-transaction__date_created').annotate(
-            search=SearchVector(
-                'transaction__user__first_name', 'transaction__user__email',
-                'transaction__user__username', 'number', 'price__description', 'price__price'
-            ),
-        ).filter(search=query)
-
-    amount_sum = Transaction.objects.filter(
-        is_done=True,
-        concert=concert,
-    ).aggregate(Sum('amount_sum'))['amount_sum__sum']
-
-    tickets_sum = tickets.count()
-    entered_percent = int(tickets.filter(is_active=False).count() * 100 / tickets_sum if tickets_sum != 0 else 0)
-
-    return HttpResponse(json.dumps({
-        "tickets": [{
-            "number": ticket.number,
-            "is_active": ticket.is_active,
-            "get_hash": ticket.get_hash(),
-            "price": {
-                "id": ticket.price.id,
-                "description": ticket.price.description,
-                "price": ticket.price.price,
-            },
-            "transaction": {
-                "date_created": timezone.localtime(
-                    ticket.transaction.date_created).strftime("%H:%M %d.%m.%y"),
-                "user": {
-                    "first_name": ticket.transaction.user.first_name,
-                    "pk": ticket.transaction.user.pk,
-                },
-                "email_status": ticket.transaction.email_status,
-            }
-        } for ticket in tickets],
-        "amount_sum": amount_sum,
-        "tickets_sum": tickets_sum,
-        "entered_percent": entered_percent,
-        "concert": {
-            "title": concert.title,
-        },
-        "user": {
-            "username": request.user.username,
-            "first_name": request.user.first_name,
-            "is_superuser": request.user.is_superuser,
-            "pk": request.user.pk,
-        },
-    }))
+class StatView(StaffMemberRequiredMixin, View):
+    def get(self, request, concert):
+        get_object_or_404(Concert, id=concert)
+        return render(request, "stat.html", {'concert_id': concert})
 
 
 @staff_member_required

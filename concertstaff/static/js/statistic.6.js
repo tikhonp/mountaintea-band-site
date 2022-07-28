@@ -2,8 +2,8 @@ const app = Vue.createApp({
     delimiters: ['[[',']]'],
     data() {
         return {
-            tickets: null,
-            amount_sum: null,
+            tickets: [],
+            amount_sum: 0,
             tickets_sum: null,
             entered_percent: null,
             concert: null,
@@ -32,34 +32,91 @@ const app = Vue.createApp({
             } else {
                 this.search_loading = true;
                 this.is_search = true
-                this.fetchInitData(this.query);
+                this.loadTickets(this.query);
             }
         },
-        fetchInitData(query) {
-            axios.get(base_url + window.location.pathname + 'data/', {
-                withCredentials: true,
-                params: { query: query }
-            })
+        updateLoadingStatus() {
+            if (this.user !== null && this.tickets !== null && this.concert !== null) {
+                this.data_loading = false;
+                this.search_loading = false;
+            }
+        },
+        loadTickets(query) {
+            let tickets_url = `${base_url}/private/api/v1/tickets/`
+            axios.get(tickets_url, {withCredentials: true, params: {
+                search: query, transaction__is_done: true, transaction__concert: concert_id
+            }})
                 .then((response) => {
-                    this.tickets = response.data.tickets;
-                    this.amount_sum = response.data.amount_sum;
-                    this.tickets_sum = response.data.tickets_sum;
-                    this.entered_percent = response.data.entered_percent;
-                    this.concert = response.data.concert;
-                    this.user = response.data.user;
+                    this.tickets = response.data
 
-                    this.data_loading = false;
-                    this.search_loading = false;
+                    this.amount_sum = this.c_amount_sum()
+                    this.tickets_sum = this.c_tickets_sum()
+                    this.entered_percent = this.c_entered_percent()
+
+                    this.updateLoadingStatus();
                 })
                 .catch((error) => {
                     this.error = 'Упс! Что-то не работает, пожалуйста, сообщите нам.';
                     this.search_loading = false;
                     console.log(error);
                 })
+        },
+        fetchInitData() {
+            this.loadTickets('');
+
+            let concert_url = `${base_url}/private/api/v1/concerts/${concert_id}/`
+            axios.get(concert_url, {withCredentials: true})
+                .then((response) => {
+                    this.concert = response.data
+                    this.updateLoadingStatus();
+                })
+                .catch((error) => {
+                    this.error = 'Упс! Что-то не работает, пожалуйста, сообщите нам.';
+                    this.search_loading = false;
+                    console.log(error);
+                })
+
+            let user_url = `${base_url}/private/api/v1/user/`
+            axios.get(user_url, {withCredentials: true})
+                .then((response) => {
+                    this.user = response.data;
+                    this.updateLoadingStatus();
+                })
+                .catch((error) => {
+                    this.error = 'Упс! Что-то не работает, пожалуйста, сообщите нам.';
+                    this.search_loading = false;
+                    console.log(error);
+                })
+        },
+        c_amount_sum() {
+            let sum = 0;
+            let transaction = [];
+            for (let t in this.tickets) {
+                if (!transaction.includes(this.tickets[t].transaction.id)) {
+                    sum += this.tickets[t].transaction.amount_sum;
+                    transaction.push(this.tickets[t].transaction.id);
+                }
+            }
+            return sum;
+        },
+        c_tickets_sum() {
+            return this.tickets.length;
+        },
+        c_entered_percent() {
+            if (this.tickets_sum == 0) {
+                return 0;
+            }
+            let not_active_tickets = 0;
+            for (let t in this.tickets) {
+                if (!t.is_active) {
+                    not_active_tickets += 1;
+                }
+            }
+            return not_active_tickets * 100 / this.tickets_sum;
         }
     },
     mounted() {
-        this.fetchInitData('');
+        this.fetchInitData();
     },
     template: `
     <div v-if="data_loading" class="d-flex justify-content-center align-middle my-5">

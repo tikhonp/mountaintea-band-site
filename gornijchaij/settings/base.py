@@ -43,9 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
     'phonenumber_field',
+    'rest_framework',
+    'django_cleanup.apps.CleanupConfig',
+    'django_filters',
     'concert',
     'concertstaff',
-    'django_cleanup.apps.CleanupConfig',
+    'private_api',
     'corsheaders',
 ]
 
@@ -158,3 +161,11 @@ CORS_ALLOWED_ORIGINS = [
     'https://mountainteaband.ru',
     'https://www.mountainteaband.ru',
 ]
+
+
+# REST FRAMEWORK
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
+
+LOGIN_URL = '/admin/login/'

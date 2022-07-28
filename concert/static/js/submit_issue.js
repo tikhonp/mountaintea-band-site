@@ -129,7 +129,8 @@ const issues_app = Vue.createApp({
                 contact_telegram: this.telegram !== '' ? this.telegram : null,
                 contact_email: this.email !== '' ? this.email : null
             };
-            axios.post(base_url + "/concerts/issue/", body)
+            let url = `${base_url}/private/api/v1/issues/`
+            axios.post(url, body)
                 .then(response => {
                     this.loading = false;
                     this.is_done = true;

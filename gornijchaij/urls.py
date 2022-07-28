@@ -31,13 +31,15 @@ sitemaps = {
 sitemaps.update(concert_sitemaps)
 
 urlpatterns = [
-    path('', views.main, name='main'),
+    path('', views.MainView.as_view(), name='main'),
     path('admin/', admin.site.urls, name='admin'),
     path('concerts/', include('concert.urls')),
     path('staff/', include('concertstaff.urls')),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps},
          name='django.contrib.sitemaps.views.sitemap'),
+    path('private/api/v1/', include('private_api.urls'))
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [path('api-auth/', include('rest_framework.urls'))]

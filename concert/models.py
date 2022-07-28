@@ -109,6 +109,10 @@ class Concert(models.Model):
     def get_absolute_url(self):
         return f'/concerts/{self.pk}/'
 
+    @classmethod
+    def get_main_queryset(cls, max_count: int = None) -> list:
+        return [obj for obj in cls.objects.all() if obj.is_active][:max_count]
+
     def __str__(self) -> str:
         return "{} {}".format(self.title, "активен" if self.is_active else "Закончен")
 

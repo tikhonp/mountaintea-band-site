@@ -97,14 +97,16 @@ const app = Vue.createApp({
         createTransaction() {
             this.pay_loading = true;
             const data = {
+                concert_id: concert_id,
                 user: {
                     name: this.name,
                     email: this.email,
                     phone_number: this.phone
                 },
-                tickets: Object.fromEntries(this.prices.map( x => [x.id, Number(x.count)]))
+                tickets: this.prices,
             }
-            axios.post(base_url + window.location.pathname, data)
+            let url = `${base_url}/private/api/v1/buy/ticket/`
+            axios.post(url, data, {withCredentials: true})
                 .then((response) => {
                     this.transaction_id = response.data.transaction_id
                     this.pay_loading = false;
@@ -197,15 +199,37 @@ const app = Vue.createApp({
             return input.value.replace(/\D/g, '');
         },
         fetchInitData() {
-            axios.get(base_url + window.location.pathname + 'data/', {withCredentials: true})
+            let prices_url = `${base_url}/private/api/v1/prices/`;
+            axios.get(prices_url, {
+                params: {concert: concert_id}
+            })
                 .then((response) => {
-                    this.concert = response.data.concert;
-                    this.prices = response.data.prices;
-                    if (response.data.user) {
-                        this.name = response.data.user.first_name;
-                        this.email = response.data.user.email;
-                        this.phone = response.data.user.phone;
+                    this.prices = response.data;
+                    for (var i = 0; i < this.prices.length; i++) {
+                        this.prices[i].count = 0;
                     }
+                })
+                .catch((error) => {
+                    this.error = 'Упс! Что-то не работает, пожалуйста, сообщите нам.';
+                    console.log(error);
+                })
+            let user_url = `${base_url}/private/api/v1/user/`;
+            axios.get(user_url, {withCredentials: true})
+                .then((response) => {
+                    this.name = response.data.first_name;
+                    this.email = response.data.email;
+                    this.phone = response.data.profile.phone;
+                })
+                .catch((error) => {
+                    if (error.response.status !== 403) {
+                        this.error = 'Упс! Что-то не работает, пожалуйста, сообщите нам.';
+                        console.log(error);
+                    }
+                })
+            let concerts_url = `${base_url}/private/api/v1/concerts/${concert_id}/`;
+            axios.get(concerts_url, {withCredentials: true})
+                .then((response) => {
+                    this.concert = response.data;
                     this.data_loading = false;
                 })
                 .catch((error) => {
@@ -213,6 +237,75 @@ const app = Vue.createApp({
                     console.log(error);
                 })
         },
+        strftime(sFormat, date) {
+          if (!(date instanceof Date)) date = new Date();
+          var nDay = date.getDay(),
+            nDate = date.getDate(),
+            nMonth = date.getMonth(),
+            nYear = date.getFullYear(),
+            nHour = date.getHours(),
+            aDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            aMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            aDayCount = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334],
+            isLeapYear = function() {
+              if ((nYear&3)!==0) return false;
+              return nYear%100!==0 || nYear%400===0;
+            },
+            getThursday = function() {
+              var target = new Date(date);
+              target.setDate(nDate - ((nDay+6)%7) + 3);
+              return target;
+            },
+            zeroPad = function(nNum, nPad) {
+              return ('' + (Math.pow(10, nPad) + nNum)).slice(1);
+            };
+          return sFormat.replace(/%[a-z]/gi, function(sMatch) {
+            return {
+              '%a': aDays[nDay].slice(0,3),
+              '%A': aDays[nDay],
+              '%b': aMonths[nMonth].slice(0,3),
+              '%B': aMonths[nMonth],
+              '%c': date.toUTCString(),
+              '%C': Math.floor(nYear/100),
+              '%d': zeroPad(nDate, 2),
+              '%e': nDate,
+              '%F': date.toISOString().slice(0,10),
+              '%G': getThursday().getFullYear(),
+              '%g': ('' + getThursday().getFullYear()).slice(2),
+              '%H': zeroPad(nHour, 2),
+              '%I': zeroPad((nHour+11)%12 + 1, 2),
+              '%j': zeroPad(aDayCount[nMonth] + nDate + ((nMonth>1 && isLeapYear()) ? 1 : 0), 3),
+              '%k': '' + nHour,
+              '%l': (nHour+11)%12 + 1,
+              '%m': zeroPad(nMonth + 1, 2),
+              '%M': zeroPad(date.getMinutes(), 2),
+              '%p': (nHour<12) ? 'AM' : 'PM',
+              '%P': (nHour<12) ? 'am' : 'pm',
+              '%s': Math.round(date.getTime()/1000),
+              '%S': zeroPad(date.getSeconds(), 2),
+              '%u': nDay || 7,
+              '%V': (function() {
+                      var target = getThursday(),
+                        n1stThu = target.valueOf();
+                      target.setMonth(0, 1);
+                      var nJan1 = target.getDay();
+                      if (nJan1!==4) target.setMonth(0, 1 + ((4-nJan1)+7)%7);
+                      return zeroPad(1 + Math.ceil((n1stThu-target)/604800000), 2);
+                    })(),
+              '%w': '' + nDay,
+              '%x': date.toLocaleDateString(),
+              '%X': date.toLocaleTimeString(),
+              '%y': ('' + nYear).slice(2),
+              '%Y': nYear,
+              '%z': date.toTimeString().replace(/.+GMT([+-]\d+).+/, '$1'),
+              '%Z': date.toTimeString().replace(/.+\((.+?)\)$/, '$1')
+            }[sMatch] || sMatch;
+          });
+        },
+        get_start_time() {
+            let date = new Date(this.concert.start_date_time);
+            return this.strftime("%d.%m в %H:%M", date);
+        }
     },
     computed: {
         isEmailValid() {
@@ -245,7 +338,7 @@ const app = Vue.createApp({
 
     <div v-if="!data_loading && prices" class="mt-2 mb-4">
         <h2>Билет на концерт - [[ concert.title ]]</h2>
-        <p>Когда: [[ concert.date_time ]].</p>
+        <p>Когда: [[ get_start_time() ]].</p>
 
         <div v-if="prices.length == 0">
             <div class="alert alert-info" role="alert">

@@ -12,7 +12,7 @@
     <div class="container mt-2">
         <h2 class="title">Концерты и шоу</h2>
 
-        {% for concert in concerts_active %}
+        {% for concert in concerts.concerts_active %}
             <div class="card mb-2" itemscope itemtype="https://schema.org/MusicEvent">
                 <div class="card-body">
                     <h4 class="card-title" itemprop="name">{{ concert.full_title }}</h4>
@@ -46,9 +46,9 @@
             </div>
         {% endfor %}
 
-        {% if concerts_disabled %}
+        {% if concerts.concerts_disabled %}
             <h2 class="mt-3">Завершенные концерты</h2>
-            {% for concert in concerts_disabled %}
+            {% for concert in concerts.concerts_disabled %}
                 <div class="card mb-2" itemscope itemtype="https://schema.org/MusicEvent">
                     <div class="card-body">
                         <h4 class="card-title" itemprop="name">{{ concert.full_title }}</h4>
