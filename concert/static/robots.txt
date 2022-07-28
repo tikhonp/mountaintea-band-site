@@ -3,10 +3,11 @@ User-Agent: *
 Allow: /
 Allow: /concerts/*
 
-Disallow: /admin/
-Disallow: /staff/
+Disallow: /admin/*
+Disallow: /staff/*
 Disallow: /concerts/tickets/donepayment/
 Disallow: /concerts/*/tickets/
+Disallow: /private/*
 
 Sitemap: https://mountainteaband.ru/sitemap.xml
 Sitemap: https://mountainteaband.ru/concerts/sitemap.xml

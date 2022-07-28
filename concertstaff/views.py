@@ -1,27 +1,21 @@
-import json
-
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.core import exceptions
-from django.core.mail import mail_managers
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
+from django.views.generic import TemplateView
+from django.views.generic.base import TemplateResponseMixin
+from django.views.generic.edit import FormView
 
-from concert.emails import generate_ticket_email, generate_managers_ticket_email, send_mail
-from concert.models import Transaction, Ticket, Concert, Price
-from concert.utils import create_user_payment
+from concert.emails import generate_ticket_email, send_mail
+from concert.models import Ticket, Concert
 from concertstaff import forms
 from concertstaff.models import Issue
-from django.views.generic import ListView
 
 
 class StaffMemberRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
-        print(self.request.user.is_staff or self.request.user.is_superuser)
         return self.request.user.is_staff or self.request.user.is_superuser
 
 
@@ -46,16 +40,26 @@ class StatView(StaffMemberRequiredMixin, View):
         return render(request, "stat.html", {'concert_id': concert})
 
 
-@staff_member_required
-@require_http_methods(['GET', 'POST'])
-def ticket_check(request, ticket, sha):
-    ticket = get_object_or_404(
-        Ticket.objects.select_related('transaction', 'transaction__user', 'transaction__concert'), number=ticket)
+class TicketCheckView(StaffMemberRequiredMixin, View):
+    def get(self, request, ticket, sha):
+        ticket = get_object_or_404(
+            Ticket.objects.select_related('transaction', 'transaction__user', 'transaction__concert'), number=ticket)
 
-    if sha != ticket.get_hash():
-        return HttpResponseBadRequest('Invalid sha hash')
+        if sha != ticket.get_hash():
+            return HttpResponseBadRequest('Invalid sha hash')
 
-    if request.method == 'POST':
+        return render(request, 'submit_ticket.html', {
+            'ticket': ticket,
+            'show_use_button': timezone.now().date() == ticket.transaction.concert.start_date_time.date()
+        })
+
+    def post(self, request, ticket, sha):
+        ticket = get_object_or_404(
+            Ticket.objects.select_related('transaction', 'transaction__user', 'transaction__concert'), number=ticket)
+
+        if sha != ticket.get_hash():
+            return HttpResponseBadRequest('Invalid sha hash')
+
         action = request.POST.get('action')
         if action == 'use':
             ticket.is_active = False
@@ -70,154 +74,80 @@ def ticket_check(request, ticket, sha):
 
             if send_email == 'on':
                 send_mail(**generate_ticket_email(ticket.transaction, headers=True))
-    return render(request, 'submit_ticket.html', {
-        'ticket': ticket,
-        'show_use_button': timezone.now().date() == ticket.transaction.concert.start_date_time.date()
-    })
+
+        return render(request, 'submit_ticket.html', {
+            'ticket': ticket,
+            'show_use_button': timezone.now().date() == ticket.transaction.concert.start_date_time.date()
+        })
 
 
-@staff_member_required
-@require_http_methods(['GET'])
-def concerts_data(request):
-    return HttpResponse(json.dumps([{
-        "id": concert.id,
-        "full_title": concert.full_title,
-        "title": concert.title,
-    } for concert in Concert.objects.all() if concert.is_active]))
-
-
-@staff_member_required
-@csrf_exempt
-@require_http_methods(['POST'])
-def ticket_check_data(request, ticket, sha):
-    concert_id = json.loads(request.body).get('concert_id')
-    try:
-        ticket = Ticket.objects.select_related(
-            'transaction', 'transaction__user', 'price', 'transaction__concert').get(number=ticket)
-    except Ticket.DoesNotExist:
-        return HttpResponse(json.dumps({
-            'state': 'error',
-            "error": "Билета номер \"{}\" не найдено.".format(ticket)
-        }))
-
-    if sha != ticket.get_hash():
-        return HttpResponse(json.dumps({
-            'state': 'error',
-            'error': 'Неверный sha hash валидации билета номер "{}".'.format(ticket)
-        }))
-
-    valid = False
-    if ticket.is_active and ticket.transaction.is_done and \
-            ticket.transaction.concert.id == int(concert_id):
-        ticket.is_active = False
-        ticket.save()
-        valid = True
-
-    return HttpResponse(json.dumps({
-        "state": "done",
-        "number": ticket.number,
-        "is_active": ticket.is_active,
-        "valid": valid,
-        "url": ticket.get_absolute_url(),
-        "price": {
-            "id": ticket.price.id,
-            "description": ticket.price.description,
-            "price": ticket.price.price,
-        },
-        "transaction": {
-            "is_done": ticket.transaction.is_done,
-            "date_created": timezone.localtime(
-                ticket.transaction.date_created).strftime("%H:%M %d.%m.%y"),
-            "user": {
-                "first_name": ticket.transaction.user.first_name,
-                "pk": ticket.transaction.user.pk,
-            }
-        },
-        "concert_id": ticket.transaction.concert.id,
-    }))
-
-
-@staff_member_required
-@require_http_methods(['GET', 'POST'])
-def add_ticket(request):
+class AddTicketFormView(StaffMemberRequiredMixin, FormView):
+    template_name = 'free_ticket.html'
+    form_class = forms.AddTicketForm
     created = False
-    form = forms.AddTicketForm()
 
-    if request.method == 'POST':
-        form = forms.AddTicketForm(request.POST)
+    def get_context_data(self, **kwargs):
+        kwargs['created'] = self.created
+        return super().get_context_data(**kwargs)
 
-        if form.is_valid():
-            user = create_user_payment(form.cleaned_data)
-            concert = Concert.objects.get(pk=form.cleaned_data.get('concert'))
-
-            try:
-                price = Price.objects.get(price=0., concert=concert)
-            except Price.DoesNotExist:
-                return HttpResponse("Необходимо создать Price с нулевой ценой, обратитесь к администратору.")
-
-            transaction = Transaction.objects.create(
-                user=user, concert=concert,
-                date_closed=timezone.now(), amount_sum=0., is_done=True)
-            Ticket.objects.create(transaction=transaction, price=price)
-
-            tickets = Ticket.objects.filter(transaction=transaction)
-            send_mail(**generate_ticket_email(transaction, tickets=tickets, request=request, headers=True))
-
-            if not request.user.is_superuser:
-                mail_managers(**generate_managers_ticket_email(transaction, tickets=tickets))
-
-            created = True
-            form = forms.AddTicketForm()
-
-    return render(request, 'free_ticket.html', {'form': form, 'created': created})
+    def form_valid(self, form):
+        if form.send_email(self.request):
+            self.created = True
+            return self.render_to_response(self.get_context_data())
+        else:
+            return HttpResponse("Необходимо создать Price с нулевой ценой, обратитесь к администратору.")
 
 
-@staff_member_required
-@require_http_methods(["GET", "POST"])
-def submit_number(request):
-    if request.method == 'GET':
-        return render(request, 'submit_ticket_number.html')
+class SubmitNumberView(StaffMemberRequiredMixin, TemplateResponseMixin, View):
+    template_name = 'submit_ticket_number.html'
 
-    else:
+    def get(self, request):
+        return self.render_to_response({})
+
+    def post(self, request):
         number = request.POST.get('ticket', '')
         try:
             ticket = Ticket.objects.get(number=number)
         except exceptions.ObjectDoesNotExist:
-            return render(request, 'submit_ticket_number.html', {'number': number})
+            return self.render_to_response({'number': number})
 
         return redirect('staff-ticket-check', ticket=number, sha=ticket.get_hash())
 
 
-@staff_member_required
-@require_http_methods(["GET", "POST"])
-def issue_page(request, issue):
-    issue = get_object_or_404(Issue, id=issue)
+class IssuePageView(StaffMemberRequiredMixin, TemplateView):
+    template_name = 'issue.html'
+    issue = None
 
-    if request.method == 'POST':
+    def get_context_data(self, **kwargs):
+        is_manager = self.request.user == self.issue.manager
+        kwargs.update({
+            'issue': self.issue,
+            'manager': 'вы' if is_manager else self.issue.manager,
+            'is_manager': is_manager,
+        })
+        return super().get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.issue = get_object_or_404(Issue, id=kwargs['issue'])
+        return self.render_to_response(self.get_context_data(**kwargs))
+
+    def post(self, request, *args, **kwargs):
+        self.issue = get_object_or_404(Issue, id=kwargs['issue'])
         action = request.POST.get('action')
         if action == 'get_task':
-            if issue.manager is None:
-                issue.manager = request.user
-                issue.save()
+            if self.issue.manager is None:
+                self.issue.manager = request.user
+                self.issue.save()
             else:
                 return  # raise exception
         if action == 'done_task':
-            if issue.manager == request.user:
-                issue.is_closed = True
-                issue.save()
+            if self.issue.manager == request.user:
+                self.issue.is_closed = True
+                self.issue.save()
             else:
-                return  # raise exception
-
-    is_manager = request.user == issue.manager
-
-    return render(request, 'issue.html', {
-        'issue': issue,
-        'manager': 'вы' if is_manager else issue.manager,
-        'is_manager': is_manager,
-    })
+                return
+        return self.render_to_response(self.get_context_data(**kwargs))
 
 
-@staff_member_required
-@require_http_methods(['GET'])
-def qrcode(request):
-    return render(request, 'qrcode.html')
+class QRCodeView(StaffMemberRequiredMixin, TemplateView):
+    template_name = 'qrcode.html'

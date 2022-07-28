@@ -8,7 +8,7 @@ from concertstaff.models import Issue
 class ConcertSerializer(serializers.ModelSerializer):
     class Meta:
         model = Concert
-        fields = ['id', 'title', 'start_date_time', 'buy_ticket_message', 'yandex_wallet_receiver']
+        exclude = ('page_template', 'email_template', 'yandex_notification_secret')
 
 
 class PriceSerializer(serializers.ModelSerializer):
@@ -65,6 +65,10 @@ class TransactionSerializer(serializers.ModelSerializer):
 class TicketSerializer(serializers.ModelSerializer):
     price = PriceSerializer(read_only=True)
     transaction = TransactionSerializer(read_only=True)
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, instance):
+        return instance.get_absolute_url()
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -74,3 +78,4 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = "__all__"
+        extra_kwargs = {'url': {'read_only': True}}

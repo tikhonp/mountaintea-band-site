@@ -16,7 +16,7 @@
         <div class="card-body">
           <div class="d-grid gap-2">
             <button v-for="concert in concerts" class="btn btn-secondary" @click="chooseConcert(concert)">
-              {{ concert.full_title }}
+              {{ concert.title }}
             </button>
           </div>
         </div>
@@ -126,15 +126,21 @@ export default {
       return url.protocol === "http:" || url.protocol === "https:";
     },
     getTicketData(url) {
-      this.axios.post(url + 'data/', {
-        concert_id: this.current_concert_id
-      }, {withCredentials: true})
+      let components = url.split('/')
+      let req_url = `${base_url}/private/api/v1/tickets/${components[5]}/check/${components[6]}/${this.current_concert_id}/`;
+      this.axios.put(req_url, {withCredentials: true})
           .then((response) => {
+            response.data.state = 'done'
             this.push_to_query(response.data)
           })
           .catch((error) => {
-            this.error = 'Неверный QR-код.'
-            console.log(error);
+            if (response.data) {
+              response.data.state = 'error'
+              this.push_to_query(response.data)
+            } else {
+              this.error = 'Неверный QR-код.'
+              console.log(error);
+            }
           })
     },
     push_to_query(element) {
@@ -162,7 +168,8 @@ export default {
       }
     },
     fetchConcerts() {
-      this.axios.get(base_url + '/staff/concerts/data/', {withCredentials: true})
+      let url = `${base_url}/private/api/v1/concerts/`
+      this.axios.get(url, {withCredentials: true, params: {is_active: true}})
           .then((response) => {
             if (response.data.length === 0) {
               this.error = 'Нет доступных концертов.'
