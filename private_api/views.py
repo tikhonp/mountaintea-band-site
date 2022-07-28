@@ -65,6 +65,7 @@ class IssueViewSet(mixins.CreateModelMixin,
                    mixins.ListModelMixin,
                    mixins.RetrieveModelMixin,
                    viewsets.GenericViewSet):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
 
