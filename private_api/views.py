@@ -21,7 +21,7 @@ class PriceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Price.objects.all()
     serializer_class = PriceSerializer
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ['concert']
+    filterset_fields = ['concert', 'is_active']
 
 
 class CurrentUserViewSet(viewsets.ViewSet):

@@ -201,7 +201,7 @@ const app = Vue.createApp({
         fetchInitData() {
             let prices_url = `${base_url}/private/api/v1/prices/`;
             axios.get(prices_url, {
-                params: {concert: concert_id}
+                params: {concert: concert_id, is_active: true}
             })
                 .then((response) => {
                     this.prices = response.data;
