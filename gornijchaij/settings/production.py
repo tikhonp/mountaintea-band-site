@@ -48,3 +48,10 @@ CORS_ALLOWED_ORIGINS = [
     'https://mountainteaband.ru',
     'https://www.mountainteaband.ru',
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}

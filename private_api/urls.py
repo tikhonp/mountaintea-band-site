@@ -1,8 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from private_api import views
+from django.conf import settings
 
-router = DefaultRouter()
+if settings.DEBUG:
+    router = DefaultRouter()
+else:
+    router = SimpleRouter()
 router.register(r'concerts', views.ConcertViewSet, basename="concerts")
 router.register(r'prices', views.PriceViewSet, basename="prices")
 router.register(r'user', views.CurrentUserViewSet, basename="currant user vs")
