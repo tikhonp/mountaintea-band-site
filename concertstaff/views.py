@@ -1,4 +1,3 @@
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.core import exceptions
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
@@ -12,11 +11,7 @@ from concert.emails import generate_ticket_email, send_mail
 from concert.models import Ticket, Concert
 from concertstaff import forms
 from concertstaff.models import Issue
-
-
-class StaffMemberRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    def test_func(self):
-        return self.request.user.is_staff or self.request.user.is_superuser
+from concertstaff.utils import StaffMemberRequiredMixin
 
 
 class MainView(StaffMemberRequiredMixin, View):
