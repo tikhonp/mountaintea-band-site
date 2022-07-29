@@ -44,7 +44,10 @@ const app = Vue.createApp({
         loadTickets(query) {
             let tickets_url = `${base_url}/private/api/v1/tickets/`
             axios.get(tickets_url, {withCredentials: true, params: {
-                search: query, transaction__is_done: true, transaction__concert: concert_id
+                    search: query,
+                    transaction__is_done: true,
+                    transaction__concert: concert_id,
+                    ordering: '-transaction__date_created'
             }})
                 .then((response) => {
                     this.tickets = response.data

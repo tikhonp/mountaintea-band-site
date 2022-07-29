@@ -1,4 +1,4 @@
-from django.contrib.auth import login
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import viewsets, permissions, response, exceptions, generics, mixins
@@ -9,7 +9,7 @@ from concert.models import Concert, Price, Transaction, Ticket
 from concert.utils import create_user_payment
 from concertstaff.models import Issue
 from private_api.serializers import ConcertSerializer, PriceSerializer, UserSerializer, BuyTicketSerializer, \
-    IssueSerializer, TicketSerializer
+    IssueSerializer, TicketSerializer, IncomingPaymentSerializer, MailgunEventPayloadSerializer
 from private_api.utils import CsrfExemptSessionAuthentication, ConcertIsDoneFilter
 
 
@@ -81,14 +81,15 @@ class IsStaffUser(permissions.BasePermission):
 
 
 class TicketViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Ticket.objects.all().order_by('-transaction__date_created')
+    queryset = Ticket.objects.all().select_related('transaction', 'transaction__concert', 'transaction__user', 'price')
     serializer_class = TicketSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ['transaction', 'is_active', 'price', 'transaction__is_done', 'transaction__concert']
     search_fields = ['transaction__user__first_name', 'transaction__user__email', 'transaction__user__username',
                      'number', 'price__description', 'price__price']
     permission_classes = (IsStaffUser | permissions.IsAdminUser,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    ordering_fields = ['transaction__date_created']
 
     @action(detail=True, methods=['put'], url_path='check/(?P<sha>[^/.]+)/(?P<concert_id>[^/.]+)')
     def check(self, request, pk=None, sha=None, concert_id=None):
@@ -112,3 +113,40 @@ class TicketViewSet(viewsets.ReadOnlyModelViewSet):
         data.update({"valid": valid, })
 
         return response.Response(data)
+
+
+class IncomingPaymentView(generics.GenericAPIView):
+    serializer_class = IncomingPaymentSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.send_email(request)
+        return response.Response()
+
+
+class MailgunWebhookView(generics.GenericAPIView):
+    serializer_class = MailgunEventPayloadSerializer
+
+    def post(self, request, event):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.validate_hmac()
+
+        event_data = serializer.data.get('event-data')
+        tid = event_data.get('user-variables', {}).get('tid')
+        transaction = get_object_or_404(Transaction, id=int(tid))
+
+        event_status = event_data.get('event')
+        if event_status is None:
+            transaction.email_status = event
+        else:
+            transaction.email_status = event_status
+            email_delivery_code = event_data.get('delivery-status', {}).get('code')
+            if email_delivery_code:
+                transaction.email_delivery_code = email_delivery_code
+            email_delivery_message = event_data.get('delivery-status', {}).get('message')
+            if email_delivery_message:
+                transaction.email_delivery_message = email_delivery_message
+        transaction.save()
+        return response.Response()

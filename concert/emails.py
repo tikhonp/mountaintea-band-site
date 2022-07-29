@@ -15,7 +15,7 @@ def generate_ticket_email(
 ) -> dict:
     """Render dict with email settings template with tickets based on the concert model settings"""
 
-    tickets = tickets if tickets else Ticket.objects.filter(transaction=transaction)
+    tickets = tickets if tickets else transaction.ticket_set.filter(transaction=transaction)
     images = ConcertImage.objects.filter(concert=transaction.concert)
 
     context_dict = {
