@@ -43,7 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ['password', ]
 
 
 class BuyTicketUserSerializer(serializers.Serializer):
@@ -81,9 +81,13 @@ class TicketSerializer(serializers.ModelSerializer):
     price = PriceSerializer(read_only=True)
     transaction = TransactionSerializer(read_only=True)
     url = serializers.SerializerMethodField()
+    hash = serializers.SerializerMethodField()
 
     def get_url(self, instance):
         return instance.get_absolute_url()
+
+    def get_hash(self, instance):
+        return instance.get_hash()
 
     @staticmethod
     def setup_eager_loading(queryset):
