@@ -6,7 +6,7 @@ import dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load env variables from file
-dotenv_file = BASE_DIR / ".env"
+dotenv_file = BASE_DIR.parent / ".env"
 if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
 
