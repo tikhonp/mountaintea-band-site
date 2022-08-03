@@ -1,8 +1,6 @@
 import logging
 
 import django
-from django.contrib import messages
-from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
@@ -11,7 +9,7 @@ from django.views import View
 from django.views.generic import ListView, TemplateView
 
 from concert.emails import generate_ticket_email, generate_concert_promo_email
-from concert.models import Concert, Price, Transaction, Ticket, ConcertImage
+from concert.models import Concert, Transaction, Ticket
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,8 @@
+from django.conf import settings
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter, SimpleRouter
+
 from private_api import views
-from django.conf import settings
 
 if settings.DEBUG:
     router = DefaultRouter()

@@ -1,5 +1,5 @@
 # Django dependencies
-Django==4.0.6
+Django==4.1
 django-filter==22.1
 django_cleanup==6.0.0
 djangorestframework==3.13.1

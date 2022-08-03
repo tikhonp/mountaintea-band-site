@@ -9,7 +9,6 @@ from django.urls import reverse
 from concert import views
 from concert.sitemaps import concert_sitemaps
 
-
 admin.site.site_header = 'MountainTea administration'
 admin.site.site_title = 'MountainTea site admin'
 
@@ -37,7 +36,7 @@ urlpatterns = [
     path('staff/', include('concertstaff.urls')),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps},
          name='django.contrib.sitemaps.views.sitemap'),
-    path('private/api/v1/', include('private_api.urls'))
+    path('private/api/v1/', include('private_api.urls')),
 ]
 
 if settings.DEBUG:

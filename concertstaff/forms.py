@@ -1,10 +1,10 @@
 from django import forms
+from django.utils import timezone
 from phonenumber_field.formfields import PhoneNumberField
 
 from concert.emails import generate_ticket_email, send_mail
 from concert.models import Concert, Price, Transaction, Ticket
 from concert.utils import create_user_payment
-from django.utils import timezone
 
 
 class AddTicketForm(forms.Form):
