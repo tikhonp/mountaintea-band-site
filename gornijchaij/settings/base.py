@@ -98,12 +98,8 @@ WSGI_APPLICATION = 'gornijchaij.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'gornijchaij',
-        'USER': 'gornijchaijuser',
-        'PASSWORD': 'raspberry1',
-        'HOST': 'localhost',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
@@ -143,13 +139,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-# -----> MAILGUN
+# MAILGUN
 MANAGERS = []
 ADMINS = []
 
-EMAIL_HOST = 'smtp.eu.mailgun.org'
+EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'postmaster@mountainteaband.ru'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'Горный Чай <noreply@mountainteaband.ru>'
 EMAIL_USE_TLS = True

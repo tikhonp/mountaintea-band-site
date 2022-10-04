@@ -23,8 +23,8 @@ ALLOWED_HOSTS = ['.mountainteaband.ru']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'gornijchaij',
-        'USER': 'gornijchaijuser',
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
         'HOST': 'localhost',
         'PORT': '',
@@ -32,14 +32,13 @@ DATABASES = {
 }
 
 MANAGERS = [
-    # ('Tikhon', 'tikhon.petrishchev@gmail.com'),
-    # ('Platon', 'spektortosha@gmail.com'),
-    # ('Step', 'Stepaqwn@gmail.com'),
+
 ]
 
 ADMINS = [
-    # ('Tikhon', 'ticha56@mail.ru')
+
 ]
+
 HOST = 'https://mountainteaband.ru'
 SECURE_SSL_HOST = 'https://mountainteaband.ru'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

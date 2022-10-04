@@ -1,10 +1,6 @@
-# gornijchaij
+# mountainteaband.ru
 
-Официальный сайт группы "Горный Чай"
-
-### TODO
-
-- Сделать description
+Сайт группы "Горный Чай" с продажей билетов
 
 ### Installation
 
@@ -80,3 +76,5 @@ file /run/gunicorn.sock
 curl --unix-socket /run/gunicorn.sock localhost
 sudo systemctl status gunicorn
 ```
+
+### TODO
