@@ -32,7 +32,7 @@
         <img alt="песочница 2021" src="{% static 'main_image.png' %}" class="img-fluid">
         <div class="container pt-3 text-white">
             <div itemscope itemtype="https://schema.org/MusicGroup">
-                <h3 class="gornijchaij-title">Кто мы?</h3>
+                <h3 class="mountaintea-band-site-title">Кто мы?</h3>
                 <br>
                 <p>
                     <span itemprop="name">Горный Чай</span> -
@@ -45,7 +45,7 @@
                     </span>
                 </p>
                 <br>
-                <h3 class="gornijchaij-title pb-2">Концерты</h3>
+                <h3 class="mountaintea-band-site-title pb-2">Концерты</h3>
                 {% if concerts %}
                     {% for concert in concerts %}
                         <div class="pb-2" itemprop="event" itemscope itemtype="https://schema.org/MusicEvent">
@@ -132,7 +132,7 @@
                     <a class="btn btn-outline-light" href="{% url 'concerts' %}" role="button">Все концерты -></a>
                 </div>
                 <br>
-                <h3 class="gornijchaij-title pb-3">Релизы</h3>
+                <h3 class="mountaintea-band-site-title pb-3">Релизы</h3>
                     <iframe width="100%" height="150" class="rounded"
                             src="https://odesli.co/embed/?url=https%3A%2F%2Falbum.link%2Fpm8ps7szrr6pv&theme=dark"
                             frameborder="0" allowfullscreen
@@ -145,7 +145,7 @@
                             <small class="d-block mb-3 text-muted">Горный Чай © 2021 — {% now 'Y' %}</small>
                         </div>
                         <div class="col-6 col-md">
-                            <h5 class="gornijchaij-title">Контакты</h5>
+                            <h5 class="mountaintea-band-site-title">Контакты</h5>
                             <ul class="list-unstyled text-small">
                                 <li><a target="_blank" class="link-secondary" itemprop="url"
                                        href="https://www.instagram.com/mountainteaaa/">Instagram</a>
@@ -158,7 +158,7 @@
                             </ul>
                         </div>
                         <div class="col-6 col-md">
-                            <h5 class="gornijchaij-title">Мы</h5>
+                            <h5 class="mountaintea-band-site-title">Мы</h5>
                             <ul class="list-unstyled text-small">
                                 <span itemprop="employee" itemscope itemtype="https://schema.org/Person">
                                     <li><a target="_blank" class="link-secondary" itemprop="url"

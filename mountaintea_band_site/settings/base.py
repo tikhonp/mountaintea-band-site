@@ -70,7 +70,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://www.mountainteaband.ru',
 ]
 
-ROOT_URLCONF = 'gornijchaij.urls'
+ROOT_URLCONF = 'mountaintea_band_site.urls'
 
 TEMPLATES = [
     {
@@ -91,7 +91,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'gornijchaij.wsgi.application'
+WSGI_APPLICATION = 'mountaintea_band_site.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases

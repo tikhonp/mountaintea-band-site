@@ -6,13 +6,13 @@ After=network.target
 [Service]
 User=tikhon
 Group=www-data
-Environment = DJANGO_SETTINGS_MODULE=gornijchaij.settings.production
-WorkingDirectory=/home/tikhon/gornijchaij
-ExecStart=/home/tikhon/gornijchaij/env/bin/gunicorn \
+Environment = DJANGO_SETTINGS_MODULE=mountaintea_band_site.settings.production
+WorkingDirectory=/home/tikhon/mountaintea-band-site
+ExecStart=/home/tikhon/mountaintea-band-site/env/bin/gunicorn \
           --access-logfile - \
           --workers 1 \
           --bind unix:/run/gunicorn.sock \
-          gornijchaij.wsgi:application
+          mountaineer_band_site.wsgi:application
 
 [Install]
 WantedBy=multi-user.target

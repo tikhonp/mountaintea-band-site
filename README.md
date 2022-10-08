@@ -19,8 +19,8 @@ The trickiest part of our stack is how we develop the frontend and backend as a 
 1. Clone the repo
 
     ```sh
-    $ git clone https://github.com/TikhonP/gornijchaij.git
-    $ cd gornijchaij
+    $ git clone https://github.com/TikhonP/mountaintea-band-site.git
+    $ cd mountaintea_band_site
     ```
 
 2. Assuming that you have Python and virtualenv installed, set up your environment and install the required dependencies
@@ -36,7 +36,7 @@ The trickiest part of our stack is how we develop the frontend and backend as a 
 4. Export the environment variable, make and run the migrations
 
     ```sh
-    $ export DJANGO_SETTINGS_MODULE=gornijchaij.settings.development
+    $ export DJANGO_SETTINGS_MODULE=mountaintea_band_site.settings.development
     $ python manage.py makemigrations
     $ python manage.py migrate
     ```
@@ -81,12 +81,12 @@ Installation for ubuntu and debian:
 
     ```sh
     $ sudo -u postgres psql
-    postgres=# CREATE USER gornijchaij WITH PASSWORD 'password';
-    postgres=# ALTER ROLE gornijchaij SET client_encoding TO 'utf8';
-    postgres=# ALTER ROLE gornijchaij SET default_transaction_isolation TO 'read committed';
-    postgres=# ALTER ROLE gornijchaij SET timezone TO 'Europe/Moscow';
-    postgres=# CREATE DATABASE gornijchaij;
-    postgres=# GRANT ALL PRIVILEGES ON DATABASE gornijchaij TO gornijchaij;
+    postgres=# CREATE USER mountaintea_band_site_user WITH PASSWORD 'password';
+    postgres=# ALTER ROLE mountaintea_band_site_user SET client_encoding TO 'utf8';
+    postgres=# ALTER ROLE mountaintea_band_site_user SET default_transaction_isolation TO 'read committed';
+    postgres=# ALTER ROLE mountaintea_band_site_user SET timezone TO 'Europe/Moscow';
+    postgres=# CREATE DATABASE mountaintea_band_site_db;
+    postgres=# GRANT ALL PRIVILEGES ON DATABASE mountaintea_band_site_db TO mountaintea_band_site_user;
     postgres=# \q
     ```
 
@@ -103,7 +103,7 @@ Installation for ubuntu and debian:
 5. Export the environment variable, make and run the migrations
 
     ```sh
-    $ export DJANGO_SETTINGS_MODULE=gornijchaij.settings.production
+    $ export DJANGO_SETTINGS_MODULE=mountaintea_band_site.settings.production
     $ python manage.py makemigrations
     $ python manage.py migrate
     ```
@@ -138,12 +138,12 @@ Installation for ubuntu and debian:
     [Service]
     User=ubuntu
     Group=www-data
-    WorkingDirectory=/home/ubuntu/gornijchaij
-    ExecStart=/home/ubuntu/gornijchaij/env/bin/gunicorn \
+    WorkingDirectory=/home/ubuntu/mountaintea-band-site
+    ExecStart=/home/ubuntu/mountaintea-band-site/env/bin/gunicorn \
               --access-logfile - \
               --workers 3 \
               --bind unix:/run/gunicorn.sock \
-              gornijchaij.wsgi:application
+              mountaintea_band_site.wsgi:application
 
     [Install]
     WantedBy=multi-user.target
@@ -157,10 +157,10 @@ Installation for ubuntu and debian:
 7. Create nginx config from template file `nginx.conf` and put it to `/etc/nginx/sites-available/`
 
     ```sh
-    $ sudo vim /etc/nginx/sites-available/gornijchaij
+    $ sudo vim /etc/nginx/sites-available/mountaintea-band-site
     ```
     ```sh
-    $ sudo ln -s /etc/nginx/sites-available/gornijchaij /etc/nginx/sites-enabled
+    $ sudo ln -s /etc/nginx/sites-available/mountaintea-band-site /etc/nginx/sites-enabled
     $ sudo nginx -t
     $ sudo systemctl restart nginx
     $ sudo ufw delete allow 8000
