@@ -1,80 +1,185 @@
-# mountainteaband.ru
+<div align="center">
+  <br>
+  <h1>🎸</h1>
+  <h1>mountainteaband.ru</h1>
+</div>
 
-Сайт группы "Горный Чай" с продажей билетов
+Welcome to the [mountainteaband.ru](mountainteaband.ru) codebase.
+We're little musicians from Russia, who love to play music and share it with the world.
 
-### Installation
+[mountainteaband.ru](mountainteaband.ru) is a service for the sale of tickets and event announcements.
 
-```bash
-sudo apt update
-sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl
-```
+## 🛠 Tech stack
 
-Создание базы данных
+💻 **TL;DR: Django, Postgres, Vue.js**
 
-```
-sudo -u postgres psql
-CREATE DATABASE gornijchaij;
-CREATE USER gornijchaijuser WITH PASSWORD 'password';
-GRANT ALL PRIVILEGES ON DATABASE gornijchaij TO gornijchaijuser;
-\q
-```
+The trickiest part of our stack is how we develop the frontend and backend as a single service. We don't use SPA, as many people do, but only make parts of the page dynamic by inserting Vue.js components directly into Django templates. This may seem weird, but it actually makes it very easy for one person to develop and maintain the entire site.
 
-Установка зависимостей python
+## 🔮 Installing and running locally
 
-```
-sudo -H pip3 install --upgrade pip
-sudo -H pip3 install virtualenv
-python3 -m venv env; . env/bin/activate
-pip install django gunicorn psycopg2-binary
-```
+1. Clone the repo
 
-Создание сокета
+    ```sh
+    $ git clone https://github.com/TikhonP/gornijchaij.git
+    $ cd gornijchaij
+    ```
 
-```
-sudo vim /etc/systemd/system/gunicorn.socket
+2. Assuming that you have Python and virtualenv installed, set up your environment and install the required dependencies
 
-[Unit]
-Description=gunicorn socket
+    ```sh
+    $ python3 -m venv env
+    $ source env/bin/activate
+    $ pip install -r requirements.txt
+    ```
 
-[Socket]
-ListenStream=/run/gunicorn.sock
+3. Create a `.env` file in the root directory of the project and add the environment variables from `.env_example` to it
 
-[Install]
-WantedBy=sockets.target
-```
+4. Export the environment variable, make and run the migrations
 
-```
-sudo vim /etc/systemd/system/gunicorn.service
+    ```sh
+    $ export DJANGO_SETTINGS_MODULE=gornijchaij.settings.development
+    $ python manage.py makemigrations
+    $ python manage.py migrate
+    ```
 
-[Unit]
-Description=gunicorn daemon
-Requires=gunicorn.socket
-After=network.target
+5. Run
 
-[Service]
-User=sammy
-Group=www-data
-WorkingDirectory=/home/tikhon/gornijchaij
-ExecStart=/home/tikhon/gornijchaij/env/bin/gunicorn \
-          --access-logfile - \
-          --workers 3 \
-          --bind unix:/run/gunicorn.sock \
-          gornijchaij.wsgi:application
+    ```sh
+    $ python manage.py runserver
+    ```
+   
+This will start the application in development mode on [http://127.0.0.1:8000/](http://127.0.0.1:8000/) with _SQLite_ database. 
 
-[Install]
-WantedBy=multi-user.target
-```
+If you want to develop `/staff/qrcode/` page, you need to setup _Vue.js_ workspace:
 
-```
-sudo systemctl start gunicorn.socket
-sudo systemctl enable gunicorn.socket
-```
+1. Go to `qrcode_scanner_app_dev` directory
 
-```
-sudo systemctl status gunicorn.socket
-file /run/gunicorn.sock
-curl --unix-socket /run/gunicorn.sock localhost
-sudo systemctl status gunicorn
-```
+    ```sh
+    $ cd qrcode_scanner_app_dev
+    ```
 
-### TODO
+2. Install and run:
+
+    ```sh
+    $ npm install
+    $ npm run dev
+    ```
+
+## 🚢 Deployment
+
+We're using simple _nginx_ + _gunicorn_ setup.
+
+Installation for ubuntu and debian:
+
+1. Install packages
+
+    ```sh
+    $ sudo apt update
+    $ sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl
+    ```
+
+2. Create postgres user and database
+
+    ```sh
+    $ sudo -u postgres psql
+    postgres=# CREATE USER gornijchaij WITH PASSWORD 'password';
+    postgres=# ALTER ROLE gornijchaij SET client_encoding TO 'utf8';
+    postgres=# ALTER ROLE gornijchaij SET default_transaction_isolation TO 'read committed';
+    postgres=# ALTER ROLE gornijchaij SET timezone TO 'Europe/Moscow';
+    postgres=# CREATE DATABASE gornijchaij;
+    postgres=# GRANT ALL PRIVILEGES ON DATABASE gornijchaij TO gornijchaij;
+    postgres=# \q
+    ```
+
+3. Set up _python_ environment and install the required dependencies
+
+    ```sh
+    $ python3 -m venv env
+    $ source env/bin/activate
+    $ pip install -r requirements.txt
+    ```
+
+4. Create `.env` file in the root directory of the project and add the environment variables from `.env_example` to it
+
+5. Export the environment variable, make and run the migrations
+
+    ```sh
+    $ export DJANGO_SETTINGS_MODULE=gornijchaij.settings.production
+    $ python manage.py makemigrations
+    $ python manage.py migrate
+    ```
+
+6. Create gunicorn socket and service
+
+    ```sh
+    $ sudo vim /etc/systemd/system/gunicorn.socket
+    ```
+
+    ```sh
+    [Unit]
+    Description=gunicorn socket
+
+    [Socket]
+    ListenStream=/run/gunicorn.sock
+
+    [Install]
+    WantedBy=sockets.target
+    ```
+
+    ```sh
+    $ sudo vim /etc/systemd/system/gunicorn.service
+    ```
+
+    ```sh
+    [Unit]
+    Description=gunicorn daemon
+    Requires=gunicorn.socket
+    After=network.target
+
+    [Service]
+    User=ubuntu
+    Group=www-data
+    WorkingDirectory=/home/ubuntu/gornijchaij
+    ExecStart=/home/ubuntu/gornijchaij/env/bin/gunicorn \
+              --access-logfile - \
+              --workers 3 \
+              --bind unix:/run/gunicorn.sock \
+              gornijchaij.wsgi:application
+
+    [Install]
+    WantedBy=multi-user.target
+    ```
+
+    ```sh
+    $ sudo systemctl start gunicorn.socket
+    $ sudo systemctl enable gunicorn.socket
+    ```
+
+7. Create nginx config from template file `nginx.conf` and put it to `/etc/nginx/sites-available/`
+
+    ```sh
+    $ sudo vim /etc/nginx/sites-available/gornijchaij
+    ```
+    ```sh
+    $ sudo ln -s /etc/nginx/sites-available/gornijchaij /etc/nginx/sites-enabled
+    $ sudo nginx -t
+    $ sudo systemctl restart nginx
+    $ sudo ufw delete allow 8000
+    $ sudo ufw allow 'Nginx Full'
+    ```
+   
+## 🔐 Security and vulnerabilities
+
+If you think you've found a critical vulnerability that should not be exposed to the public yet, you can always email me directly by email: [tikhon.petrishchev@gmail.com](mailto:tikhon.petrishchev@gmail.com).
+
+Please do not test vulnerabilities in public.
+
+## 👩💼 License 
+
+[MIT](LICENSE)
+
+In other words, you can use the code for private and commercial purposes with an author attribution (by including the original license file).
+
+Feel free to contact us via email [tikhon.petrishchev@gmail.com](mailto:tikhon.petrishchev@gmail.com).
+
+❤️
