@@ -1,13 +1,12 @@
 <div align="center">
   <br>
-  <h1>🎸</h1>
-  <h1>mountainteaband.ru</h1>
+  <h1> 🎸 mountainteaband.ru</h1>
 </div>
 
-Welcome to the [mountainteaband.ru](mountainteaband.ru) codebase.
+Welcome to the [mountainteaband.ru](https://mountainteaband.ru) codebase.
 We're little musicians from Russia, who love to play music and share it with the world.
 
-[mountainteaband.ru](mountainteaband.ru) is a service for the sale of tickets and event announcements.
+[mountainteaband.ru](https://mountainteaband.ru) is a service for the sale of tickets and event announcements.
 
 ## 🛠 Tech stack
 
@@ -174,7 +173,7 @@ If you think you've found a critical vulnerability that should not be exposed to
 
 Please do not test vulnerabilities in public.
 
-## 👩💼 License 
+## 💼 License 
 
 [MIT](LICENSE)
 
