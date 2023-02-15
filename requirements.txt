@@ -1,7 +1,7 @@
 python-dotenv==0.21.0
 
 # Django dependencies
-Django==3.2.16
+Django==3.2.18
 django-filter==22.1
 django_cleanup==6.0.0
 djangorestframework==3.14.0
