@@ -16,8 +16,10 @@ logger = logging.getLogger(__name__)
 
 class MainView(ListView):
     context_object_name = 'concerts'
-    queryset = Concert.get_main_queryset(3)
     template_name = 'main.html'
+
+    def get_queryset(self):
+        return Concert.get_main_queryset(3)
 
     def post(self, request):
         name = request.POST.get('name')

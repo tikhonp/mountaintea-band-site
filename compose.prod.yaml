@@ -1,0 +1,66 @@
+services:
+  nginx:
+    container_name: nginx-prod
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - localnet
+    volumes:
+      - media-data:/media-volume
+    build:
+      context: .
+      target: nginx-prod
+    depends_on:
+      - server
+
+  # cf-tunnel:
+  #   image: cloudflare/cloudflared:latest
+  #   restart: always
+  #   command: tunnel --no-autoupdate run
+  #   environment:
+  #     - TUNNEL_TOKEN=$CF_TUNNEL_TOKEN
+  #   networks:
+  #     - localnet
+          
+  server:
+    container_name: mountaintea-server
+    env_file: ".env"
+    restart: always
+    build:
+      context: .
+      target: prod
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - localnet
+    hostname: server
+    volumes:
+      - media-data:/app/mountaintea_band_site/media
+
+  db:
+    container_name: mountaintea-db
+    image: postgres
+    env_file: ".env"
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-U", "dummy", "-d", "mountaintea-db" ]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+    networks:
+      - localnet
+    hostname: db
+
+volumes:
+  db-data:
+    name: "mountaintea-db-data"
+  media-data:
+    name: "mountaintea-media-data"
+
+networks:
+  localnet:
+    driver: bridge
