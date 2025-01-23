@@ -13,6 +13,7 @@ services:
       target: nginx-prod
     depends_on:
       - server
+    hostname: nginx
 
   cf-tunnel:
     image: cloudflare/cloudflared:latest
