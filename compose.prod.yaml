@@ -14,14 +14,14 @@ services:
     depends_on:
       - server
 
-  # cf-tunnel:
-  #   image: cloudflare/cloudflared:latest
-  #   restart: always
-  #   command: tunnel --no-autoupdate run
-  #   environment:
-  #     - TUNNEL_TOKEN=$CF_TUNNEL_TOKEN
-  #   networks:
-  #     - localnet
+  cf-tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: always
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=$CF_TUNNEL_TOKEN
+    networks:
+      - localnet
           
   server:
     container_name: mountaintea-server
