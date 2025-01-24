@@ -91,7 +91,8 @@ class TicketSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def setup_eager_loading(queryset):
-        queryset = queryset.select_related('price', 'transaction', 'transaction__user', 'transaction__user__profile')
+        queryset = queryset.select_related(
+            'price', 'transaction', 'transaction__user', 'transaction__user__profile')
         return queryset
 
     class Meta:
@@ -118,20 +119,21 @@ class IncomingPaymentSerializer(serializers.Serializer):
 
         hash_str = "{notification_type}&{operation_id}&{amount}&{currency}&{datetime}&{sender}" \
                    "&{codepro}&{notification_secret}&{label}".format(
-            notification_type=cleaned_data.get('notification_type'),
-            operation_id=cleaned_data.get('operation_id'),
-            amount=cleaned_data.get('amount'),
-            currency=cleaned_data.get('currency'),
-            datetime=cleaned_data.get('datetime'),
-            sender=cleaned_data.get('sender'),
-            codepro=cleaned_data.get('codepro'),
-            notification_secret=yandex_notification_secret,
-            label=cleaned_data.get('label'),
-        )
+                       notification_type=cleaned_data.get('notification_type'),
+                       operation_id=cleaned_data.get('operation_id'),
+                       amount=cleaned_data.get('amount'),
+                       currency=cleaned_data.get('currency'),
+                       datetime=cleaned_data.get('datetime'),
+                       sender=cleaned_data.get('sender'),
+                       codepro=cleaned_data.get('codepro'),
+                       notification_secret=yandex_notification_secret,
+                       label=cleaned_data.get('label'),
+                   )
         hash_object = hashlib.sha1(hash_str.encode())
         if str(hash_object.hexdigest()) != cleaned_data.get('sha1_hash'):
             if settings.DEBUG:
-                logger.error("Failed to validate SHA1 hash, the hash is: {}".format(str(hash_object.hexdigest())))
+                logger.error("Failed to validate SHA1 hash, the hash is: {}".format(
+                    str(hash_object.hexdigest())))
             else:
                 logger.error("Failed to validate SHA1 hash.")
             raise exceptions.ValidationError("Failed to check SHA1 hash.")
@@ -160,12 +162,13 @@ class IncomingPaymentSerializer(serializers.Serializer):
 
         send_mail(**generate_ticket_email(
             transaction, tickets=transaction.ticket_set.all(), request=request, headers=True))
-        mail_managers(**generate_managers_ticket_email(transaction, tickets=transaction.ticket_set.all()))
+        mail_managers(**generate_managers_ticket_email(transaction,
+                      tickets=transaction.ticket_set.all()))
 
         return transaction
 
 
-class MailgunUserVariblesSerializer(serializers.Serializer):
+class UserVariblesSerializer(serializers.Serializer):
     tid = serializers.IntegerField()
 
 
@@ -181,7 +184,7 @@ class MailgunEventDataSerializer(serializers.Serializer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['user-variables'] = MailgunUserVariblesSerializer(required=False)
+        self.fields['user-variables'] = UserVariblesSerializer(required=False)
         self.fields['delivery-status'] = MailgunDeliveryStatusSerializer(required=False)
 
 
@@ -201,7 +204,8 @@ class MailgunEventPayloadSerializer(serializers.Serializer):
     def validate_hmac(self):
         signature = self.data.get('signature')
         hmac_digest = hmac.new(key=settings.MAILGUN_SIGNING_KEY.encode(),
-                               msg=('{}{}'.format(signature.get('timestamp'), signature.get('token'))).encode(),
+                               msg=('{}{}'.format(signature.get('timestamp'),
+                                    signature.get('token'))).encode(),
                                digestmod=hashlib.sha256).hexdigest()
         if not hmac.compare_digest(str(signature.get('signature')), str(hmac_digest)):
             if settings.DEBUG:
@@ -209,3 +213,7 @@ class MailgunEventPayloadSerializer(serializers.Serializer):
             else:
                 logger.error("Failed to check HMAC hash")
             raise exceptions.ValidationError("Failed to check HMAC hash.")
+
+
+class SmtpbzEventPayloadSerializer(serializers.Serializer):
+    pass

@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import login
@@ -10,7 +11,7 @@ from concert.models import Concert, Price, Transaction, Ticket
 from concert.utils import create_user_payment
 from concertstaff.models import Issue
 from private_api.serializers import ConcertSerializer, PriceSerializer, UserSerializer, BuyTicketSerializer, \
-    IssueSerializer, TicketSerializer, IncomingPaymentSerializer, MailgunEventPayloadSerializer
+    IssueSerializer, TicketSerializer, IncomingPaymentSerializer, MailgunEventPayloadSerializer, SmtpbzEventPayloadSerializer
 from private_api.utils import CsrfExemptSessionAuthentication, ConcertIsDoneFilter
 
 
@@ -127,14 +128,16 @@ class IncomingPaymentView(generics.GenericAPIView):
 
 
 class SmtpbzWebhookView(generics.GenericAPIView):
-    serializer_class = MailgunEventPayloadSerializer
+    serializer_class = SmtpbzEventPayloadSerializer
 
     def post(self, request, event):
-        print("POST", request.data)
-        return response.Response()
+        tag = request.data.get('tag')
+        tid = json.loads(tag).get('tid')
+        transaction = get_object_or_404(Transaction, id=int(tid))
+        message_status = request.data.get('message_status')
+        transaction.email_status = event
+        transaction.email_delivery_message = f"{message_status} {request.data.get('response')}"
 
-    def get(self, request, event):
-        print("GET", request.data)
         return response.Response()
 
 
