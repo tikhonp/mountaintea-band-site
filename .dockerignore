@@ -32,3 +32,4 @@ Makefile
 LICENSE
 README.md
 env_example
+restore-from-backup.sh
