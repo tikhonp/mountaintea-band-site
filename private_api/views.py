@@ -61,7 +61,8 @@ class BuyTicketApiView(generics.GenericAPIView):
 
         for ticket in serializer.data['tickets']:
             for i in range(ticket['count']):
-                Ticket.objects.create(transaction=transaction, price=Price.objects.get(id=ticket['id']))
+                Ticket.objects.create(transaction=transaction,
+                                      price=Price.objects.get(id=ticket['id']))
 
         return response.Response({'transaction_id': transaction.id})
 
@@ -83,10 +84,12 @@ class IsStaffUser(permissions.BasePermission):
 
 
 class TicketViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Ticket.objects.all().select_related('transaction', 'transaction__concert', 'transaction__user', 'price')
+    queryset = Ticket.objects.all().select_related(
+        'transaction', 'transaction__concert', 'transaction__user', 'price')
     serializer_class = TicketSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    filterset_fields = ['transaction', 'is_active', 'price', 'transaction__is_done', 'transaction__concert']
+    filterset_fields = ['transaction', 'is_active', 'price',
+                        'transaction__is_done', 'transaction__concert']
     search_fields = ['transaction__user__first_name', 'transaction__user__email', 'transaction__user__username',
                      'number', 'price__description', 'price__price']
     permission_classes = (IsStaffUser | permissions.IsAdminUser,)
@@ -102,7 +105,8 @@ class TicketViewSet(viewsets.ReadOnlyModelViewSet):
             raise exceptions.ValidationError("Билета номер \"{}\" не найдено.".format(pk))
 
         if sha != ticket.get_hash():
-            raise exceptions.ValidationError('Неверный sha hash валидации билета номер "{}".'.format(pk))
+            raise exceptions.ValidationError(
+                'Неверный sha hash валидации билета номер "{}".'.format(pk))
 
         valid = False
         if ticket.is_active and ticket.transaction.is_done and \
@@ -137,7 +141,7 @@ class SmtpbzWebhookView(generics.GenericAPIView):
         message_status = request.data.get('message_status')
         transaction.email_status = event
         transaction.email_delivery_message = f"{message_status} {request.data.get('response')}"
-
+        transaction.save()
         return response.Response()
 
 
