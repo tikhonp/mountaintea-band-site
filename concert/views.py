@@ -17,9 +17,7 @@ logger = logging.getLogger(__name__)
 class MainView(ListView):
     context_object_name = 'concerts'
     template_name = 'main.html'
-
-    def get_queryset(self):
-        return Concert.get_main_queryset(3)
+    queryset = Concert.get_main_queryset(3)
 
     def post(self, request):
         name = request.POST.get('name')
@@ -87,7 +85,8 @@ class DonePaymentView(View):
         if not transaction_id or not transaction_id.isdigit():
             return HttpResponseBadRequest("Invalid query params")
 
-        user = get_object_or_404(Transaction.objects.select_related('user'), pk=int(transaction_id)).user
+        user = get_object_or_404(Transaction.objects.select_related(
+            'user'), pk=int(transaction_id)).user
         return render(request, self.template_name, {'user': user})
 
 
@@ -99,7 +98,8 @@ class QRCodeImageView(View):
 
 class EmailPageView(View):
     def get(self, request, transaction, sha_hash):
-        transaction = get_object_or_404(Transaction.objects.select_related('concert'), pk=transaction)
+        transaction = get_object_or_404(
+            Transaction.objects.select_related('concert'), pk=transaction)
 
         if transaction.get_hash() != sha_hash:
             return HttpResponseBadRequest("Invalid transaction hash")
@@ -118,7 +118,8 @@ class ConcertPromoEmailView(View):
             return HttpResponseBadRequest("Invalid user hash")
 
         return HttpResponse(
-            generate_concert_promo_email(concert, user, request=request, is_web=True).get('html_message')
+            generate_concert_promo_email(concert, user, request=request,
+                                         is_web=True).get('html_message')
         )
 
 

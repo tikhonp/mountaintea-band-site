@@ -6,6 +6,7 @@ from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.edit import FormView
+from django.db.models import Exists
 
 from concert.emails import generate_ticket_email, send_mail
 from concert.models import Ticket, Concert
@@ -18,12 +19,11 @@ class MainView(StaffMemberRequiredMixin, View):
     template_name = 'main_staff.html'
 
     def get(self, request):
-        concerts = Concert.objects.all()
         issues = Issue.objects.all()
         return render(request, self.template_name, {
             'user': request.user,
-            'concerts': [obj for obj in concerts if obj.is_active],
-            'concerts_done': [obj for obj in concerts if not obj.is_active],
+            'concerts': Concert.get_active_concerts_queryset(),
+            'concerts_done': Concert.objects.filter(~Exists(Concert.get_active_concerts_queryset())),
             'working_issues': issues.filter(manager=request.user, is_closed=False),
             'available_issues': issues.filter(manager=None, is_closed=False),
         })

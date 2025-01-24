@@ -126,6 +126,18 @@ class IncomingPaymentView(generics.GenericAPIView):
         return response.Response()
 
 
+class SmtpbzWebhookView(generics.GenericAPIView):
+    serializer_class = MailgunEventPayloadSerializer
+
+    def post(self, request, event):
+        print("POST", request.data)
+        return response.Response()
+
+    def get(self, request, event):
+        print("GET", request.data)
+        return response.Response()
+
+
 class MailgunWebhookView(generics.GenericAPIView):
     serializer_class = MailgunEventPayloadSerializer
 
