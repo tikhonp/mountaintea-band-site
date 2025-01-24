@@ -40,8 +40,10 @@ services:
 volumes:
   db-data:
     name: "mountaintea-db-data"
+    external: true
   media-data:
     name: "mountaintea-media-data"
+    external: true
 
 networks:
   localnet:
