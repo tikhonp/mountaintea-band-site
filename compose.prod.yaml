@@ -47,6 +47,7 @@ services:
     restart: always
     volumes:
       - db-data:/var/lib/postgresql/data
+      - db-backup-data:/tmp/backups
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-U", "dummy", "-d", "mountaintea-db" ]
       interval: 1s
@@ -55,12 +56,29 @@ services:
     networks:
       - localnet
     hostname: db
+    labels:
+      - docker-volume-backup.archive-pre=/bin/sh -c 'pg_dump -U dummy -w mountaintea-db > /tmp/backups/mountaintea-db.dump'
+
+  backup:
+    image: offen/docker-volume-backup:v2
+    environment:
+      BACKUP_FILENAME: backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: backup-
+      BACKUP_RETENTION_DAYS: '7'
+    restart: always
+    volumes:
+      # - db-data:/backup/postgres-backup:ro
+      - media-data:/backup/media-backup:ro
+      - db-backup-data:/backup/db-backup:ro
+      - ${HOME}/backups:/archive
 
 volumes:
   db-data:
     name: "mountaintea-db-data"
   media-data:
     name: "mountaintea-media-data"
+  db-backup-data:
+    name: "mountaintea-db-backup-data"
 
 networks:
   localnet:
