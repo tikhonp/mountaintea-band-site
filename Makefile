@@ -20,3 +20,6 @@ go-to-server-container:
 
 migrations:
 	docker compose -f compose.makemigrations.yaml up --build --abort-on-container-exit
+
+backup:
+	 docker exec mountaintea-backup backup
