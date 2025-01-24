@@ -17,16 +17,20 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, verbose_name="the related user")
-    phone = PhoneNumberField("user's phone", blank=True, null=True, help_text='Контактный телефон', default=None)
+    user = models.OneToOneField(User, on_delete=models.CASCADE,
+                                unique=True, verbose_name="the related user")
+    phone = PhoneNumberField("user's phone", blank=True, null=True,
+                             help_text='Контактный телефон', default=None)
     accept_mailing = models.BooleanField("mailings allow lists", default=True)
-    telegram_id = models.IntegerField("telegram user id for staff users", null=True, default=None, blank=True)
+    telegram_id = models.IntegerField(
+        "telegram user id for staff users", null=True, default=None, blank=True)
 
     def __str__(self):
         return "{} {}".format(self.user.username, self.phone)
 
     def get_hash(self) -> str:
-        hash_str = '{}&{}&{}&{}&{}'.format(self.pk, self.phone, self.user.username, self.user.email, self.user.pk)
+        hash_str = '{}&{}&{}&{}&{}'.format(
+            self.pk, self.phone, self.user.username, self.user.email, self.user.pk)
         return hashlib.sha1(hash_str.encode()).hexdigest()
 
 
@@ -50,7 +54,8 @@ class Concert(models.Model):
     description = models.TextField("concert description", null=True, default=None, blank=True)
 
     start_date_time = models.DateTimeField("concert start date time")
-    end_date_time = models.DateTimeField("concert end date time if required", null=True, blank=True, default=None)
+    end_date_time = models.DateTimeField(
+        "concert end date time if required", null=True, blank=True, default=None)
 
     STATUS_CHOICES = [
         ('EventCancelled', 'Отменен'),
@@ -59,7 +64,8 @@ class Concert(models.Model):
         ('EventRescheduled', 'Перенесен'),
         ('EventScheduled', '')
     ]
-    status = models.CharField("status", max_length=16, choices=STATUS_CHOICES, default='EventScheduled')
+    status = models.CharField("status", max_length=16,
+                              choices=STATUS_CHOICES, default='EventScheduled')
     """concert status assuming https://schema.org/EventStatusType EventScheduled by default"""
 
     place_name = models.CharField("place name", max_length=255)
@@ -68,15 +74,21 @@ class Concert(models.Model):
     place_description = models.CharField("place description", max_length=255, null=True, blank=True)
     performer = models.CharField("artists", max_length=255, null=True, default=None, blank=True)
     organizer = models.CharField("organizer", max_length=255, null=True, blank=True, default=None)
-    image = models.ImageField("concert image", upload_to="concert_images", null=True, default=None, blank=True)
+    image = models.ImageField("concert image", upload_to="concert_images",
+                              null=True, default=None, blank=True)
 
-    page_template = models.TextField("template to show concert page", default='<p>Добавьте страницу концерта</p>')
-    email_template = models.TextField("template for email with tickets", default='<p>Добавьте страницу email</p>')
+    page_template = models.TextField("template to show concert page",
+                                     default='<p>Добавьте страницу концерта</p>')
+    email_template = models.TextField(
+        "template for email with tickets", default='<p>Добавьте страницу email</p>')
     email_title = models.CharField("theme of email", max_length=255, default='Билет на концерт')
-    promo_email_template = models.TextField("promo email template", null=True, blank=True, default=None)
-    promo_email_title = models.CharField("theme of promo email", max_length=255, null=True, blank=True, default=None)
+    promo_email_template = models.TextField(
+        "promo email template", null=True, blank=True, default=None)
+    promo_email_title = models.CharField(
+        "theme of promo email", max_length=255, null=True, blank=True, default=None)
 
-    max_tickets_count = models.IntegerField("максимальное количество билетов", blank=True, default=None, null=True)
+    max_tickets_count = models.IntegerField(
+        "максимальное количество билетов", blank=True, default=None, null=True)
     buy_ticket_message = models.CharField("Сообщение на странице оформления билетов", blank=True, null=True,
                                           default=None, max_length=512)
 
@@ -103,7 +115,7 @@ class Concert(models.Model):
     def full_title(self) -> str:
         if self.performer:
             return self.title + ': ' + self.performer + ' в ' + self.place_name + \
-                   ' | ' + self.start_date_time.strftime('%d.%y')
+                ' | ' + self.start_date_time.strftime('%d.%y')
         else:
             return self.title + ' в ' + self.place_name + ' | ' + self.start_date_time.strftime('%d.%y')
 
@@ -114,7 +126,7 @@ class Concert(models.Model):
     def get_active_concerts_queryset(cls):
         return cls.objects.filter(
             Q(status='EventPostponed') |
-                Q(Q(Q(end_date_time__isnull=True | Q(end_date_time__gte=timezone.now()))) & Q(start_date_time__gte=timezone.now())))
+            Q(Q(Q(end_date_time__isnull=True) | Q(end_date_time__gte=timezone.now())) & Q(start_date_time__gte=timezone.now())))
 
     @classmethod
     def get_main_queryset(cls, max_count: int = None) -> list:
@@ -127,14 +139,16 @@ class Concert(models.Model):
 class ConcertImage(models.Model):
     caption = models.CharField("alt text for image", max_length=255)
     image = models.ImageField("image", upload_to="concert_page_images")
-    concert = models.ForeignKey(Concert, on_delete=models.CASCADE, verbose_name="the related concert")
+    concert = models.ForeignKey(Concert, on_delete=models.CASCADE,
+                                verbose_name="the related concert")
 
     def __str__(self):
         return self.caption + ' ({})'.format(self.pk)
 
 
 class Price(models.Model):
-    concert = models.ForeignKey(Concert, on_delete=models.CASCADE, verbose_name="the related concert")
+    concert = models.ForeignKey(Concert, on_delete=models.CASCADE,
+                                verbose_name="the related concert")
 
     CURRENCY_CHOICES = [
         ('RUB', 'рубль'),
@@ -143,7 +157,8 @@ class Price(models.Model):
         ('GBP', 'британский фунт')
     ]
     price = models.FloatField("price of ticket")
-    currency = models.CharField("price currency", max_length=3, choices=CURRENCY_CHOICES, default='RUB')
+    currency = models.CharField("price currency", max_length=3,
+                                choices=CURRENCY_CHOICES, default='RUB')
     description = models.CharField("price description", max_length=255)
 
     is_active = models.BooleanField("price active", default=True)
@@ -162,7 +177,8 @@ class Price(models.Model):
 
 class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="the related user")
-    concert = models.ForeignKey(Concert, on_delete=models.CASCADE, verbose_name="the related concert")
+    concert = models.ForeignKey(Concert, on_delete=models.CASCADE,
+                                verbose_name="the related concert")
 
     is_done = models.BooleanField(default=False)
     date_created = models.DateTimeField("date time created", auto_now_add=True)
@@ -184,8 +200,10 @@ class Transaction(models.Model):
                        'loops enable the notification to be received by Mailgun.'),
         ('stored', 'Mailgun has stored an incoming message'),
     ]
-    email_status = models.CharField("email send status", max_length=12, choices=STATUS_CHOICES, default='unnecessary')
-    email_delivery_code = models.IntegerField("status code of email delivery", null=True, default=None)
+    email_status = models.CharField("email send status", max_length=12,
+                                    choices=STATUS_CHOICES, default='unnecessary')
+    email_delivery_code = models.IntegerField(
+        "status code of email delivery", null=True, default=None)
     email_delivery_message = models.TextField("delivery status message", null=True, default=None)
 
     def __str__(self) -> str:
@@ -200,7 +218,8 @@ class Transaction(models.Model):
 
 
 class Ticket(models.Model):
-    transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE, verbose_name="the related transaction")
+    transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE,
+                                    verbose_name="the related transaction")
     price = models.ForeignKey(Price, on_delete=models.CASCADE, verbose_name="the related price")
 
     number = models.CharField("ticket number", max_length=6, unique=True)
