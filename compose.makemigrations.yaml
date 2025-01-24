@@ -16,7 +16,7 @@ services:
   db:
     container_name: mountaintea-db
     env_file: ".env"
-    image: postgres
+    image: postgres:17
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:

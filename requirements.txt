@@ -1,22 +1,22 @@
-python-dotenv==0.21.0
+python-dotenv==1.0.1
 
 # Django dependencies
-Django==3.2.16
-django-filter==22.1
-django_cleanup==6.0.0
-djangorestframework==3.14.0
-django-cors-headers==3.13.0
-django-phonenumber-field==7.0.0
-phonenumbers==8.12.56
+Django==5.1.5
+django-filter==24.3
+django-cleanup==9.0.0
+djangorestframework==3.15.2
+django-cors-headers==4.6.0
+django-phonenumber-field==8.0.0
+phonenumbers==8.13.53
 
 # QR code generation
-Pillow==9.2.0
-qrcode==7.3.1
+pillow==11.1.0
+qrcode==8.0
 
 # Email template rendering
-html2text==2020.1.16
+html2text==2024.2.26
 
 # Production deploy
-sentry-sdk
-psycopg2-binary==2.9.4
-gunicorn==20.1.0
+sentry-sdk==2.20.0
+psycopg2-binary==2.9.10
+gunicorn==23.0.0

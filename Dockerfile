@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:1
 
-ARG PYTHON_VERSION=3.9
+ARG PYTHON_VERSION=3.13.1
+ARG NGINX_VERSION=1.27
+
 FROM python:${PYTHON_VERSION}-slim AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -30,6 +32,6 @@ ENV DJANGO_SETTINGS_MODULE=mountaintea_band_site.settings.production
 ADD --chmod=111 exec-scripts/start-prod.sh /start.sh 
 CMD ["/start.sh"]
 
-FROM nginx AS nginx-prod
+FROM nginx:${NGINX_VERSION} AS nginx-prod
 COPY nginx/conf.d/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=staticfiles /app/mountaintea_band_site/static /usr/share/nginx/html/static
