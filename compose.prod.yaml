@@ -2,8 +2,6 @@ services:
   nginx:
     container_name: mountaintea-nginx-prod
     restart: always
-    ports:
-      - "80:80"
     networks:
       - localnet
     volumes:
