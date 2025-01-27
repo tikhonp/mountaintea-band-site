@@ -148,7 +148,7 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'Горный Чай <noreply@mountainteaband.ru>'
 EMAIL_USE_TLS = True
-SERVER_EMAIL = 'django@mountaintea.ru'
+SERVER_EMAIL = 'django@mountainteaband.ru'
 MAILGUN_SIGNING_KEY = os.getenv('MAILGUN_SIGNING_KEY')
 
 HOST = 'https://mountainteaband.ru'
