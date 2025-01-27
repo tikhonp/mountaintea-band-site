@@ -34,4 +34,10 @@
 </script>
 
 <script src="https://js.sentry-cdn.com/9bb54f6d4275947b9633159a42342cff.min.js" crossorigin="anonymous"></script>
+<script>
+  Sentry.replayIntegration({
+    unblock: [".sentry-unblock, [data-sentry-unblock]"],
+    unmask: [".sentry-unmask, [data-sentry-unmask]"],
+  });
+</script>
 {% endif %}
