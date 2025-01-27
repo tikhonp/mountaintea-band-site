@@ -31,7 +31,7 @@ DATABASES = {
 }
 
 MANAGERS = [
-
+    ('Tikhon', 'tikhon.petrishchev@gmail.com'),
 ]
 
 ADMINS = [

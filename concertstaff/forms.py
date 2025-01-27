@@ -1,8 +1,9 @@
 from django import forms
 from django.utils import timezone
 from phonenumber_field.formfields import PhoneNumberField
+from django.core.mail import mail_managers
 
-from concert.emails import generate_ticket_email, send_mail
+from concert.emails import generate_ticket_email, send_mail, generate_managers_ticket_email
 from concert.models import Concert, Price, Transaction, Ticket
 from concert.utils import create_user_payment
 

@@ -1,8 +1,7 @@
 from django.core.management.base import BaseCommand
 
-from concert.emails import generate_ticket_email, send_mail
+# from concert.emails import generate_ticket_email, send_mail
 from concert.models import Transaction, Concert
-from django.utils import timezone
 from datetime import datetime
 
 

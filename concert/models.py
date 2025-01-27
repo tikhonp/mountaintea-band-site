@@ -5,7 +5,6 @@ from io import BytesIO
 from typing import Optional
 
 import qrcode
-from PIL import Image
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -124,9 +123,7 @@ class Concert(models.Model):
 
     @classmethod
     def get_active_concerts_queryset(cls):
-        return cls.objects.filter(
-            Q(status='EventPostponed') |
-            Q(Q(Q(end_date_time__isnull=True) | Q(end_date_time__gte=timezone.now())) & Q(start_date_time__gte=timezone.now())))
+        return cls.objects.filter(Q(status='EventPostponed') | Q(Q(Q(end_date_time__isnull=True) | Q(end_date_time__gte=timezone.now())) & Q(start_date_time__gte=timezone.now())))
 
     @classmethod
     def get_main_queryset(cls, max_count: int = None) -> list:
@@ -238,7 +235,8 @@ class Ticket(models.Model):
                 self.price.is_active = False
                 self.price.save()
 
-        if self.transaction.concert.max_tickets_count:
+        concert = self.transaction.concert
+        if concert.max_tickets_count:
             if Ticket.objects.filter(
                     price__concert=concert, transaction__is_done=True
             ).count() >= self.transaction.concert.max_tickets_count:
@@ -264,10 +262,8 @@ class Ticket(models.Model):
             self.number,
             self.get_hash(),
         ))
-        canvas = Image.new('RGB', (500, 500), 'white')
-        canvas.paste(qrcode_img)
         buffer = BytesIO()
-        canvas.save(buffer, 'PNG')
+        qrcode_img.save(buffer, 'PNG')
         return buffer.getvalue()
 
     def get_absolute_url(self):

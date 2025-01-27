@@ -136,7 +136,11 @@ class SmtpbzWebhookView(generics.GenericAPIView):
 
     def post(self, request, event):
         tag = request.data.get('tag')
+        if not tag:
+            return response.Response()
         tid = json.loads(tag).get('tid')
+        if not tid:
+            return response.Response()
         transaction = get_object_or_404(Transaction, id=int(tid))
         message_status = request.data.get('message_status')
         transaction.email_status = event
