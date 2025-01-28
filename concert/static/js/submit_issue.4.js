@@ -151,15 +151,15 @@ window.addEventListener("load", function() {
     <div v-if="!is_done">
         <div class="modal-body">
             <div class="form-floating mb-3">
-                <input @keyup="unvalidateTitle()" type="text" :class="titleClass" id="title" v-model="title" name="title">
-                <label for="floatingInput">Заголовок</label>
+                <input id="name_input" @keyup="unvalidateTitle()" type="text" :class="titleClass" id="title" v-model="title" name="title">
+                <label for="name_input">Заголовок</label>
                 <div v-if="title_invalid" class="invalid-feedback">[[ title_invalid ]]</div>
             </div>
 
             <div class="form-floating">
-                <textarea @keyup="unvalidateDescription()" :class="descriptionClass" id="description" v-model="description" name="description"
+                <textarea id="description_input" @keyup="unvalidateDescription()" :class="descriptionClass" id="description" v-model="description" name="description"
                           style="height: 100px"></textarea>
-                <label for="floatingTextarea2">Комментарий</label>
+                <label for="description_input">Комментарий</label>
                 <div v-if="description_invalid" class="invalid-feedback">[[ description_invalid ]]</div>
             </div>
 
@@ -168,14 +168,14 @@ window.addEventListener("load", function() {
             </div>
 
             <div class="form-floating mb-3">
-                <input @keyup="unvalidateTelegram()" type="text" :class="telegramClass" id="telegram" v-model="telegram" name="telegram">
-                <label for="floatingInput">Telegram</label>
+                <input id="telegram_input" @keyup="unvalidateTelegram()" type="text" :class="telegramClass" id="telegram" v-model="telegram" name="telegram">
+                <label for="telegram_input">Telegram</label>
                 <div v-if="telegram_invalid" class="invalid-feedback">[[ telegram_invalid ]]</div>
             </div>
 
             <div class="form-floating mb-3">
-                <input @keyup="unvalidateEmail()" type="email" :class="emailClass" id="email" v-model="email" name="email">
-                <label for="floatingInput">Email</label>
+                <input autocomplete="on" id="email_input" @keyup="unvalidateEmail()" type="email" :class="emailClass" id="email" v-model="email" name="email">
+                <label for="email_input">Email</label>
                 <div v-if="email_invalid" class="invalid-feedback">[[ email_invalid ]]</div>
             </div>
         </div>
