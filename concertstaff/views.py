@@ -21,8 +21,8 @@ class MainView(StaffMemberRequiredMixin, View):
     def get(self, request):
         return render(request, self.template_name, {
             'user': request.user,
-            'concerts': Concert.get_active_concerts_queryset(),
-            'concerts_done': Concert.objects.filter(~Exists(Concert.get_active_concerts_queryset().filter(pk=OuterRef('pk')))),
+            'concerts': Concert.get_active_concerts_queryset().order_by('-start_date_time'),
+            'concerts_done': Concert.objects.filter(~Exists(Concert.get_active_concerts_queryset().filter(pk=OuterRef('pk')))).order_by('-start_date_time'),
             'working_issues': Issue.objects.filter(manager=request.user, is_closed=False),
             'available_issues': Issue.objects.filter(manager=None, is_closed=False),
         })

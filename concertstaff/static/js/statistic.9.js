@@ -14,6 +14,7 @@ window.addEventListener("load", function(_event) {
                 search_loading: false,
                 submitButtonDisabled: false,
                 is_search: false,
+                tickets_finished_loading: false,
 
                 error: '',
                 query: '',
@@ -37,7 +38,7 @@ window.addEventListener("load", function(_event) {
                 }
             },
             updateLoadingStatus() {
-                if (this.user !== null && this.tickets !== null && this.concert !== null) {
+                if (this.user !== null && this.tickets_finished_loading && this.concert !== null) {
                     this.data_loading = false;
                     this.search_loading = false;
                 }
@@ -59,6 +60,7 @@ window.addEventListener("load", function(_event) {
                         this.tickets_sum = this.c_tickets_sum()
                         this.entered_percent = this.c_entered_percent()
 
+                        this.tickets_finished_loading = true
                         this.updateLoadingStatus();
                     })
                     .catch((error) => {
@@ -177,14 +179,10 @@ window.addEventListener("load", function(_event) {
                 if (this.tickets_sum == 0) {
                     return 0;
                 }
-                let not_active_tickets = 0;
-                for (let t in this.tickets) {
-                    if (!t.is_active) {
-                        not_active_tickets += 1;
-                    }
-                }
-                return not_active_tickets * 100 / this.tickets_sum;
-            }
+                let not_active_tickets = this.tickets.filter(t => !t.is_active).length
+                let entered = not_active_tickets / this.tickets_sum;
+                return Number(entered * 100)
+            },
         },
         mounted() {
             this.fetchInitData();
@@ -226,9 +224,8 @@ window.addEventListener("load", function(_event) {
             <div class="alert alert-secondary" role="alert">
                 Всего собрано
                 <mark>[[ amount_sum.toFixed(2) ]]</mark>
-                рублей. Куплено билетов -
-                <mark>[[ tickets_sum ]]</mark>
-                <small class="pb-2">(С учетом коммисии 2%)</small>
+                рублей. <small class="pb-2">(С учетом коммисии)</small>
+                Куплено билетов: <mark>[[ tickets_sum ]]</mark>
             </div>
 
             <div v-if="entered_percent != 0">
@@ -237,7 +234,7 @@ window.addEventListener("load", function(_event) {
                 <div class="progress mt-3 mb-3" style="height: 20px;">
                     <div class="progress-bar" role="progressbar" :style="'width: ' + entered_percent + '%;'"
                          :aria-valuenow="entered_percent" aria-valuemin="0"
-                         aria-valuemax="100">[[ entered_percent ]]%
+                         aria-valuemax="100">[[ Math.trunc(entered_percent) ]]%
                     </div>
                 </div>
             </div>
