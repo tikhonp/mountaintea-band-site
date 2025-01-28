@@ -13,7 +13,7 @@ docker volume rm mountaintea-db-data -f || exit
 docker volume rm mountaintea-media-data -f || exit
 
 docker run -d --name temp_restore_container -v mountaintea-media-data:/backup_restore alpine
-docker cp backup-data-cache/backup/media-backup temp_restore_container:/backup_restore
+docker cp backup-data-cache/backup/media-backup/. temp_restore_container:/backup_restore
 docker stop temp_restore_container
 docker rm temp_restore_container
 

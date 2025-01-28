@@ -31,11 +31,11 @@ DATABASES = {
 }
 
 MANAGERS = [
-    ('Tikhon', 'tikhon.petrishchev@gmail.com'),
+    # ('Tikhon', 'tikhon.petrishchev@gmail.com'),
 ]
 
 ADMINS = [
-
+    ('Tikhon', 'tikhon.petrishchev@gmail.com'),
 ]
 
 HOST = 'https://mountainteaband.ru'

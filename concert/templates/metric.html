@@ -34,4 +34,12 @@
 </script>
 
 <script src="https://js.sentry-cdn.com/9bb54f6d4275947b9633159a42342cff.min.js" crossorigin="anonymous"></script>
+<script>
+  window.addEventListener("load", function (event) {
+    Sentry.replayIntegration({
+      maskAllText: false,
+      blockAllMedia: false,
+    });
+  }
+</script>
 {% endif %}
