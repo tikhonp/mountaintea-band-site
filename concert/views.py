@@ -19,7 +19,7 @@ class MainView(ListView):
     template_name = 'main.html'
     queryset = Concert.get_main_queryset(3)
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         name = request.POST.get('name')
         email = request.POST.get('email')
 
@@ -36,8 +36,7 @@ class MainView(ListView):
         except django.contrib.auth.models.User.MultipleObjectsReturned:
             pass
 
-        context = self.get_context_data(object_list=self.get_queryset())
-        return self.render_to_response(context)
+        return self.get(request, *args, **kwargs)
 
 
 class ConcertsView(ListView):

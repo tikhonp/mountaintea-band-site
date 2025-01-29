@@ -131,8 +131,15 @@ window.addEventListener("load", function() {
                     contact_email: this.email !== '' ? this.email : null
                 };
                 let url = `${base_url}/private/api/v1/issues/`
-                axios.post(url, body)
-                    .then(_response => {
+                fetch(url, {
+                    method: "POST",
+                    body: JSON.stringify(body),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                })
+                    .then((_response) => {
                         this.loading = false;
                         this.is_done = true;
                     })

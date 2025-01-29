@@ -126,7 +126,7 @@ class Concert(models.Model):
         return cls.objects.filter(Q(status='EventPostponed') | Q(Q(Q(end_date_time__isnull=True) | Q(end_date_time__gte=timezone.now())) & Q(start_date_time__gte=timezone.now())))
 
     @classmethod
-    def get_main_queryset(cls, max_count: int = None) -> list:
+    def get_main_queryset(cls, max_count: int = None):
         return cls.get_active_concerts_queryset()[:max_count]
 
     def __str__(self) -> str:

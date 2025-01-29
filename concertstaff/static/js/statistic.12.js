@@ -44,18 +44,17 @@ window.addEventListener("load", function(_event) {
                 }
             },
             loadTickets(query) {
-                let tickets_url = `${base_url}/private/api/v1/tickets/`
-                axios.get(tickets_url, {
-                    withCredentials: true, params: {
-                        search: query,
-                        transaction__is_done: true,
-                        transaction__concert: concert_id,
-                        ordering: '-transaction__date_created'
-                    }
-                })
-                    .then((response) => {
-                        this.tickets = response.data
-
+                var tickets_url = new URL(`${base_url}/private/api/v1/tickets/`)
+                tickets_url.search = new URLSearchParams({
+                    search: query,
+                    transaction__is_done: true,
+                    transaction__concert: concert_id,
+                    ordering: '-transaction__date_created'
+                }).toString()
+                fetch(tickets_url)
+                    .then(response => response.json())
+                    .then((data) => {
+                        this.tickets = data
                         this.amount_sum = this.c_amount_sum()
                         this.tickets_sum = this.c_tickets_sum()
                         this.entered_percent = this.c_entered_percent()
@@ -102,9 +101,10 @@ window.addEventListener("load", function(_event) {
                 this.loadTickets('');
 
                 let concert_url = `${base_url}/private/api/v1/concerts/${concert_id}/`
-                axios.get(concert_url, { withCredentials: true })
-                    .then((response) => {
-                        this.concert = response.data
+                fetch(concert_url)
+                    .then(response => response.json())
+                    .then((data) => {
+                        this.concert = data
                         this.updateLoadingStatus();
                     })
                     .catch((error) => {
@@ -114,9 +114,10 @@ window.addEventListener("load", function(_event) {
                     })
 
                 let user_url = `${base_url}/private/api/v1/user/`
-                axios.get(user_url, { withCredentials: true })
-                    .then((response) => {
-                        this.user = response.data;
+                fetch(user_url)
+                    .then(response => response.json())
+                    .then((data) => {
+                        this.user = data;
                         this.updateLoadingStatus();
                     })
                     .catch((error) => {
