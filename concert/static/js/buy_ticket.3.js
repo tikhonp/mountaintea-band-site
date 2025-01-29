@@ -59,41 +59,43 @@ window.addEventListener("load", function(_event) {
                     return
                 }
 
-                axios.get("https://emailverification.whoisxmlapi.com/api/v2", {
-                    params: {
-                        apiKey: "at_27BJltqSvUaQ9ejiQ2kBI1iBbhCno",
-                        emailAddress: this.email,
-                    }
-                })
-                    .then((response) => {
-                        let message = '';
-                        if (!response.data.formatCheck) {
-                            this.emailInvalid = true;
-                            this.pay_loading = false;
-                            this.warnDisabled();
-                            return;
-                        } else if (response.data.dnsCheck === "false") {
-                            message = 'Такой почты не существует. Проверьте домен "'
-                                + response.data.domain + '".';
-                        } else if (response.data.smtpCheck === "false") {
-                            message = 'Сервер вашей почты не поддерживает электронные сообщения.'
-                        }
+                //axios.get("https://emailverification.whoisxmlapi.com/api/v2", {
+                //    params: {
+                //        apiKey: "at_27BJltqSvUaQ9ejiQ2kBI1iBbhCno",
+                //        emailAddress: this.email,
+                //    }
+                //})
+                //    .then((response) => {
+                //        let message = '';
+                //        if (!response.data.formatCheck) {
+                //            this.emailInvalid = true;
+                //            this.pay_loading = false;
+                //            this.warnDisabled();
+                //            return;
+                //        } else if (response.data.dnsCheck === "false") {
+                //            message = 'Такой почты не существует. Проверьте домен "'
+                //                + response.data.domain + '".';
+                //        } else if (response.data.smtpCheck === "false") {
+                //            message = 'Сервер вашей почты не поддерживает электронные сообщения.'
+                //        }
+                //
+                //        if (message !== '') {
+                //            this.pay_loading = false;
+                //            this.email_error_message = message;
+                //            this.warnDisabled();
+                //            let myModal = new bootstrap.Modal(document.getElementById('staticBackdropAlert'));
+                //            myModal.show();
+                //            return;
+                //        } else {
+                //            this.createTransaction()
+                //        }
+                //    })
+                //    .catch((error) => {
+                //        console.log(error);
+                //        this.createTransaction()
+                //    })
 
-                        if (message !== '') {
-                            this.pay_loading = false;
-                            this.email_error_message = message;
-                            this.warnDisabled();
-                            let myModal = new bootstrap.Modal(document.getElementById('staticBackdropAlert'));
-                            myModal.show();
-                            return;
-                        } else {
-                            this.createTransaction()
-                        }
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        this.createTransaction()
-                    })
+                this.createTransaction()
             },
             createTransaction() {
                 this.pay_loading = true;
@@ -115,7 +117,8 @@ window.addEventListener("load", function(_event) {
                     .catch((error) => {
                         this.pay_loading = false;
                         this.fetchInitData();
-                        this.error = error.response.data.error;
+
+                        this.error = error?.response?.data?.error || null
                         if (!this.error) {
                             this.error = 'Упс! Что-то не работает, пожалуйста, сообщите нам.';
                         }
@@ -222,10 +225,11 @@ window.addEventListener("load", function(_event) {
                         this.phone = response.data.profile.phone;
                     })
                     .catch((error) => {
-                        if (error.response.status !== 403) {
-                            this.error = 'Упс! Что-то не работает, пожалуйста, сообщите нам.';
-                            console.log(error);
+                        if (error.response && error.response.status == 403) {
+                            return
                         }
+                        this.error = 'Упс! Что-то не работает, пожалуйста, сообщите нам.';
+                        console.log(error);
                     })
                 let concerts_url = `${base_url}/private/api/v1/concerts/${concert_id}/`;
                 axios.get(concerts_url, { withCredentials: true })
