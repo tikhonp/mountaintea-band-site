@@ -58,6 +58,18 @@ $ make prod
 ```
 
 Thats all :)
+
+## 📧 Setup Email
+
+For proper mailing you need an smtp service that provides DKIM and SPF records.
+
+1. So first you need smtp service domain. Add to `.env`: `EMAIL_HOST=example.smtp.com`
+2. Then you need smtp username note that it would be great if that's will be `noreply@mountainteaband.ru`, the sender adress. At least this record MUST EXIST ON SERVER otherwise shitty mail.ru regects all. Put `EMAIL_HOST_USER=noreply@mountainteaband.ru` into `.env`.
+3. Password in `.env`: `EMAIL_HOST_PASSWORD=password`
+4. Add `DKIM` and `SPF` dns records to domain.
+5. As long it's just email sending service not recieveing, add NULL MX record.
+6. And finally `_dmarc.` record to strict the DKIM and SPF policies: `v=DMARC1; p=quarantine; adkim=s; aspf=s;`
+
    
 ## 🔐 Security and vulnerabilities
 
