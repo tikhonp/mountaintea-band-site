@@ -84,8 +84,7 @@ class IsStaffUser(permissions.BasePermission):
 
 
 class TicketViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Ticket.objects.all().select_related(
-        'transaction', 'transaction__concert', 'transaction__user', 'price')
+    queryset = Ticket.objects.all().select_related('transaction', 'transaction__concert', 'transaction__user', 'transaction__user__profile', 'price', 'price__concert')
     serializer_class = TicketSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ['transaction', 'is_active', 'price',

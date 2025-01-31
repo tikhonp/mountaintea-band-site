@@ -7,6 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from django.template import Template, RequestContext
 from django.views import View
 from django.views.generic import ListView, TemplateView
+from django.db.models import OuterRef, Exists
 
 from concert.emails import generate_ticket_email, generate_concert_promo_email
 from concert.models import Concert, Transaction, Ticket
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 class MainView(ListView):
     context_object_name = 'concerts'
     template_name = 'main.html'
-    queryset = Concert.get_main_queryset(3)
+    queryset = Concert.get_active_concerts_queryset()[:3]
 
     def post(self, request, *args, **kwargs):
         name = request.POST.get('name')
@@ -45,15 +46,10 @@ class ConcertsView(ListView):
     template_name = 'concerts.html'
 
     def get_queryset(self):
-        concerts_active, concerts_disabled = [], []
-        for obj in self.model.objects.all():
-            if obj.is_active:
-                concerts_active.append(obj)
-            else:
-                concerts_disabled.append(obj)
-        queryset = {'concerts_active': concerts_active,
-                    'concerts_disabled': concerts_disabled}
-        return queryset
+        return {
+            'concerts_active': Concert.get_active_concerts_queryset().order_by('-start_date_time'),
+            'concerts_disabled': Concert.objects.filter(~Exists(Concert.get_active_concerts_queryset().filter(pk=OuterRef('pk')))).order_by('-start_date_time')
+        }
 
 
 class ConcertPageView(View):

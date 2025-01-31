@@ -43,7 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ['password', ]
+        exclude = ['password', 'groups', 'user_permissions']
 
 
 class BuyTicketUserSerializer(serializers.Serializer):

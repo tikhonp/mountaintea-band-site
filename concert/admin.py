@@ -32,17 +32,20 @@ class ConcertAdmin(admin.ModelAdmin):
 @admin.register(models.Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'phone', 'accept_mailing', 'telegram_id')
+    list_filter = ('accept_mailing', 'user__is_active')
 
 
 @admin.register(models.Price)
 class PriceAdmin(admin.ModelAdmin):
     list_display = ('concert', 'description', 'price', 'is_active')
+    list_filter = ('concert', 'is_active')
 
 
 @admin.register(models.Transaction)
 class TransactionAdmin(admin.ModelAdmin):
     actions = ['download_csv']
     list_display = ('user', 'concert', 'is_done', 'amount_sum', 'date_created')
+    list_filter = ('concert', 'is_done', 'date_created', 'email_status')
 
     def download_csv(self, request, queryset):
         buffer = StringIO()
@@ -70,8 +73,10 @@ class TransactionAdmin(admin.ModelAdmin):
 @admin.register(models.Ticket)
 class TicketAdmin(admin.ModelAdmin):
     list_display = ('number', 'transaction', 'price', 'is_active')
+    list_filter = ('price__concert', 'is_active')
 
 
 @admin.register(models.ConcertImage)
 class ConcertImageAdmin(admin.ModelAdmin):
     list_display = ('caption', 'concert', 'image',)
+    list_filter = ('concert',)
