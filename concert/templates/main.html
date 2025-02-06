@@ -82,7 +82,8 @@
                                     {% if concert.performer %}
                                         <meta itemprop="performer" content="{{ concert.performer }}">
                                     {% endif %}
-                                    {% for price in concert.prices_set %}
+                                    {% load my_filters %}
+                                    {% for price in concert.price_set|is_active:True %}
                                         <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
                                             <meta itemprop="name" content="{{ price.description }}">
                                             <meta itemprop="validFrom" content="2021-10-20T00:00:00">
