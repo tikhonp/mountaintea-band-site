@@ -58,7 +58,7 @@
                                             <a class="link-secondary" href="{{ concert.place_url }}"
                                                itemprop="url"></a>
                                         {% endif %}
-                                        <h6 class="card-subtitle mb-2 text-muted" itemprop="name">
+                                        <h6 class="card-subtitle mb-2 text-muted">
                                             <span itemprop="name">{{ concert.place_name }}</span>:
                                             <span itemprop="address">{{ concert.place_address }}</span>
                                         </h6>
@@ -76,6 +76,23 @@
                                     {% if concert.image %}
                                         <meta itemprop="image" content="{{ concert.image.url }}">
                                     {% endif %}
+                                    {% if concert.organizer %}
+                                        <meta itemprop="organizer" content="{{ concert.organizer }}">
+                                    {% endif %}
+                                    {% if concert.performer %}
+                                        <meta itemprop="performer" content="{{ concert.performer }}">
+                                    {% endif %}
+                                    {% for price in concert.prices_set %}
+                                        <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                                            <meta itemprop="name" content="{{ price.description }}">
+                                            <meta itemprop="validFrom" content="2021-10-20T00:00:00">
+                                            <meta itemprop="validThrough" content="{{ concert.end_date_time|date:"c" }}">
+                                            <meta itemprop="price" content="{{ price.price }}">
+                                            <meta itemprop="priceCurrency" content="{{ price.currency }}">
+                                            <meta itemprop="url" content="{% url 'buy-ticket' concert_id=concert.id %}">
+                                            <meta itemprop="availability" content="{{ price.availability }}">
+                                        </div>
+                                    {% endfor %}
                                     <h6 class="card-subtitle mb-2 text-muted">{{ concert.start_date_time }}</h6>
 
                                     <a class="stretched-link" href="{% url 'concert' concert.id %}"

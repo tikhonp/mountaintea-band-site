@@ -112,11 +112,7 @@ class Concert(models.Model):
 
     @property
     def full_title(self) -> str:
-        if self.performer:
-            return self.title + ': ' + self.performer + ' в ' + self.place_name + \
-                ' | ' + self.start_date_time.strftime('%d.%y')
-        else:
-            return self.title + ' в ' + self.place_name + ' | ' + self.start_date_time.strftime('%d.%y')
+        return self.title + ' в ' + self.place_name + ' | ' + self.start_date_time.strftime('%d.%y')
 
     def get_absolute_url(self):
         return f'/concerts/{self.pk}/'
