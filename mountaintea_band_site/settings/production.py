@@ -14,9 +14,10 @@ sentry_sdk.init(
 
 DEBUG = False
 
+HOST = os.getenv("HOST")
+
 ALLOWED_HOSTS = [
-    '0.0.0.0',
-    '.mountainteaband.ru'
+    os.getenv('DOMAIN'),
 ]
 
 DATABASES = {
@@ -31,20 +32,21 @@ DATABASES = {
 }
 
 MANAGERS = [
+    # Setting this will send email on every new ticket
     # ('Tikhon', 'tikhon.petrishchev@gmail.com'),
 ]
 
 ADMINS = [
+    # Setting this will send prod errors to email
+    # I use sentry for such case
     # ('Tikhon', 'tikhon.petrishchev@gmail.com'),
 ]
 
-HOST = 'https://mountainteaband.ru'
-SECURE_SSL_HOST = 'https://mountainteaband.ru'
+SECURE_SSL_HOST = HOST
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 CORS_ALLOWED_ORIGINS = [
-    'https://mountainteaband.ru',
-    'https://www.mountainteaband.ru',
+    HOST,
 ]
 
 

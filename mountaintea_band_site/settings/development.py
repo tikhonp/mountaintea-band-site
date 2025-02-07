@@ -2,10 +2,10 @@ from .base import *
 
 DEBUG = True
 
+HOST = os.getenv("HOST")
+
 ALLOWED_HOSTS = [
-    '0.0.0.0',
-    'localhost',
-    'localhost:8000',
+    os.getenv("DOMAIN"),
 ]
 
 DATABASES = {
@@ -19,14 +19,8 @@ DATABASES = {
     }
 }
 
-HOST = 'http://localhost:8000'
-
-MANAGERS = [
-    # ('Tikhon', 'tikhon.petrishchev@gmail.com'),
-]
-
 CORS_ALLOWED_ORIGINS = [
-    'http://0.0.0.0:8000',
+    HOST,
 ]
 
 REST_FRAMEWORK = {
