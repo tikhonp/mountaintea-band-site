@@ -1,36 +1,74 @@
 import json
 
-import django
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
+from concert.models import Ticket, Price, Concert, Transaction
 
 
-def find_profile(data: list, username: str) -> dict:
-    for i in data:
-        if i['model'] == 'concert.profile' and i['fields']['user'][0] == username:
-            return i
+def create_user(old_user_id: dict, data: list) -> User:
+    user_data = next(filter(lambda x: x['model'] == 'auth.user' and x['pk'] == old_user_id, data))['fields']
+    try:
+        return User.objects.get(
+            username=user_data['username'],
+        )
+    except User.DoesNotExist:
+        profile_data = next(filter(lambda x: x['model'] == 'concert.profile' and x['fields']['user'] == old_user_id, data))
+        user = User.objects.create(
+            password=user_data['password'],
+            last_login=user_data['last_login'],
+            username=user_data['username'],
+            first_name=user_data['first_name'],
+            last_name=user_data['last_name'],
+            email=user_data['email'],
+            is_active=user_data['is_active'],
+            date_joined=user_data['date_joined'],
+        )
+        p = user.profile
+        p.phone = profile_data['phone']
+        p.save()
+        print("Created user: ", user)
+        return user
 
 
-def create_user(user_data: dict, data: list):
-    print(user_data)
-    user = User.objects.create(
-        password=user_data['fields']['password'],
-        last_login=user_data['fields']['last_login'],
-        is_superuser=user_data['fields']['is_superuser'],
-        username=user_data['fields']['username'],
-        first_name=user_data['fields']['first_name'],
-        last_name=user_data['fields']['last_name'],
-        email=user_data['fields']['email'],
-        is_staff=user_data['fields']['is_staff'],
-        is_active=user_data['fields']['is_active'],
-        date_joined=user_data['fields']['date_joined'],
-    )
-    p = user.profile
-    profile_fields = find_profile(data, user_data['fields']['username'])['fields']
-    p.phone = profile_fields['phone']
-    p.accept_mailing = profile_fields['accept_mailing']
-    p.telegram_id = profile_fields['telegram_id']
-    p.save()
+def creste_prices_for_first_concert(data) -> dict:
+    prices_to_new_map = {}
+    c = Concert.objects.get(pk=1)
+    for price in filter(lambda x: x['model'] == 'concert.price', data):
+        p = Price.objects.create(
+            concert=c,
+            price=price['fields']['price'],
+            description=price['fields']['description'],
+            is_active=False,
+            max_count=price['fields']['max_count'],
+        )
+        prices_to_new_map[price["pk"]] = p.pk
+        print(f'{price["pk"]}: {p.pk},')
+
+    return prices_to_new_map
+
+
+def create_transactions_and_tickets_for_first_concert(data, prices_to_new_map):
+    c = Concert.objects.get(pk=1)
+    for t in filter(lambda x: x['model'] == 'concert.transaction' and x['fields']['is_done'], data):
+        user = create_user(t['fields']['user'], data)
+        transaction = Transaction.objects.create(
+            user=user,
+            concert=c,
+            is_done=t['fields']['is_done'],
+            date_created=t['fields']['date_created'],
+            date_closed=t['fields']['date_closed'],
+            amount_sum=t['fields']['amount_sum'],
+        )
+        print("Created t: ", transaction)
+
+        for ticket_data in filter(lambda x: x['model'] == 'concert.ticket' and x['fields']['transaction'] == t['pk'], data):
+            ticket = Ticket.objects.create(
+                transaction=transaction,
+                price=Price.objects.get(pk=prices_to_new_map[ticket_data['fields']['price']]),
+                number=ticket_data['fields']['number'],
+                is_active=ticket_data['fields']['is_active'],
+            )
+            print("Created ticket: ", ticket)
 
 
 class Command(BaseCommand):
@@ -47,19 +85,7 @@ class Command(BaseCommand):
         with open(options['json_data_file']) as f:
             data = json.load(f)
 
-        # create users
-
-        for i in data:
-            if i['model'] == 'auth.user':
-                # if not i['fields']['is_superuser'] and not i['fields']['is_staff']:
-                try:
-                    create_user(i, data)
-                except django.db.utils.IntegrityError:
-                    print("ERROR")
-
-        # create prices
-
-        # for i in data:
-        #     if i['model'] == 'concert.price':
-        #         print(i)
-        #         break
+        create_transactions_and_tickets_for_first_concert(
+            data,
+            creste_prices_for_first_concert(data)
+        )

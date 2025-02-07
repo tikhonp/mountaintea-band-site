@@ -15,9 +15,11 @@ Sitemap: https://mountainteaband.ru/concerts/sitemap.xml
 
 User-Agent: Googlebot-Image
 Disallow: /
+Allow: /static/favicomatic/*
 
 User-Agent: YandexImages
 Disallow: /
+Allow: /static/favicomatic/*
 
 User-Agent: MSNBot-Media
 Disallow: /
