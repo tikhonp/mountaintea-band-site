@@ -89,7 +89,7 @@ def generate_concert_promo_email(
         'html': is_web,
         **{'image_' + str(obj.id): obj for obj in images}
     }
-    context = RequestContext(request, context_dict) if request else Context(context_dict)
+    context = Context(context_dict)
     html_email = Template(concert.promo_email_template).render(context)
     plain_text = html2text.html2text(html_email)
 

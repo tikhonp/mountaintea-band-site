@@ -19,7 +19,7 @@ DATABASES = {
     }
 }
 
-HOST = 'http://0.0.0.0:8000'
+HOST = 'http://localhost:8000'
 
 MANAGERS = [
     # ('Tikhon', 'tikhon.petrishchev@gmail.com'),

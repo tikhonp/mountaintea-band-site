@@ -12,6 +12,9 @@ prod: export SOURCE_COMMIT=$(shell git rev-parse HEAD)
 prod:
 	docker compose -f compose.prod.yaml up --build -d
 
+fprod:
+	docker compose -f compose.prod.yaml down
+
 logs-prod:
 	docker compose -f compose.prod.yaml logs -f -n 100
 
