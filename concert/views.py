@@ -1,13 +1,12 @@
 import logging
 
-import django
 from django.contrib.auth.models import User
+from django.db.models import OuterRef, Exists
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
 from django.template import Template, RequestContext
 from django.views import View
 from django.views.generic import ListView, TemplateView
-from django.db.models import OuterRef, Exists
 
 from concert.emails import generate_ticket_email, generate_concert_promo_email
 from concert.models import Concert, Transaction, Ticket
@@ -29,12 +28,8 @@ class MainView(ListView):
             user.first_name = name
             user.save()
         except User.DoesNotExist:
-            User.objects.create(
-                username=name.replace(' ', ''),
-                first_name=name,
-                email=email
-            )
-        except django.contrib.auth.models.User.MultipleObjectsReturned:
+            User.objects.create(username=name.replace(' ', ''), first_name=name, email=email)
+        except User.MultipleObjectsReturned:
             pass
 
         return self.get(request, *args, **kwargs)
@@ -48,7 +43,9 @@ class ConcertsView(ListView):
     def get_queryset(self):
         return {
             'concerts_active': Concert.get_active_concerts_queryset().order_by('-start_date_time'),
-            'concerts_disabled': Concert.objects.filter(~Exists(Concert.get_active_concerts_queryset().filter(pk=OuterRef('pk')))).order_by('-start_date_time')
+            'concerts_disabled': Concert.objects.filter(
+                ~Exists(Concert.get_active_concerts_queryset().filter(
+                    pk=OuterRef('pk')))).order_by('-start_date_time')
         }
 
 
@@ -60,11 +57,13 @@ class ConcertPageView(View):
         template = Template(concert.page_template)
 
         return HttpResponse(
-            template.render(RequestContext(request, {
-                'concert': concert,
-                'prices': concert.price_set.filter(is_active=True),
-                **{'image_' + str(obj.id): obj for obj in concert.concertimage_set.all()},
-            }))
+            template.render(
+                RequestContext(request, {
+                    'concert': concert,
+                    'prices': concert.price_set.filter(is_active=True),
+                    **{'image_' + str(obj.id): obj for obj in concert.concertimage_set.all()},
+                })
+            )
         )
 
 
@@ -80,8 +79,7 @@ class DonePaymentView(View):
         if not transaction_id or not transaction_id.isdigit():
             return HttpResponseBadRequest("Invalid query params")
 
-        user = get_object_or_404(Transaction.objects.select_related(
-            'user'), pk=int(transaction_id)).user
+        user = get_object_or_404(Transaction.objects.select_related('user'), pk=int(transaction_id)).user
         return render(request, self.template_name, {'user': user})
 
 
@@ -93,15 +91,12 @@ class QRCodeImageView(View):
 
 class EmailPageView(View):
     def get(self, request, transaction, sha_hash):
-        transaction = get_object_or_404(
-            Transaction.objects.select_related('concert'), pk=transaction)
+        transaction = get_object_or_404(Transaction.objects.select_related('concert'), pk=transaction)
 
         if transaction.get_hash() != sha_hash:
             return HttpResponseBadRequest("Invalid transaction hash")
 
-        return HttpResponse(
-            generate_ticket_email(transaction, request=request, is_web=True).get('html_message')
-        )
+        return HttpResponse(generate_ticket_email(transaction, request=request, is_web=True).get('html_message'))
 
 
 class ConcertPromoEmailView(View):
@@ -113,9 +108,7 @@ class ConcertPromoEmailView(View):
             return HttpResponseBadRequest("Invalid user hash")
 
         return HttpResponse(
-            generate_concert_promo_email(concert, user, request=request,
-                                         is_web=True).get('html_message')
-        )
+            generate_concert_promo_email(concert, user, request=request, is_web=True).get('html_message'))
 
 
 class EmailUnsubscribeView(View):

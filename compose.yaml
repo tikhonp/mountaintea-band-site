@@ -6,7 +6,7 @@ services:
       context: .
       target: dev
     ports:
-      - 8000:8000
+      - "8000:8000"
     volumes:
       - media-data:/app/mountaintea_band_site/media
     develop:
@@ -27,7 +27,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - "5432:5432"
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-U", "dummy", "-d", "mountaintea-db" ]
       interval: 1s

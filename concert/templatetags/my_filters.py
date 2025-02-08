@@ -7,6 +7,7 @@ register = template.Library()
 def get_item(dictionary, key):
     return dictionary.get(key)
 
+
 @register.filter
 def is_active(things, state):
     return things.filter(is_active=state)

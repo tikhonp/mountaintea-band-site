@@ -139,7 +139,6 @@ dmypy.json
 #vue.js
 # Logs
 qrcode_scanner_app_dev/logs
-*.log
 qrcode_scanner_app_dev/npm-debug.log*
 qrcode_scanner_app_dev/yarn-debug.log*
 qrcode_scanner_app_dev/yarn-error.log*

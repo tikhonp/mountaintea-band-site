@@ -32,7 +32,7 @@ The trickiest part of our stack is how we develop the frontend and backend as a 
    
 This will start the application in development mode on [http://0.0.0.0:8000/](http://0.0.0.0:8000/). 
 
-If you want to develop `/staff/qrcode/` page, you need to setup _Vue.js_ workspace:
+If you want to develop `/staff/qrcode/` page, you need to set up _Vue.js_ workspace:
 
 1. Go to `qrcode_scanner_app_dev` directory
 
@@ -61,7 +61,7 @@ Thats all :)
 
 ## 📧 Setup Email
 
-For proper mailing you need an smtp service that provides DKIM and SPF records.
+For proper mailing you need a smtp service that provides DKIM and SPF records.
 
 1. So first you need smtp service domain. Add to `.env`: `EMAIL_HOST=example.smtp.com`
 2. Then you need smtp username note that it would be great if that's will be `noreply@mountainteaband.ru`, the sender adress. At least this record MUST EXIST ON SERVER otherwise shitty mail.ru regects all. Put `EMAIL_HOST_USER=noreply@mountainteaband.ru` into `.env`.
