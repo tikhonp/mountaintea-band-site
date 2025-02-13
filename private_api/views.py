@@ -134,26 +134,18 @@ class SmtpbzWebhookView(generics.GenericAPIView):
     serializer_class = SmtpbzEventPayloadSerializer
 
     def post(self, request, event):
-
-        # Seems like cloudflare was caching emails status
-        # requests. SO i tried to STOP IT!!!
-        resp = response.Response()
-        resp['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-        resp['Pragma'] = 'no-cache'
-        resp['Expires'] = '0'
-
         tag = request.data.get('tag')
         if not tag:
-            return resp
+            return response.Response()
         tid = json.loads(tag).get('tid')
         if not tid:
-            return resp
+            return response.Response()
         transaction = get_object_or_404(Transaction, id=int(tid))
         message_status = request.data.get('message_status')
         transaction.email_status = event
         transaction.email_delivery_message = f"{message_status} {request.data.get('response')}"
         transaction.save()
-        return resp
+        return response.Response()
 
 
 class MailgunWebhookView(generics.GenericAPIView):
