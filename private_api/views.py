@@ -134,6 +134,7 @@ class SmtpbzWebhookView(generics.GenericAPIView):
     serializer_class = SmtpbzEventPayloadSerializer
 
     def post(self, request, event):
+        print(request.data)
         tag = request.data.get('tag')
         if not tag:
             return response.Response()
