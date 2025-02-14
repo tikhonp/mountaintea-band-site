@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1
 
-ARG PYTHON_VERSION=3.13.1
+ARG PYTHON_VERSION=3.13.2
 ARG NGINX_VERSION=1.27
 
 FROM python:${PYTHON_VERSION}-slim AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+RUN pip install --upgrade pip
 
 WORKDIR /app
 RUN --mount=type=cache,target=/root/.cache/pip \
