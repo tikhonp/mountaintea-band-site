@@ -205,6 +205,16 @@ class Transaction(models.Model):
     def get_absolute_url(self) -> str:
         return f'/concerts/email/{self.id}/{self.get_hash()}/'
 
+    def update_status(self, status, message):
+        if self.email_status == 'opened':
+            return
+        if status == 'accepted' and self.email_status != 'unnecessary':
+            return
+
+        self.email_status = status
+        self.email_delivery_message = message
+        self.save()
+
 
 class Ticket(models.Model):
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE,

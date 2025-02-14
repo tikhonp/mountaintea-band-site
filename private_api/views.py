@@ -134,18 +134,22 @@ class SmtpbzWebhookView(generics.GenericAPIView):
     serializer_class = SmtpbzEventPayloadSerializer
 
     def post(self, request, event):
-        print(request.data)
-        tag = request.data.get('tag')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        tag = data.get('tag')
         if not tag:
             return response.Response()
         tid = json.loads(tag).get('tid')
         if not tid:
             return response.Response()
+
         transaction = get_object_or_404(Transaction, id=int(tid))
-        message_status = request.data.get('message_status')
-        transaction.email_status = event
-        transaction.email_delivery_message = f"{message_status} {request.data.get('response')}"
-        transaction.save()
+        transaction.update_status(
+            event,
+            f"{data.get('message_status')} {data.get('response')}",
+        )
         return response.Response()
 
 

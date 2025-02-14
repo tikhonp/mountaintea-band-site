@@ -216,4 +216,10 @@ class MailgunEventPayloadSerializer(serializers.Serializer):
 
 
 class SmtpbzEventPayloadSerializer(serializers.Serializer):
-    pass
+    message_status = serializers.CharField(source='type', required=False)
+    message_id = serializers.CharField(source='messageId', required=False)
+    sender = serializers.EmailField(source='from', required=False)
+    recipient = serializers.EmailField(source='to', required=False)
+    response = serializers.CharField()
+    tag = serializers.JSONField()
+    subject = serializers.CharField()
