@@ -70,7 +70,7 @@ services:
     volumes:
       - media-data:/backup/media-backup:ro
       - db-backup-data:/backup/db-backup:ro
-      - ${HOME}/backups:/archive
+      - ${HOME}/backups/mountaintea:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
 volumes:
