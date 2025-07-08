@@ -20,13 +20,13 @@ services:
         max-size: "100m"
         max-file: "10"
 
-  cf-tunnel:
-    image: cloudflare/cloudflared:latest
-    container_name: mountaintea-cloudflare-tunnel
+  ssh-tunnel:
+    image: jnovack/autossh
+    env_file: ".env"
     restart: always
-    command: tunnel --no-autoupdate run
-    environment:
-      - TUNNEL_TOKEN=$CF_TUNNEL_TOKEN
+    container_name: mountaintea-ssh-tunnel 
+    volumes:
+      - "${HOME}/.ssh:/var/keys:ro"
     networks:
       - localnet
     logging:
