@@ -1,14 +1,8 @@
 import os.path
 from pathlib import Path
-import dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Load env variables from file
-dotenv_file = BASE_DIR.parent / ".env"
-if os.path.isfile(dotenv_file):
-    dotenv.load_dotenv(dotenv_file)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv(
@@ -20,7 +14,6 @@ SECRET_KEY = os.getenv(
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    '45.128.204.12',
     'mountainteaband.ru',
     'www.mountainteaband.ru',
     'email.mountainteaband.ru',
