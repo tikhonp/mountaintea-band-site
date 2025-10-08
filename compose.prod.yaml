@@ -21,12 +21,14 @@ services:
         max-file: "10"
 
   ssh-tunnel:
-    image: jnovack/autossh
+    image: jnovack/autossh:2.1.0
+    container_name: mountaintea-ssh-tunnel 
     env_file: ".env"
     restart: always
-    container_name: mountaintea-ssh-tunnel 
+    environment:
+      - SSH_OPTIONS=-o UserKnownHostsFile=/dev/null
     volumes:
-      - "${HOME}/.ssh:/var/keys:ro"
+      - "${HOME}/.ssh/id_ed25519:/id_rsa:ro"
     networks:
       - localnet
     logging:
@@ -58,7 +60,7 @@ services:
 
   db:
     container_name: mountaintea-db
-    image: postgres:17
+    image: postgres:17.6
     env_file: ".env"
     restart: always
     volumes:
