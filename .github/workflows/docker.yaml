@@ -34,14 +34,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image nginx
         uses: docker/build-push-action@v6
         with:
           context: .
+          target: nginx-prod
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-            ${{ github.ref == 'refs/heads/main' && format('{0}/{1}:latest', env.REGISTRY, env.IMAGE_NAME) || '' }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-nginx:${{ github.ref_name }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-nginx:${{ github.sha }}
+            ${{ github.ref == 'refs/heads/main' && format('{0}/{1}-nginx:latest', env.REGISTRY, env.IMAGE_NAME) || '' }}
 
+      - name: Build and push Docker image server
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: prod
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-server:${{ github.ref_name }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-server:${{ github.sha }}
+            ${{ github.ref == 'refs/heads/main' && format('{0}/{1}-server:latest', env.REGISTRY, env.IMAGE_NAME) || '' }}
