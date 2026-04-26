@@ -1,16 +1,12 @@
-name: Mounatintea
-
 services:
   nginx:
+    image: ghcr.io/tikhonp/mountaintea-band-site-nginx:latest
     container_name: mountaintea-nginx-prod
     restart: always
     networks:
       - localnet
     volumes:
       - media-data:/media-volume
-    build:
-      context: .
-      target: nginx-prod
     depends_on:
       - server
     hostname: nginx
@@ -38,12 +34,10 @@ services:
         max-file: "10"
 
   server:
+    image: ghcr.io/tikhonp/mountaintea-band-site-server:latest
     container_name: mountaintea-server
     env_file: ".env"
     restart: always
-    build:
-      context: .
-      target: prod
     depends_on:
       db:
         condition: service_healthy
@@ -59,8 +53,8 @@ services:
         max-file: "10"
 
   db:
-    container_name: mountaintea-db
     image: postgres:17.6
+    container_name: mountaintea-db
     env_file: ".env"
     restart: always
     volumes:
