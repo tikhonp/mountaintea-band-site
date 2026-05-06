@@ -24,7 +24,7 @@ services:
     environment:
       - SSH_OPTIONS=-o UserKnownHostsFile=/dev/null
     volumes:
-      - "${HOME}/.ssh/id_ed25519:/id_rsa:ro"
+      - "./id_ed25519:/id_rsa:ro"
     networks:
       - localnet
     logging:
