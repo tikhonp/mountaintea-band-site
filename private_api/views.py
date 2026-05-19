@@ -124,8 +124,13 @@ class IncomingPaymentView(generics.GenericAPIView):
     serializer_class = IncomingPaymentSerializer
 
     def post(self, request):
+        print("Received incoming payment notification: {}".format(request.data))
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except exceptions.ValidationError as e:
+            logger.error("Failed to validate incoming payment: {}".format(e))
+            raise e
         serializer.send_email(request)
         return response.Response()
 
