@@ -129,7 +129,7 @@ class IncomingPaymentView(generics.GenericAPIView):
         try:
             serializer.is_valid(raise_exception=True)
         except exceptions.ValidationError as e:
-            logger.error("Failed to validate incoming payment: {}".format(e))
+            print("Failed to validate incoming payment: {}".format(e))
             raise e
         serializer.send_email(request)
         return response.Response()
