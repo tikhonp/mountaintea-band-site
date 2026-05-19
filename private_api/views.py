@@ -6,12 +6,14 @@ from rest_framework import filters
 from rest_framework import viewsets, permissions, response, exceptions, generics, mixins
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import action
+from rest_framework.status import HTTP_410_GONE
 
 from concert.models import Concert, Price, Transaction, Ticket
 from concert.utils import create_user_payment
 from concertstaff.models import Issue
 from private_api.serializers import ConcertSerializer, PriceSerializer, UserSerializer, BuyTicketSerializer, \
-    IssueSerializer, TicketSerializer, IncomingPaymentSerializer, MailgunEventPayloadSerializer, SmtpbzEventPayloadSerializer
+    IssueSerializer, TicketSerializer, IncomingPaymentSerializer, MailgunEventPayloadSerializer, \
+    SmtpbzEventPayloadSerializer
 from private_api.utils import CsrfExemptSessionAuthentication, ConcertIsDoneFilter
 
 
@@ -49,7 +51,7 @@ class BuyTicketApiView(generics.GenericAPIView):
         prices = Price.objects.filter(concert=concert, is_active=True)
 
         if not prices:
-            raise exceptions.APIException("Ошибка: билеты закончились.", code=410)
+            raise exceptions.APIException("Ошибка: билеты закончились.", code=HTTP_410_GONE)
 
         if len([1 for t in serializer.data['tickets'] if isinstance(t['count'], int)]) == 0:
             raise exceptions.ValidationError("Введите корректное количество билетов.")
@@ -84,7 +86,8 @@ class IsStaffUser(permissions.BasePermission):
 
 
 class TicketViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Ticket.objects.all().select_related('transaction', 'transaction__concert', 'transaction__user', 'transaction__user__profile', 'price', 'price__concert')
+    queryset = Ticket.objects.all().select_related('transaction', 'transaction__concert', 'transaction__user',
+                                                   'transaction__user__profile', 'price', 'price__concert')
     serializer_class = TicketSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ['transaction', 'is_active', 'price',
@@ -124,13 +127,8 @@ class IncomingPaymentView(generics.GenericAPIView):
     serializer_class = IncomingPaymentSerializer
 
     def post(self, request):
-        print("Received incoming payment notification: {}".format(request.data))
         serializer = self.get_serializer(data=request.data)
-        try:
-            serializer.is_valid(raise_exception=True)
-        except exceptions.ValidationError as e:
-            print("Failed to validate incoming payment: {}".format(e))
-            raise e
+        serializer.is_valid(raise_exception=True)
         serializer.send_email(request)
         return response.Response()
 

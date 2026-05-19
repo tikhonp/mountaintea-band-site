@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import mail_managers
 from django.shortcuts import get_object_or_404
+from django.utils.http import urlencode
 from rest_framework import exceptions
 from rest_framework import serializers
 
@@ -91,8 +92,7 @@ class TicketSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def setup_eager_loading(queryset):
-        queryset = queryset.select_related(
-            'price', 'transaction', 'transaction__user', 'transaction__user__profile')
+        queryset = queryset.select_related('price', 'transaction', 'transaction__user', 'transaction__user__profile')
         return queryset
 
     class Meta:
@@ -102,46 +102,48 @@ class TicketSerializer(serializers.ModelSerializer):
 
 
 class IncomingPaymentSerializer(serializers.Serializer):
-    notification_type = serializers.CharField()
+    notification_type = serializers.ChoiceField(choices=['p2p-incoming', 'card-incoming'])
     operation_id = serializers.CharField()
     amount = serializers.FloatField()
     withdraw_amount = serializers.IntegerField(required=False)
     currency = serializers.CharField()
     datetime = serializers.DateTimeField()
     sender = serializers.CharField(allow_null=True)
-    codepro = serializers.BooleanField()
-    label = serializers.CharField()
-    sha1_hash = serializers.CharField()
-    unaccepted = serializers.BooleanField(required=False)
+    label = serializers.CharField(allow_blank=True)
+    test_notification = serializers.BooleanField(required=False)
+    sign = serializers.CharField()
 
-    def validate_sha(self, yandex_notification_secret: str):
+    def validate_sha(self, yoomoney_notification_secret: str):
+
         cleaned_data = self.context['request'].POST
 
-        hash_str = "{notification_type}&{operation_id}&{amount}&{currency}&{datetime}&{sender}" \
-                   "&{codepro}&{notification_secret}&{label}".format(
-                       notification_type=cleaned_data.get('notification_type'),
-                       operation_id=cleaned_data.get('operation_id'),
-                       amount=cleaned_data.get('amount'),
-                       currency=cleaned_data.get('currency'),
-                       datetime=cleaned_data.get('datetime'),
-                       sender=cleaned_data.get('sender'),
-                       codepro=cleaned_data.get('codepro'),
-                       notification_secret=yandex_notification_secret,
-                       label=cleaned_data.get('label'),
-                   )
-        hash_object = hashlib.sha1(hash_str.encode())
-        if str(hash_object.hexdigest()) != cleaned_data.get('sha1_hash'):
+        parts = []
+        for key in sorted(cleaned_data.keys()):
+            if key == 'sign':
+                continue
+
+            for value in cleaned_data.getlist(key):
+                encoded_value = urlencode('' if value is None else str(value))
+                parts.append(f'{key}={encoded_value}')
+
+        payload = '&'.join(parts)
+        signature = hmac.new(key=yoomoney_notification_secret.encode(), msg=payload.encode(),
+                             digestmod=hashlib.sha256, ).hexdigest()
+
+        if not hmac.compare_digest(str(signature), str(cleaned_data.get('sign', ''))):
             if settings.DEBUG:
-                logger.error("Failed to validate SHA1 hash, the hash is: {}".format(
-                    str(hash_object.hexdigest())))
+                logger.error('Failed to validate HMAC-SHA256 signature, the hash is: %s', signature, )
             else:
-                logger.error("Failed to validate SHA1 hash.")
-            raise exceptions.ValidationError("Failed to check SHA1 hash.")
+                logger.error('Failed to validate HMAC-SHA256 signature.')
+            raise exceptions.ValidationError('Failed to check HMAC-SHA256 signature.')
 
     def post_validate_label(self) -> int | None:
         label = self.data.get('label')
-        if label == '':
+        if label == '' and self.data.get('test_notification', False):
+            logger.info("Received test notification with empty label, skipping processing.")
             return None
+        if label is None:
+            raise exceptions.ValidationError("Label is required.")
         if not label.isdigit():
             raise exceptions.ValidationError("Label is not valid digit.")
         return int(label)
@@ -151,8 +153,7 @@ class IncomingPaymentSerializer(serializers.Serializer):
         if not label:
             return None
         transaction = get_object_or_404(
-            Transaction.objects.select_related('concert', 'user').prefetch_related('ticket_set'),
-            id=label)
+            Transaction.objects.select_related('concert', 'user').prefetch_related('ticket_set'), id=label)
         self.validate_sha(transaction.concert.yandex_notification_secret)
 
         transaction.date_closed = self.data.get('datetime')
@@ -160,15 +161,14 @@ class IncomingPaymentSerializer(serializers.Serializer):
         transaction.is_done = True
         transaction.save()
 
-        send_mail(**generate_ticket_email(
-            transaction, tickets=transaction.ticket_set.all(), request=request, headers=True))
-        mail_managers(**generate_managers_ticket_email(transaction,
-                      tickets=transaction.ticket_set.all()))
+        send_mail(
+            **generate_ticket_email(transaction, tickets=transaction.ticket_set.all(), request=request, headers=True))
+        mail_managers(**generate_managers_ticket_email(transaction, tickets=transaction.ticket_set.all()))
 
         return transaction
 
 
-class UserVariblesSerializer(serializers.Serializer):
+class UserVariablesSerializer(serializers.Serializer):
     tid = serializers.IntegerField()
 
 
@@ -184,7 +184,7 @@ class MailgunEventDataSerializer(serializers.Serializer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['user-variables'] = UserVariblesSerializer(required=False)
+        self.fields['user-variables'] = UserVariablesSerializer(required=False)
         self.fields['delivery-status'] = MailgunDeliveryStatusSerializer(required=False)
 
 
@@ -204,8 +204,7 @@ class MailgunEventPayloadSerializer(serializers.Serializer):
     def validate_hmac(self):
         signature = self.data.get('signature')
         hmac_digest = hmac.new(key=settings.MAILGUN_SIGNING_KEY.encode(),
-                               msg=('{}{}'.format(signature.get('timestamp'),
-                                    signature.get('token'))).encode(),
+                               msg=('{}{}'.format(signature.get('timestamp'), signature.get('token'))).encode(),
                                digestmod=hashlib.sha256).hexdigest()
         if not hmac.compare_digest(str(signature.get('signature')), str(hmac_digest)):
             if settings.DEBUG:

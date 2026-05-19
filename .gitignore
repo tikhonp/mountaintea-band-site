@@ -156,3 +156,6 @@ qrcode_scanner_app_dev/dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+test.rest
+llmtmp/

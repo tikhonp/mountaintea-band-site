@@ -109,6 +109,7 @@ class Concert(models.Model):
     def duration(self) -> Optional[datetime.timedelta]:
         if self.end_date_time:
             return self.end_date_time - self.start_date_time
+        return None
 
     @property
     def full_title(self) -> str:
@@ -119,7 +120,9 @@ class Concert(models.Model):
 
     @classmethod
     def get_active_concerts_queryset(cls):
-        return cls.objects.filter(Q(status='EventPostponed') | Q(Q(Q(end_date_time__isnull=True) | Q(end_date_time__gte=timezone.now())) & Q(start_date_time__gte=timezone.now())))
+        return cls.objects.filter(Q(status='EventPostponed') | Q(
+            Q(Q(end_date_time__isnull=True) | Q(end_date_time__gte=timezone.now())) & Q(
+                start_date_time__gte=timezone.now())))
 
     def __str__(self) -> str:
         return "{} {}".format(self.title, "активен" if self.is_active else "Закончен")
