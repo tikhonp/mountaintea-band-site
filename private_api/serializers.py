@@ -3,12 +3,12 @@ from __future__ import annotations
 import hashlib
 import hmac
 import logging
+from urllib.parse import quote_plus
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import mail_managers
 from django.shortcuts import get_object_or_404
-from django.utils.http import urlencode
 from rest_framework import exceptions
 from rest_framework import serializers
 
@@ -123,7 +123,7 @@ class IncomingPaymentSerializer(serializers.Serializer):
                 continue
 
             for value in cleaned_data.getlist(key):
-                encoded_value = urlencode('' if value is None else str(value))
+                encoded_value = quote_plus('' if value is None else str(value), safe='')
                 parts.append(f'{key}={encoded_value}')
 
         payload = '&'.join(parts)
