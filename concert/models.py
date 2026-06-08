@@ -120,9 +120,12 @@ class Concert(models.Model):
 
     @classmethod
     def get_active_concerts_queryset(cls):
-        return cls.objects.filter(Q(status='EventPostponed') | Q(
-            Q(Q(end_date_time__isnull=True) | Q(end_date_time__gte=timezone.now())) & Q(
-                start_date_time__gte=timezone.now())))
+        now = timezone.now()
+        return cls.objects.filter(
+            Q(status='EventPostponed') |
+            Q(end_date_time__isnull=False, end_date_time__gt=now) |
+            Q(end_date_time__isnull=True, start_date_time__gt=now)
+        )
 
     def __str__(self) -> str:
         return "{} {}".format(self.title, "активен" if self.is_active else "Закончен")

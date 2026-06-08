@@ -18,10 +18,22 @@ from private_api.utils import CsrfExemptSessionAuthentication, ConcertIsDoneFilt
 
 
 class ConcertViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Concert.objects.all()
     serializer_class = ConcertSerializer
-    filter_backends = (ConcertIsDoneFilter,)
-    filterset_fields = ['is_active']
+
+    def get_queryset(self):
+        queryset = Concert.objects.all()
+        is_active = self.request.query_params.get('is_active')
+
+        if is_active is None:
+            return queryset
+
+        if is_active.lower() in ('true', '1'):
+            return self.get_is_active_quieryset(queryset)
+
+        if is_active.lower() in ('false', '0'):
+            return queryset.exclude(pk__in=self.get_is_active_quieryset(queryset))
+
+        return queryset
 
 
 class PriceViewSet(viewsets.ReadOnlyModelViewSet):

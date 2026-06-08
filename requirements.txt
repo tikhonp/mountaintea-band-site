@@ -1,11 +1,11 @@
 # Django dependencies
-django==6.0.5
+django==6.0.6
 django-filter==25.2
 django-cleanup==9.0.0
 djangorestframework==3.17.1
 django-cors-headers==4.9.0
 django-phonenumber-field==8.4.0
-phonenumbers==9.0.30
+phonenumbers==9.0.32
 
 # QR code generation
 pillow==12.2.0
@@ -15,6 +15,6 @@ qrcode==8.2
 html2text==2025.4.15
 
 # Production deploy
-sentry-sdk==2.60.0
+sentry-sdk==2.61.1
 psycopg2-binary==2.9.12
 gunicorn==26.0.0
