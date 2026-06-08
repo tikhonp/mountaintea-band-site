@@ -28,10 +28,10 @@ class ConcertViewSet(viewsets.ReadOnlyModelViewSet):
             return queryset
 
         if is_active.lower() in ('true', '1'):
-            return self.get_is_active_quieryset(queryset)
+            return Concert.get_active_concerts_queryset()
 
         if is_active.lower() in ('false', '0'):
-            return queryset.exclude(pk__in=self.get_is_active_quieryset(queryset))
+            return queryset.exclude(pk__in=Concert.get_active_concerts_queryset())
 
         return queryset
 
